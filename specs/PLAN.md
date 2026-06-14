@@ -33,7 +33,8 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 
 - [x] **1.1 Types** — `Employee`, `TimeEntry`, `WeeklyApproval`, `WeeklySummaryRow`,
       `EmployeeStatus`/`ApprovalStatus` enums. ✓
-- [ ] **1.2 Error codes** — `ErrorCode` union + envelope type in `errors.ts`.
+- [x] **1.2 Error codes** — `ErrorCode` union + `ApiErrorBody` envelope in
+      `errors.ts` (en/es messages stay in the API). ✓
 - [ ] **1.3 Date/week helpers** — `getWeekStart`, `isFutureDate`, week range; pure
       (no local TZ).
       _Done when:_ unit tests pass for every weekday + month/year boundaries.
