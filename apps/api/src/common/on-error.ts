@@ -7,7 +7,7 @@ import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import type { ApiErrorBody } from '@timesheet/shared';
 import { AppError } from './errors.js';
 import { DEFAULT_LOCALE, getMessage } from './i18n.js';
-import type { AppEnv } from './locale.middleware.js';
+import type { AppEnv } from './types.js';
 
 export const onError: ErrorHandler<AppEnv> = (err, c) => {
   const locale = c.get('locale') ?? DEFAULT_LOCALE;

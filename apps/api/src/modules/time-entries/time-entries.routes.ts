@@ -9,7 +9,7 @@ import {
 } from '@timesheet/shared';
 import { Hono } from 'hono';
 import { z } from 'zod';
-import type { AppEnv } from '../../common/locale.middleware.js';
+import type { AppEnv } from '../../common/types.js';
 import { validate } from '../../common/validator.js';
 import * as service from './time-entries.service.js';
 
