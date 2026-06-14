@@ -34,11 +34,11 @@ packages/shared/src/
 ```ts
 type WeeklyPay = {
   totalHours: number;
-  regularHours: number;   // min(total, 40)
-  overtimeHours: number;  // max(total - 40, 0)
-  regularPay: number;     // round2(regularHours * rate)
-  overtimePay: number;    // round2(overtimeHours * rate * 1.5)
-  totalPay: number;       // round2(regularPay + overtimePay)
+  regularHours: number; // min(total, 40)
+  overtimeHours: number; // max(total - 40, 0)
+  regularPay: number; // round2(regularHours * rate)
+  overtimePay: number; // round2(overtimeHours * rate * 1.5)
+  totalPay: number; // round2(regularPay + overtimePay)
 };
 
 function calculateWeeklyPay(totalHours: number, hourlyRate: number): WeeklyPay;
@@ -56,6 +56,7 @@ function calculateWeeklyPay(totalHours: number, hourlyRate: number): WeeklyPay;
 ## Unit tests (required)
 
 Cover at minimum:
+
 - Exactly 40h → all regular, no overtime.
 - 40.25h → 40 regular + 0.25 overtime.
 - Under 40h (e.g. 32h) → no overtime.

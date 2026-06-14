@@ -1,5 +1,16 @@
 {
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "extraKnownMarketplaces": {
+    "nx-claude-plugins": {
+      "source": {
+        "source": "github",
+        "repo": "nrwl/nx-ai-agents-config"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "nx@nx-claude-plugins": true
+  },
   "permissions": {
     "allow": [
       "Bash(pnpm install)",
@@ -18,13 +29,7 @@
       "Edit",
       "Write"
     ],
-    "ask": [
-      "Bash(git push:*)",
-      "Bash(docker compose down:*)"
-    ],
-    "deny": [
-      "Read(.env)",
-      "Read(.env.*)"
-    ]
+    "ask": ["Bash(git push:*)", "Bash(docker compose down:*)"],
+    "deny": ["Read(.env)", "Read(.env.*)"]
   }
 }

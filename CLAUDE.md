@@ -18,7 +18,7 @@ The app does three things:
    let a reviewer approve or reject each employee's week. Approved weeks are locked.
 
 This is a normal CRUD application. **It contains no AI features.** AI (Claude Code)
-is the tool used to *build* it, not part of the product.
+is the tool used to _build_ it, not part of the product.
 
 ---
 
@@ -62,12 +62,14 @@ timesheet-tracker/
 ## 4. Domain rules (business logic — easy to get wrong, get these exactly right)
 
 ### Employees
+
 - Fields: `firstName`, `lastName`, `hourlyRate`, `status` (`active` | `inactive`).
 - **Soft delete only.** Deactivating sets a `deactivatedAt` timestamp; never delete
   the row. Inactive employees are hidden from default lists but their historical
   time entries remain visible. `status` is derived from `deactivatedAt` being null.
 
 ### Time entries
+
 - Fields: `employeeId`, `date` (date-only, `YYYY-MM-DD`, no time, no timezone),
   `hours` (decimal, e.g. `7.5`).
 - Validation (enforced via shared Zod schemas):
@@ -78,11 +80,13 @@ timesheet-tracker/
   - No **create/edit/delete** of entries whose week is already **approved** (locking).
 
 ### Week definition
+
 - A week runs **Monday → Sunday**.
 - `weekStart` is always the Monday (date-only) of that week and is the canonical
   key for a week. Define this once in `packages/shared` and reuse everywhere.
 
 ### Overtime & pay (THE core calculation — see §5)
+
 - Overtime = hours worked **beyond 40 in a single week**.
 - `regularHours = min(totalHours, 40)`, `overtimeHours = max(totalHours - 40, 0)`.
 - `pay = regularHours * rate + overtimeHours * rate * 1.5`.
@@ -90,6 +94,7 @@ timesheet-tracker/
   Never compare raw floats for equality.
 
 ### Weekly summary (computed, not stored)
+
 - For a given `weekStart`, return one row per employee **who has at least one time
   entry in that week** — active or inactive. This is how an inactive employee's
   historical weeks stay visible (per soft-delete rules).
@@ -99,6 +104,7 @@ timesheet-tracker/
   (see §5). This guarantees the client genuinely consumes the shared calculation.
 
 ### Approval flow
+
 - Each (employee, week) has a status: `pending` → `approved` or `rejected`.
 - Persisted in its own `weekly_approvals` table keyed by `(employeeId, weekStart)`.
   Absence of a row = implicitly `pending`. Only the status is stored.
@@ -169,7 +175,7 @@ timesheet-tracker/
 
 This project is built spec-first. The flow for any non-trivial piece of work:
 
-1. Read / write the relevant spec in `specs/` — define *what* and the edge cases
+1. Read / write the relevant spec in `specs/` — define _what_ and the edge cases
    before writing code.
 2. Implement against the spec.
 3. Verify with tests.
@@ -222,3 +228,29 @@ docker compose up -d      # start PostgreSQL
 # (dev api / dev web — TBD)
 # (test — TBD)
 ```
+
+---
+
+<!-- nx configuration start-->
+<!-- Leave the start & end comments to automatically receive updates. -->
+
+# General Guidelines for working with Nx
+
+- For navigating/exploring the workspace, invoke the `nx-workspace` skill first - it has patterns for querying projects, targets, and dependencies
+- When running tasks (for example build, lint, test, e2e, etc.), always prefer running the task through `nx` (i.e. `nx run`, `nx run-many`, `nx affected`) instead of using the underlying tooling directly
+- Prefix nx commands with the workspace's package manager (e.g., `pnpm nx build`, `npm exec nx test`) - avoids using globally installed CLI
+- You have access to the Nx MCP server and its tools, use them to help the user
+- For Nx plugin best practices, check `node_modules/@nx/<plugin>/PLUGIN.md`. Not all plugins have this file - proceed without it if unavailable.
+- NEVER guess CLI flags - always check nx_docs or `--help` first when unsure
+
+## Scaffolding & Generators
+
+- For scaffolding tasks (creating apps, libs, project structure, setup), ALWAYS invoke the `nx-generate` skill FIRST before exploring or calling MCP tools
+
+## When to use nx_docs
+
+- USE for: advanced config options, unfamiliar flags, migration guides, plugin configuration, edge cases
+- DON'T USE for: basic generator syntax (`nx g @nx/react:app`), standard commands, things you already know
+- The `nx-generate` skill handles generator discovery internally - don't call nx_docs just to look up generator syntax
+
+<!-- nx configuration end-->
