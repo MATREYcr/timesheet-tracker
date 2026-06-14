@@ -34,7 +34,7 @@ export async function updateEmployee(id: string, input: UpdateEmployeeInput) {
   await findOrThrow(id);
   const [row] = await db
     .update(employees)
-    .set({ ...input, updatedAt: new Date() })
+    .set(input)
     .where(eq(employees.id, id))
     .returning();
   return toEmployee(row);
@@ -44,7 +44,7 @@ export async function deactivateEmployee(id: string) {
   await findOrThrow(id);
   const [row] = await db
     .update(employees)
-    .set({ deactivatedAt: new Date(), updatedAt: new Date() })
+    .set({ deactivatedAt: new Date() })
     .where(eq(employees.id, id))
     .returning();
   return toEmployee(row);
@@ -54,7 +54,7 @@ export async function reactivateEmployee(id: string) {
   await findOrThrow(id);
   const [row] = await db
     .update(employees)
-    .set({ deactivatedAt: null, updatedAt: new Date() })
+    .set({ deactivatedAt: null })
     .where(eq(employees.id, id))
     .returning();
   return toEmployee(row);

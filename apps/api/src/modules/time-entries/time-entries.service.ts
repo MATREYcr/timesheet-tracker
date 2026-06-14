@@ -1,7 +1,8 @@
 // Time entries business logic. Enforces the DB-dependent rules: the employee must
 // be active (on create), and the entry's week must not be approved/locked
 // (create/edit/delete). Hours range / no-future-date are enforced by the shared
-// Zod schema at the route boundary.
+// Zod schema at the route boundary. Mutations run in a transaction so the
+// week-locked check and the write are atomic.
 
 import {
   getWeekEnd,
@@ -20,9 +21,11 @@ import {
 } from '../../db/schema.js';
 import { toTimeEntry } from './time-entries.mapper.js';
 
-async function assertWeekNotApproved(employeeId: string, date: string) {
+type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
+
+async function assertWeekNotApproved(tx: Tx, employeeId: string, date: string) {
   const weekStart = getWeekStart(date);
-  const [approval] = await db
+  const [approval] = await tx
     .select()
     .from(weeklyApprovals)
     .where(
@@ -36,8 +39,8 @@ async function assertWeekNotApproved(employeeId: string, date: string) {
   }
 }
 
-async function findEntryOrThrow(id: string): Promise<TimeEntryRow> {
-  const [row] = await db
+async function findEntryOrThrow(tx: Tx, id: string): Promise<TimeEntryRow> {
+  const [row] = await tx
     .select()
     .from(timeEntries)
     .where(eq(timeEntries.id, id));
@@ -61,39 +64,45 @@ export async function listTimeEntries(employeeId: string, weekStart?: string) {
   return rows.map(toTimeEntry);
 }
 
-export async function createTimeEntry(input: CreateTimeEntryInput) {
-  const [employee] = await db
-    .select()
-    .from(employees)
-    .where(eq(employees.id, input.employeeId));
-  if (!employee) throw new AppError('NOT_FOUND');
-  if (employee.deactivatedAt) throw new AppError('EMPLOYEE_INACTIVE');
+export function createTimeEntry(input: CreateTimeEntryInput) {
+  return db.transaction(async (tx) => {
+    const [employee] = await tx
+      .select()
+      .from(employees)
+      .where(eq(employees.id, input.employeeId));
+    if (!employee) throw new AppError('NOT_FOUND');
+    if (employee.deactivatedAt) throw new AppError('EMPLOYEE_INACTIVE');
 
-  await assertWeekNotApproved(input.employeeId, input.date);
+    await assertWeekNotApproved(tx, input.employeeId, input.date);
 
-  const [row] = await db.insert(timeEntries).values(input).returning();
-  return toTimeEntry(row);
+    const [row] = await tx.insert(timeEntries).values(input).returning();
+    return toTimeEntry(row);
+  });
 }
 
-export async function updateTimeEntry(id: string, input: UpdateTimeEntryInput) {
-  const entry = await findEntryOrThrow(id);
-  // The current week must be open...
-  await assertWeekNotApproved(entry.employeeId, entry.date);
-  // ...and if the date moves to another week, that week must be open too.
-  if (input.date && input.date !== entry.date) {
-    await assertWeekNotApproved(entry.employeeId, input.date);
-  }
+export function updateTimeEntry(id: string, input: UpdateTimeEntryInput) {
+  return db.transaction(async (tx) => {
+    const entry = await findEntryOrThrow(tx, id);
+    // The current week must be open...
+    await assertWeekNotApproved(tx, entry.employeeId, entry.date);
+    // ...and if the date moves to another week, that week must be open too.
+    if (input.date && input.date !== entry.date) {
+      await assertWeekNotApproved(tx, entry.employeeId, input.date);
+    }
 
-  const [row] = await db
-    .update(timeEntries)
-    .set({ ...input, updatedAt: new Date() })
-    .where(eq(timeEntries.id, id))
-    .returning();
-  return toTimeEntry(row);
+    const [row] = await tx
+      .update(timeEntries)
+      .set(input)
+      .where(eq(timeEntries.id, id))
+      .returning();
+    return toTimeEntry(row);
+  });
 }
 
-export async function deleteTimeEntry(id: string) {
-  const entry = await findEntryOrThrow(id);
-  await assertWeekNotApproved(entry.employeeId, entry.date);
-  await db.delete(timeEntries).where(eq(timeEntries.id, id));
+export function deleteTimeEntry(id: string) {
+  return db.transaction(async (tx) => {
+    const entry = await findEntryOrThrow(tx, id);
+    await assertWeekNotApproved(tx, entry.employeeId, entry.date);
+    await tx.delete(timeEntries).where(eq(timeEntries.id, id));
+  });
 }

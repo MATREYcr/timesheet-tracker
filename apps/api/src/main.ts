@@ -1,12 +1,19 @@
-// API entrypoint. Loads env (repo-root .env when run via `nx serve`), then starts
-// the Hono app on the Node server.
+// API entrypoint. Loads env (repo-root .env when run via `nx serve`), validates it,
+// starts the Hono app, and shuts down cleanly.
 
 import 'dotenv/config';
 import { serve } from '@hono/node-server';
 import { createApp } from './app.js';
+import { env } from './config/env.js';
+import { closeDb } from './db/client.js';
 
-const port = Number(process.env.PORT ?? 3333);
-
-serve({ fetch: createApp().fetch, port }, (info) => {
+const server = serve({ fetch: createApp().fetch, port: env.PORT }, (info) => {
   console.log(`API listening on http://localhost:${info.port}`);
 });
+
+for (const signal of ['SIGINT', 'SIGTERM'] as const) {
+  process.on(signal, () => {
+    server.close();
+    void closeDb().finally(() => process.exit(0));
+  });
+}

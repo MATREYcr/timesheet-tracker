@@ -2,7 +2,6 @@
 // Money/hours are `numeric` (never float). Date-only values use `date`; audit
 // fields use `timestamp`. Soft delete via `deactivated_at` (no row removal).
 
-import { sql } from 'drizzle-orm';
 import {
   date,
   index,
@@ -36,7 +35,8 @@ export const employees = pgTable('employees', {
     .defaultNow(),
   updatedAt: timestamp('updated_at', { withTimezone: true })
     .notNull()
-    .defaultNow(),
+    .defaultNow()
+    .$onUpdate(() => new Date()),
 });
 
 export const timeEntries = pgTable(
@@ -57,7 +57,8 @@ export const timeEntries = pgTable(
       .defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true })
       .notNull()
-      .defaultNow(),
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     index('time_entries_employee_date_idx').on(table.employeeId, table.date),
@@ -78,7 +79,8 @@ export const weeklyApprovals = pgTable(
       .defaultNow(),
     updatedAt: timestamp('updated_at', { withTimezone: true })
       .notNull()
-      .default(sql`now()`),
+      .defaultNow()
+      .$onUpdate(() => new Date()),
   },
   (table) => [
     uniqueIndex('weekly_approvals_employee_week_idx').on(
