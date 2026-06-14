@@ -4,7 +4,7 @@
 
 import './load-env.js';
 import { db } from './client.js';
-import { employees, timeEntries, weeklyApprovals } from './schema.js';
+import { employees, timeEntries, weeklyApprovals } from './schema/index.js';
 
 async function seed() {
   // Clear in FK-safe order.

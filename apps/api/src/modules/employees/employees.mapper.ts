@@ -2,7 +2,7 @@
 // `deactivatedAt` and serializes timestamps to ISO strings.
 
 import type { Employee } from '@timesheet/shared';
-import type { EmployeeRow } from '../../db/schema.js';
+import type { EmployeeRow } from '../../db/schema/index.js';
 
 export function toEmployee(row: EmployeeRow): Employee {
   return {

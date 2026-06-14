@@ -10,7 +10,11 @@ import {
 import { and, asc, eq, gte, lte, sql } from 'drizzle-orm';
 import { AppError } from '../../common/errors.js';
 import { db } from '../../db/client.js';
-import { employees, timeEntries, weeklyApprovals } from '../../db/schema.js';
+import {
+  employees,
+  timeEntries,
+  weeklyApprovals,
+} from '../../db/schema/index.js';
 
 export async function getWeeklySummary(
   weekStart: string,

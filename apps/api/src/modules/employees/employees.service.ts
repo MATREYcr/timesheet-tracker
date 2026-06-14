@@ -7,7 +7,7 @@ import type {
 import { asc, eq, isNull } from 'drizzle-orm';
 import { AppError } from '../../common/errors.js';
 import { db } from '../../db/client.js';
-import { employees, type EmployeeRow } from '../../db/schema.js';
+import { employees, type EmployeeRow } from '../../db/schema/index.js';
 import { toEmployee } from './employees.mapper.js';
 
 export async function listEmployees(includeInactive: boolean) {

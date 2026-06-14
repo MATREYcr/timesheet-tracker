@@ -6,7 +6,11 @@ import type { TimeEntry, WeeklySummaryRow } from '@timesheet/shared';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createApp } from '../../app.js';
 import { closeDb, db } from '../../db/client.js';
-import { employees, timeEntries, weeklyApprovals } from '../../db/schema.js';
+import {
+  employees,
+  timeEntries,
+  weeklyApprovals,
+} from '../../db/schema/index.js';
 
 const app = createApp();
 const WEEK_START = '2026-06-08';

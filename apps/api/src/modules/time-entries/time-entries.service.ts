@@ -18,7 +18,7 @@ import {
   timeEntries,
   weeklyApprovals,
   type TimeEntryRow,
-} from '../../db/schema.js';
+} from '../../db/schema/index.js';
 import { toTimeEntry } from './time-entries.mapper.js';
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
