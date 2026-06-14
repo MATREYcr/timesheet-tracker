@@ -31,8 +31,8 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 
 ## Phase 1 — `packages/shared` (highest value, build first)
 
-- [ ] **1.1 Types** — `Employee`, `TimeEntry`, `WeeklyApproval`, `WeeklySummary`,
-      status enums.
+- [x] **1.1 Types** — `Employee`, `TimeEntry`, `WeeklyApproval`, `WeeklySummaryRow`,
+      `EmployeeStatus`/`ApprovalStatus` enums. ✓
 - [ ] **1.2 Error codes** — `ErrorCode` union + envelope type in `errors.ts`.
 - [ ] **1.3 Date/week helpers** — `getWeekStart`, `isFutureDate`, week range; pure
       (no local TZ).
