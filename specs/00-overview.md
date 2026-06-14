@@ -21,21 +21,21 @@ that works from a fresh clone.
 
 ## 2. Locked decisions
 
-| Decision        | Choice                          | Why                                                |
-| --------------- | ------------------------------- | -------------------------------------------------- |
-| Monorepo        | Nx + pnpm                       | Matches the target stack; pnpm required            |
-| Client          | Web — Next.js 15 (App Router)   | Strongest platform; mirrors their Goat web app     |
-| Database        | PostgreSQL via docker-compose   | Reproducible infra; matches their real stack       |
-| API framework   | Hono                            | Preferred by the brief                             |
-| ORM             | Drizzle                         | Preferred by the brief                             |
-| UI              | shadcn/ui + Tailwind            | Fast, accessible, professional                     |
-| Week start      | Monday                          | Matches the sketch (Jun 08 – Jun 14)               |
-| Dates           | Date-only strings (`YYYY-MM-DD`)| Avoids timezone bugs in payroll                    |
-| Money rounding  | Half-up, 2 decimals at boundary | Deterministic, payroll-safe                        |
-| Hours input     | 0.25–24, in 0.25 increments     | The 0.25 minimum implies quarter-hour granularity  |
-| Pay computed by | Web client (via shared calc)    | Satisfies "client must consume the calculation"    |
-| Locking         | Only `approved` locks; `rejected` editable | Lets a rejected week be fixed & re-submitted |
-| Bonus scope     | UI i18n (en/es), optimistic updates, 1 frontend test | Balanced range without losing depth |
+| Decision        | Choice                                               | Why                                               |
+| --------------- | ---------------------------------------------------- | ------------------------------------------------- |
+| Monorepo        | Nx + pnpm                                            | Matches the target stack; pnpm required           |
+| Client          | Web — Next.js 16 (App Router)                        | Strongest platform; mirrors their Goat web app    |
+| Database        | PostgreSQL via docker-compose                        | Reproducible infra; matches their real stack      |
+| API framework   | Hono                                                 | Preferred by the brief                            |
+| ORM             | Drizzle                                              | Preferred by the brief                            |
+| UI              | shadcn/ui + Tailwind                                 | Fast, accessible, professional                    |
+| Week start      | Monday                                               | Matches the sketch (Jun 08 – Jun 14)              |
+| Dates           | Date-only strings (`YYYY-MM-DD`)                     | Avoids timezone bugs in payroll                   |
+| Money rounding  | Half-up, 2 decimals at boundary                      | Deterministic, payroll-safe                       |
+| Hours input     | 0.25–24, in 0.25 increments                          | The 0.25 minimum implies quarter-hour granularity |
+| Pay computed by | Web client (via shared calc)                         | Satisfies "client must consume the calculation"   |
+| Locking         | Only `approved` locks; `rejected` editable           | Lets a rejected week be fixed & re-submitted      |
+| Bonus scope     | UI i18n (en/es), optimistic updates, 1 frontend test | Balanced range without losing depth               |
 
 Out of scope: authentication, multi-tenancy, real tax logic, payments.
 
@@ -49,18 +49,21 @@ pay). Noted here as a deliberate trade-off for the WRITEUP.
 ## 3. Domain model
 
 ### Employee
+
 - `id`, `firstName`, `lastName`, `hourlyRate` (numeric), `deactivatedAt`
   (timestamp | null), `createdAt`, `updatedAt`.
 - `status` is derived: `active` when `deactivatedAt` is null, else `inactive`.
 - Soft delete: deactivating sets `deactivatedAt`; the row is never removed.
 
 ### TimeEntry
+
 - `id`, `employeeId`, `date` (date-only), `hours` (decimal 0.25–24, in 0.25
   increments), `createdAt`, `updatedAt`.
 - Belongs to one employee. Cannot be created/edited/deleted for inactive employees,
   on future dates, or within an already-approved week.
 
 ### WeeklyApproval
+
 - `id`, `employeeId`, `weekStart` (Monday, date-only), `status`
   (`pending` | `approved` | `rejected`), `createdAt`, `updatedAt`.
 - Unique on `(employeeId, weekStart)`.
@@ -69,6 +72,7 @@ pay). Noted here as a deliberate trade-off for the WRITEUP.
   `pending`/`rejected` stay editable; re-approving after a reject is allowed.
 
 ### Computed: WeeklySummary (not stored)
+
 - The **API** returns the raw aggregate per (employee, week): `totalHours`,
   `hourlyRate`, and the `status` from WeeklyApproval. Rows are returned only for
   employees with ≥1 time entry in that week (active or inactive).

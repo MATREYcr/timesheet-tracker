@@ -1,6 +1,6 @@
 # Spec 03 — `apps/web`
 
-Next.js 15 (App Router) client. Consumes `packages/shared` for types, Zod schemas,
+Next.js 16 (App Router) client. Consumes `packages/shared` for types, Zod schemas,
 and the pay calculation. Server state via TanStack Query; UI via shadcn/ui + Tailwind.
 
 ---
@@ -32,17 +32,20 @@ apps/web/src/
 ## Screens
 
 ### Screen 1 — Employees
+
 - List of employees; "Show inactive" toggle (drives `includeInactive`).
 - Row: name, `$rate/h`, status badge, Edit + Deactivate/Reactivate actions.
 - Create/edit via dialog (shadcn `Dialog`) with validated form.
 
 ### Screen 2 — Time entries
+
 - Employee selector (shadcn `Select`).
 - List of that employee's entries (date + hours) with Edit/Delete.
 - Log-time form (date + hours), validated. Entries in approved weeks render as
   read-only / disabled.
 
 ### Screen 3 — Weekly summary (core)
+
 - Week picker with prev/next around `weekStart` (Monday–Sunday range label).
 - Fetches the **raw aggregate** (`totalHours`, `hourlyRate`, `status`) per employee
   from the API, then calls `calculateWeeklyPay(totalHours, rate)` from `shared` to

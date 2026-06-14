@@ -34,13 +34,13 @@ develop       ← integration. Phase PRs merge here.
 
 Phase branches (per `specs/PLAN.md`):
 
-| Phase | Branch                          |
-| ----- | ------------------------------- |
-| 0     | `chore/phase-0-scaffold`        |
-| 1     | `feat/phase-1-shared-package`   |
-| 2     | `feat/phase-2-api`              |
-| 3     | `feat/phase-3-web`              |
-| 4     | `docs/phase-4-delivery`         |
+| Phase | Branch                        |
+| ----- | ----------------------------- |
+| 0     | `chore/phase-0-scaffold`      |
+| 1     | `feat/phase-1-shared-package` |
+| 2     | `feat/phase-2-api`            |
+| 3     | `feat/phase-3-web`            |
+| 4     | `docs/phase-4-delivery`       |
 
 ---
 
@@ -96,14 +96,14 @@ Open the final release PR `develop → main` and return the link. Do not merge t
 
 For non-phase work (a quick fix mid-phase), use `fix/<slug>` or `chore/<slug>`.
 
-| type       | when                                  |
-| ---------- | ------------------------------------- |
-| `feat`     | new functionality                     |
-| `fix`      | bug fix                               |
-| `chore`    | setup, tooling, dependencies          |
-| `refactor` | behavior-preserving cleanup           |
-| `docs`     | documentation                         |
-| `test`     | tests                                 |
+| type       | when                         |
+| ---------- | ---------------------------- |
+| `feat`     | new functionality            |
+| `fix`      | bug fix                      |
+| `chore`    | setup, tooling, dependencies |
+| `refactor` | behavior-preserving cleanup  |
+| `docs`     | documentation                |
+| `test`     | tests                        |
 
 ---
 
@@ -114,6 +114,7 @@ For non-phase work (a quick fix mid-phase), use `fix/<slug>` or `chore/<slug>`.
 Scope = the area touched (`shared`, `api`, `web`, `db`, `i18n`, `repo`…).
 
 Examples:
+
 ```
 chore(repo): scaffold nx workspace with pnpm
 feat(shared): add calculateWeeklyPay with overtime rules
@@ -124,6 +125,7 @@ docs(repo): write fresh-clone setup in README
 ```
 
 Sign-off footer for AI-authored commits:
+
 ```
 Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
 ```

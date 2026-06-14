@@ -19,20 +19,20 @@ so the app is usable immediately after setup.
 
 ## Endpoints
 
-| Method | Path                                   | Notes                                  |
-| ------ | -------------------------------------- | -------------------------------------- |
-| GET    | `/employees?includeInactive=bool`      | Inactive hidden unless flag set        |
-| POST   | `/employees`                           | Validates via shared schema            |
-| PATCH  | `/employees/:id`                       | Edit name/rate                         |
-| POST   | `/employees/:id/deactivate`            | Sets `deactivatedAt` (soft delete)     |
-| POST   | `/employees/:id/reactivate`            | Clears `deactivatedAt`                 |
-| GET    | `/employees/:id/time-entries?weekStart=` | Optional week filter                  |
-| POST   | `/time-entries`                        | Full validation (see below)            |
-| PATCH  | `/time-entries/:id`                    | Blocked if week approved               |
-| DELETE | `/time-entries/:id`                    | Blocked if week approved               |
-| GET    | `/weekly-summary?weekStart=`           | Raw aggregate per employee (see below) |
-| POST   | `/weekly-summary/approve`              | `{ employeeId, weekStart }`            |
-| POST   | `/weekly-summary/reject`               | `{ employeeId, weekStart }`            |
+| Method | Path                                     | Notes                                  |
+| ------ | ---------------------------------------- | -------------------------------------- |
+| GET    | `/employees?includeInactive=bool`        | Inactive hidden unless flag set        |
+| POST   | `/employees`                             | Validates via shared schema            |
+| PATCH  | `/employees/:id`                         | Edit name/rate                         |
+| POST   | `/employees/:id/deactivate`              | Sets `deactivatedAt` (soft delete)     |
+| POST   | `/employees/:id/reactivate`              | Clears `deactivatedAt`                 |
+| GET    | `/employees/:id/time-entries?weekStart=` | Optional week filter                   |
+| POST   | `/time-entries`                          | Full validation (see below)            |
+| PATCH  | `/time-entries/:id`                      | Blocked if week approved               |
+| DELETE | `/time-entries/:id`                      | Blocked if week approved               |
+| GET    | `/weekly-summary?weekStart=`             | Raw aggregate per employee (see below) |
+| POST   | `/weekly-summary/approve`                | `{ employeeId, weekStart }`            |
+| POST   | `/weekly-summary/reject`                 | `{ employeeId, weekStart }`            |
 
 ## Weekly summary response (raw — client computes pay)
 
@@ -58,7 +58,12 @@ client derives those with `calculateWeeklyPay` from `shared`.
 Every error response:
 
 ```json
-{ "error": { "code": "WEEK_LOCKED", "message": "This week is approved and locked." } }
+{
+  "error": {
+    "code": "WEEK_LOCKED",
+    "message": "This week is approved and locked."
+  }
+}
 ```
 
 - `code`: stable, from the shared `ErrorCode` union.
@@ -70,17 +75,18 @@ Every error response:
 
 Maintained in the API, keyed by the shared `ErrorCode`. Examples:
 
-| code                | status | en                                       | es                                          |
-| ------------------- | ------ | ---------------------------------------- | ------------------------------------------- |
-| `VALIDATION_ERROR`  | 400    | Invalid request data.                    | Datos de solicitud inválidos.               |
-| `EMPLOYEE_INACTIVE` | 409    | Cannot log time for an inactive employee.| No se puede registrar tiempo para un empleado inactivo. |
-| `FUTURE_DATE`       | 400    | Date cannot be in the future.            | La fecha no puede ser futura.               |
-| `WEEK_LOCKED`       | 409    | This week is approved and locked.        | Esta semana está aprobada y bloqueada.      |
-| `NOT_FOUND`         | 404    | Resource not found.                      | Recurso no encontrado.                      |
+| code                | status | en                                        | es                                                      |
+| ------------------- | ------ | ----------------------------------------- | ------------------------------------------------------- |
+| `VALIDATION_ERROR`  | 400    | Invalid request data.                     | Datos de solicitud inválidos.                           |
+| `EMPLOYEE_INACTIVE` | 409    | Cannot log time for an inactive employee. | No se puede registrar tiempo para un empleado inactivo. |
+| `FUTURE_DATE`       | 400    | Date cannot be in the future.             | La fecha no puede ser futura.                           |
+| `WEEK_LOCKED`       | 409    | This week is approved and locked.         | Esta semana está aprobada y bloqueada.                  |
+| `NOT_FOUND`         | 404    | Resource not found.                       | Recurso no encontrado.                                  |
 
 ## Integration test (required)
 
 Approval-locking flow:
+
 1. Create employee + time entries for a week.
 2. Approve the week.
 3. Assert editing/deleting an entry in that week returns `WEEK_LOCKED` (409).
