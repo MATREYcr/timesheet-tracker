@@ -1,11 +1,20 @@
-# shared
+# @timesheet/shared
 
-This library was generated with [Nx](https://nx.dev).
+Headless, platform-agnostic TypeScript consumed by both the API and the web client.
+No React, no `window`, no framework imports — pure logic and contracts.
 
-## Building
+## What it exports
 
-Run `nx build shared` to build the library.
+- **types** — `Employee`, `TimeEntry`, `WeeklyApproval`, `WeeklySummaryRow`, status unions.
+- **errors** — `ErrorCode` union + `ApiErrorBody` envelope (shared contract; en/es messages live in the API).
+- **dates** — UTC-safe date-only helpers: `getWeekStart`, `getWeekEnd`, `addDays`, `isInWeek`, `isFutureDate` (weeks run Monday→Sunday).
+- **schemas** — Zod schemas + inferred input types, used by API request parsing and web form validation.
+- **pay** — `calculateWeeklyPay(totalHours, hourlyRate)` and `round2`: the single home of the overtime/pay calculation.
 
-## Running unit tests
+## Commands
 
-Run `nx test shared` to execute the unit tests via [Vitest](https://vitest.dev/).
+```bash
+nx test @timesheet/shared       # unit tests (Vitest)
+nx build @timesheet/shared      # build (tsc)
+nx typecheck @timesheet/shared  # type-check
+```

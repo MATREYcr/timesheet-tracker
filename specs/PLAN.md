@@ -46,9 +46,9 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 - [x] **1.5 Pay calculation** — `calculateWeeklyPay(totalHours, rate)` + `round2`
       (half-up). 7 tests: 40h, 40.25h, <40h, 0h, 60h, the assessment sketch
       (45.5h @ $22.50 → $1,085.63), and half-up rounding. ✓
-- [ ] **1.6 Public API** — clean `index.ts` exports; nothing platform-specific
-      imported.
-      _Done when:_ `apps/api` and `apps/web` can import from `@timesheet/shared`.
+- [x] **1.6 Public API** — clean `index.ts` re-exports (types, errors, dates,
+      schemas, pay); headless, no platform imports. Package README documents the
+      surface. Full monorepo `lint+typecheck+test+build` green. ✓
 
 ---
 
