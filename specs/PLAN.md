@@ -18,9 +18,10 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
       volume + healthcheck; `.env.example` with `DATABASE_URL`.
       _Done when:_ compose file validated (`docker compose config`). ✓ (Bringing it
       up needs Docker Desktop running — exercised in Phase 2.)
-- [ ] **0.3 Projects** — create `packages/shared`, `apps/api`, `apps/web` as Nx
-      projects with their own `package.json` + `tsconfig`.
-      _Done when:_ the three projects are listed in `npx nx show projects`.
+- [x] **0.3 Projects** — `packages/shared` (@nx/js lib, vitest), `apps/api`
+      (@nx/node app, framework none for Hono), `apps/web` (@nx/next app, App Router,
+      src). Next.js 16 installed by the generator. Scope `@timesheet/*`.
+      _Done when:_ `nx show projects` lists all three; lint/typecheck/build pass. ✓
 - [ ] **0.4 Test/lint tooling** — Vitest config (shared + api + web), ESLint +
       Prettier, shared TS strict config.
       _Done when:_ `pnpm test` runs (0 tests ok) and `pnpm lint` passes.
@@ -70,7 +71,7 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 
 ---
 
-## Phase 3 — `apps/web` (Next.js 15)
+## Phase 3 — `apps/web` (Next.js 16)
 
 - [ ] **3.1 App setup** — Next.js App Router, Tailwind, shadcn/ui init.
 - [ ] **3.2 Data layer** — typed `api` client (sets `Accept-Language`, parses

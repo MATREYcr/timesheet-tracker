@@ -5,3 +5,5 @@ packages:
 onlyBuiltDependencies:
   - nx
   - '@swc/core'
+  - esbuild
+  - sharp

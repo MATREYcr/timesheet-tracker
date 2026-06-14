@@ -24,7 +24,7 @@ that works from a fresh clone.
 | Decision        | Choice                                               | Why                                               |
 | --------------- | ---------------------------------------------------- | ------------------------------------------------- |
 | Monorepo        | Nx + pnpm                                            | Matches the target stack; pnpm required           |
-| Client          | Web — Next.js 15 (App Router)                        | Strongest platform; mirrors their Goat web app    |
+| Client          | Web — Next.js 16 (App Router)                        | Strongest platform; mirrors their Goat web app    |
 | Database        | PostgreSQL via docker-compose                        | Reproducible infra; matches their real stack      |
 | API framework   | Hono                                                 | Preferred by the brief                            |
 | ORM             | Drizzle                                              | Preferred by the brief                            |

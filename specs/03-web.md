@@ -1,6 +1,6 @@
 # Spec 03 — `apps/web`
 
-Next.js 15 (App Router) client. Consumes `packages/shared` for types, Zod schemas,
+Next.js 16 (App Router) client. Consumes `packages/shared` for types, Zod schemas,
 and the pay calculation. Server state via TanStack Query; UI via shadcn/ui + Tailwind.
 
 ---

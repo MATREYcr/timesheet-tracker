@@ -29,7 +29,7 @@ is the tool used to _build_ it, not part of the product.
 | Monorepo     | **Nx** + **pnpm workspaces**                                      |
 | API          | **Hono** + **Drizzle ORM** + **Zod**, **PostgreSQL**              |
 | Database     | PostgreSQL via **docker-compose**                                 |
-| Web client   | **Next.js 15** (App Router) + **TanStack Query**                  |
+| Web client   | **Next.js 16** (App Router) + **TanStack Query**                  |
 | Styling / UI | **Tailwind CSS** + **shadcn/ui**                                  |
 | Shared logic | Plain TypeScript (headless) — types, Zod schemas, pay calculation |
 | Tests        | **Vitest**                                                        |
@@ -46,7 +46,7 @@ Next.js APIs — these change often and training data may be stale.
 timesheet-tracker/
 ├── apps/
 │   ├── api/                Hono + Drizzle REST API
-│   └── web/                Next.js 15 client
+│   └── web/                Next.js 16 client
 ├── packages/
 │   └── shared/             Headless TS: types, Zod schemas, pay calculation
 ├── specs/                  Spec-driven plans (source of truth before coding)
