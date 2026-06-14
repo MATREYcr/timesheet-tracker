@@ -43,9 +43,9 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
       (float-safe `Number.isInteger(h / 0.25)` refine), no future date, weekStart
       must be Monday, uuid ids. 10 tests. ✓
       _Done when:_ schemas validate good/bad inputs in tests.
-- [ ] **1.5 Pay calculation** — `calculateWeeklyPay(totalHours, rate)` + `round2`.
-      _Done when:_ unit tests cover 40h, 40.25h, <40h, decimals across days, 0h,
-      60h, and a fractional-cents rounding case.
+- [x] **1.5 Pay calculation** — `calculateWeeklyPay(totalHours, rate)` + `round2`
+      (half-up). 7 tests: 40h, 40.25h, <40h, 0h, 60h, the assessment sketch
+      (45.5h @ $22.50 → $1,085.63), and half-up rounding. ✓
 - [ ] **1.6 Public API** — clean `index.ts` exports; nothing platform-specific
       imported.
       _Done when:_ `apps/api` and `apps/web` can import from `@timesheet/shared`.
