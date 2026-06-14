@@ -61,9 +61,10 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
   loads root `.env`; first migration generated (`0000_*.sql`). Applying
   (`db:migrate`) needs Docker Desktop running — pending. db scripts added.
 - [ ] **2.3 Seed script** — a few employees + entries for an instantly usable app.
-- [ ] **2.4 Error envelope + i18n middleware** — central error handler emitting
-      `{ error: { code, message } }`; en/es map by `Accept-Language`.
-      _Done when:_ an intentional error returns the localized envelope + right status.
+- [x] **2.4 Common layer** — `AppError` + status map, i18n (Accept-Language parse +
+      en/es messages), central `onError` → envelope, locale middleware, zValidator
+      wrapper. `app.ts` factory + `main.ts` bootstrap. 4 i18n unit tests; api
+      typecheck/lint/test/build green. ✓
 - [ ] **2.5 Employees routes** — list (`includeInactive`), create, patch,
       deactivate, reactivate (soft delete).
       _Done when:_ inactive hidden by default; their entries still fetchable.
