@@ -35,9 +35,9 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
       `EmployeeStatus`/`ApprovalStatus` enums. ✓
 - [x] **1.2 Error codes** — `ErrorCode` union + `ApiErrorBody` envelope in
       `errors.ts` (en/es messages stay in the API). ✓
-- [ ] **1.3 Date/week helpers** — `getWeekStart`, `isFutureDate`, week range; pure
-      (no local TZ).
-      _Done when:_ unit tests pass for every weekday + month/year boundaries.
+- [x] **1.3 Date/week helpers** — `getWeekStart`, `getWeekEnd`, `addDays`,
+      `isInWeek`, `isFutureDate`; UTC-safe (no local TZ). 8 unit tests cover every
+      weekday + month/year boundaries. ✓
 - [ ] **1.4 Zod schemas** — create/update employee, create/update time entry,
       approve/reject; inferred input types. Encode hours 0.25–24 **in 0.25
       increments** (`.multipleOf(0.25)`), no future date.
