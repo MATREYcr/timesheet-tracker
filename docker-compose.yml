@@ -1,0 +1,21 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: timesheet-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: timesheet
+      POSTGRES_PASSWORD: timesheet
+      POSTGRES_DB: timesheet
+    ports:
+      - '5432:5432'
+    volumes:
+      - timesheet_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U timesheet -d timesheet']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  timesheet_pgdata:

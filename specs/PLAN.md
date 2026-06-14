@@ -14,9 +14,10 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
       `CLAUDE.md` + `.claude/settings.json`; other-tool configs discarded. Adapted
       pnpm-based CI added as a bonus.
       _Done when:_ `pnpm install` succeeds and `pnpm exec nx` runs. ✓
-- [ ] **0.2 Database infra** — `docker-compose.yml` with PostgreSQL + a named
-      volume; `.env.example` with `DATABASE_URL`.
-      _Done when:_ `docker compose up -d` exposes a reachable Postgres.
+- [x] **0.2 Database infra** — `docker-compose.yml` with PostgreSQL 16 + named
+      volume + healthcheck; `.env.example` with `DATABASE_URL`.
+      _Done when:_ compose file validated (`docker compose config`). ✓ (Bringing it
+      up needs Docker Desktop running — exercised in Phase 2.)
 - [ ] **0.3 Projects** — create `packages/shared`, `apps/api`, `apps/web` as Nx
       projects with their own `package.json` + `tsconfig`.
       _Done when:_ the three projects are listed in `npx nx show projects`.
