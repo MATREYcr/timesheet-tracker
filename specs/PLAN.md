@@ -38,9 +38,10 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 - [x] **1.3 Date/week helpers** — `getWeekStart`, `getWeekEnd`, `addDays`,
       `isInWeek`, `isFutureDate`; UTC-safe (no local TZ). 8 unit tests cover every
       weekday + month/year boundaries. ✓
-- [ ] **1.4 Zod schemas** — create/update employee, create/update time entry,
-      approve/reject; inferred input types. Encode hours 0.25–24 **in 0.25
-      increments** (`.multipleOf(0.25)`), no future date.
+- [x] **1.4 Zod schemas** — create/update employee, create/update time entry,
+      approve/reject; inferred input types. Hours 0.25–24 in 0.25 increments
+      (float-safe `Number.isInteger(h / 0.25)` refine), no future date, weekStart
+      must be Monday, uuid ids. 10 tests. ✓
       _Done when:_ schemas validate good/bad inputs in tests.
 - [ ] **1.5 Pay calculation** — `calculateWeeklyPay(totalHours, rate)` + `round2`.
       _Done when:_ unit tests cover 40h, 40.25h, <40h, decimals across days, 0h,
