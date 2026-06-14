@@ -22,9 +22,10 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
       (@nx/node app, framework none for Hono), `apps/web` (@nx/next app, App Router,
       src). Next.js 16 installed by the generator. Scope `@timesheet/*`.
       _Done when:_ `nx show projects` lists all three; lint/typecheck/build pass. ✓
-- [ ] **0.4 Test/lint tooling** — Vitest config (shared + api + web), ESLint +
-      Prettier, shared TS strict config.
-      _Done when:_ `pnpm test` runs (0 tests ok) and `pnpm lint` passes.
+- [x] **0.4 Test/lint tooling** — Vitest in all three (api=node, web=jsdom+react,
+      shared); `passWithNoTests` so empty projects don't fail. ESLint flat config +
+      Prettier already wired by generators.
+      _Done when:_ `pnpm test` runs (0 tests ok) and `pnpm lint` passes. ✓
 
 ---
 

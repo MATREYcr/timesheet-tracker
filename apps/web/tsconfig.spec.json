@@ -1,16 +1,16 @@
 {
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
-    "outDir": "dist",
-    "types": ["node"],
-    "rootDir": "src",
-    "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo"
+    "outDir": "./out-tsc/vitest",
+    "types": [
+      "vitest/globals",
+      "vitest/importMeta",
+      "vite/client",
+      "node",
+      "vitest"
+    ]
   },
-  "include": ["src/**/*.ts"],
-  "exclude": [
-    "eslint.config.js",
-    "eslint.config.cjs",
-    "eslint.config.mjs",
+  "include": [
     "vite.config.ts",
     "vite.config.mts",
     "vitest.config.ts",
@@ -22,6 +22,7 @@
     "src/**/*.test.js",
     "src/**/*.spec.js",
     "src/**/*.test.jsx",
-    "src/**/*.spec.jsx"
+    "src/**/*.spec.jsx",
+    "src/**/*.d.ts"
   ]
 }
