@@ -141,6 +141,8 @@ Before opening a phase PR to `develop`:
 - [ ] Phase subphases ticked in `specs/PLAN.md`.
 - [ ] `pnpm test` and `pnpm lint` pass (once tooling exists).
 - [ ] No debug leftovers, no committed secrets / `.env`.
+- [ ] `pnpm-lock.yaml` committed whenever a dependency changed (CI installs with
+      `--frozen-lockfile` and fails if the lockfile is out of sync).
 - [ ] Branch pushed to origin.
 
 See `references/pr-template.md` for the PR body.

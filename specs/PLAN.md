@@ -31,22 +31,24 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 
 ## Phase 1 — `packages/shared` (highest value, build first)
 
-- [ ] **1.1 Types** — `Employee`, `TimeEntry`, `WeeklyApproval`, `WeeklySummary`,
-      status enums.
-- [ ] **1.2 Error codes** — `ErrorCode` union + envelope type in `errors.ts`.
-- [ ] **1.3 Date/week helpers** — `getWeekStart`, `isFutureDate`, week range; pure
-      (no local TZ).
-      _Done when:_ unit tests pass for every weekday + month/year boundaries.
-- [ ] **1.4 Zod schemas** — create/update employee, create/update time entry,
-      approve/reject; inferred input types. Encode hours 0.25–24 **in 0.25
-      increments** (`.multipleOf(0.25)`), no future date.
+- [x] **1.1 Types** — `Employee`, `TimeEntry`, `WeeklyApproval`, `WeeklySummaryRow`,
+      `EmployeeStatus`/`ApprovalStatus` enums. ✓
+- [x] **1.2 Error codes** — `ErrorCode` union + `ApiErrorBody` envelope in
+      `errors.ts` (en/es messages stay in the API). ✓
+- [x] **1.3 Date/week helpers** — `getWeekStart`, `getWeekEnd`, `addDays`,
+      `isInWeek`, `isFutureDate`; UTC-safe (no local TZ). 8 unit tests cover every
+      weekday + month/year boundaries. ✓
+- [x] **1.4 Zod schemas** — create/update employee, create/update time entry,
+      approve/reject; inferred input types. Hours 0.25–24 in 0.25 increments
+      (float-safe `Number.isInteger(h / 0.25)` refine), no future date, weekStart
+      must be Monday, uuid ids. 10 tests. ✓
       _Done when:_ schemas validate good/bad inputs in tests.
-- [ ] **1.5 Pay calculation** — `calculateWeeklyPay(totalHours, rate)` + `round2`.
-      _Done when:_ unit tests cover 40h, 40.25h, <40h, decimals across days, 0h,
-      60h, and a fractional-cents rounding case.
-- [ ] **1.6 Public API** — clean `index.ts` exports; nothing platform-specific
-      imported.
-      _Done when:_ `apps/api` and `apps/web` can import from `@timesheet/shared`.
+- [x] **1.5 Pay calculation** — `calculateWeeklyPay(totalHours, rate)` + `round2`
+      (half-up). 7 tests: 40h, 40.25h, <40h, 0h, 60h, the assessment sketch
+      (45.5h @ $22.50 → $1,085.63), and half-up rounding. ✓
+- [x] **1.6 Public API** — clean `index.ts` re-exports (types, errors, dates,
+      schemas, pay); headless, no platform imports. Package README documents the
+      surface. Full monorepo `lint+typecheck+test+build` green. ✓
 
 ---
 
