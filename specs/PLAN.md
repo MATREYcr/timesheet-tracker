@@ -57,9 +57,10 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 - [x] **2.1 DB schema** — Drizzle tables: `employees`, `time_entries`,
       `weekly_approvals` (numeric money/hours, date-only, soft-delete timestamp,
       FKs, composite index, unique `(employee_id, week_start)`). API set to ESM. ✓
-- [~] **2.2 DB client + migrations** — postgres-js client; `drizzle.config.ts`
-  loads root `.env`; first migration generated (`0000_*.sql`). Applying
-  (`db:migrate`) needs Docker Desktop running — pending. db scripts added.
+- [x] **2.2 DB client + migrations** — postgres-js client; `drizzle.config.ts`
+      loads root `.env`; migration `0000` generated and **applied** (3 tables
+      verified). Host port remapped to 5433 to avoid clashing with a local
+      PostgreSQL on 5432. db:\* scripts added. ✓
 - [ ] **2.3 Seed script** — a few employees + entries for an instantly usable app.
 - [x] **2.4 Common layer** — `AppError` + status map, i18n (Accept-Language parse +
       en/es messages), central `onError` → envelope, locale middleware, zValidator
