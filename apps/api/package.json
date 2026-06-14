@@ -2,6 +2,13 @@
   "name": "@timesheet/api",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
+  },
   "nx": {
     "targets": {
       "build": {
@@ -14,7 +21,7 @@
           "platform": "node",
           "outputPath": "apps/api/dist",
           "format": [
-            "cjs"
+            "esm"
           ],
           "bundle": false,
           "main": "apps/api/src/main.ts",
@@ -97,5 +104,14 @@
       }
     }
   },
-  "dependencies": {}
+  "dependencies": {
+    "@hono/node-server": "^2.0.4",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.12.25",
+    "postgres": "^3.4.9"
+  },
+  "devDependencies": {
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10"
+  }
 }
