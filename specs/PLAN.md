@@ -68,9 +68,10 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
       en/es messages), central `onError` → envelope, locale middleware, zValidator
       wrapper. `app.ts` factory + `main.ts` bootstrap. 4 i18n unit tests; api
       typecheck/lint/test/build green. ✓
-- [ ] **2.5 Employees routes** — list (`includeInactive`), create, patch,
-      deactivate, reactivate (soft delete).
-      _Done when:_ inactive hidden by default; their entries still fetchable.
+- [x] **2.5 Employees module** — routes + service + mapper: list (`includeInactive`),
+      create, patch, deactivate, reactivate (soft delete). Verified end-to-end:
+      inactive hidden by default; validation + NOT_FOUND return localized en/es
+      envelope. ✓
 - [ ] **2.6 Time-entries routes** — list (week filter), create, patch, delete with
       full validation (active employee, no future date, week not locked).
 - [ ] **2.7 Weekly-summary routes** — compute per-employee summary via shared calc;
