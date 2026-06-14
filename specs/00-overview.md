@@ -105,7 +105,7 @@ PATCH  /employees/:id
 POST   /employees/:id/deactivate
 POST   /employees/:id/reactivate
 
-GET    /employees/:id/time-entries?weekStart=YYYY-MM-DD
+GET    /time-entries?employeeId=<uuid>&weekStart=YYYY-MM-DD
 POST   /time-entries
 PATCH  /time-entries/:id
 DELETE /time-entries/:id

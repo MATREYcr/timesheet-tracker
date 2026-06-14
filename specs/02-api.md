@@ -62,20 +62,20 @@ so the app is usable immediately after setup.
 
 ## Endpoints
 
-| Method | Path                                     | Notes                                  |
-| ------ | ---------------------------------------- | -------------------------------------- |
-| GET    | `/employees?includeInactive=bool`        | Inactive hidden unless flag set        |
-| POST   | `/employees`                             | Validates via shared schema            |
-| PATCH  | `/employees/:id`                         | Edit name/rate                         |
-| POST   | `/employees/:id/deactivate`              | Sets `deactivatedAt` (soft delete)     |
-| POST   | `/employees/:id/reactivate`              | Clears `deactivatedAt`                 |
-| GET    | `/employees/:id/time-entries?weekStart=` | Optional week filter                   |
-| POST   | `/time-entries`                          | Full validation (see below)            |
-| PATCH  | `/time-entries/:id`                      | Blocked if week approved               |
-| DELETE | `/time-entries/:id`                      | Blocked if week approved               |
-| GET    | `/weekly-summary?weekStart=`             | Raw aggregate per employee (see below) |
-| POST   | `/weekly-summary/approve`                | `{ employeeId, weekStart }`            |
-| POST   | `/weekly-summary/reject`                 | `{ employeeId, weekStart }`            |
+| Method | Path                                   | Notes                                  |
+| ------ | -------------------------------------- | -------------------------------------- |
+| GET    | `/employees?includeInactive=bool`      | Inactive hidden unless flag set        |
+| POST   | `/employees`                           | Validates via shared schema            |
+| PATCH  | `/employees/:id`                       | Edit name/rate                         |
+| POST   | `/employees/:id/deactivate`            | Sets `deactivatedAt` (soft delete)     |
+| POST   | `/employees/:id/reactivate`            | Clears `deactivatedAt`                 |
+| GET    | `/time-entries?employeeId=&weekStart=` | List for an employee; optional week    |
+| POST   | `/time-entries`                        | Full validation (see below)            |
+| PATCH  | `/time-entries/:id`                    | Blocked if week approved               |
+| DELETE | `/time-entries/:id`                    | Blocked if week approved               |
+| GET    | `/weekly-summary?weekStart=`           | Raw aggregate per employee (see below) |
+| POST   | `/weekly-summary/approve`              | `{ employeeId, weekStart }`            |
+| POST   | `/weekly-summary/reject`               | `{ employeeId, weekStart }`            |
 
 ## Weekly summary response (raw — client computes pay)
 

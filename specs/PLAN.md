@@ -72,12 +72,15 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
       create, patch, deactivate, reactivate (soft delete). Verified end-to-end:
       inactive hidden by default; validation + NOT_FOUND return localized en/es
       envelope. ✓
-- [ ] **2.6 Time-entries routes** — list (week filter), create, patch, delete with
-      full validation (active employee, no future date, week not locked).
-- [ ] **2.7 Weekly-summary routes** — compute per-employee summary via shared calc;
-      approve/reject upserts approval; approved week locks entries.
-- [ ] **2.8 Integration test** — approval-locking flow (create → approve →
-      edit/delete blocked with `WEEK_LOCKED` 409). Isolated test DB.
+- [x] **2.6 Time-entries module** — list (`?employeeId=&weekStart=`), create, patch,
+      delete; service enforces active employee + week-not-locked (hours/future-date
+      via shared Zod). ✓
+- [x] **2.7 Weekly-summary module** — `GET ?weekStart=` returns the raw aggregate
+      per employee (rows only for those with ≥1 entry that week); approve/reject
+      upsert the approval. The API does NOT compute pay (client does). ✓
+- [x] **2.8 Integration test** — approval-locking flow via `app.request()` against
+      real Postgres: create (pending) → approve → create/edit/delete blocked with
+      `WEEK_LOCKED` 409 → reject re-opens. 4 tests pass. CI runs a Postgres service. ✓
 
 ---
 
