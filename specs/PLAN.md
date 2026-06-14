@@ -61,7 +61,9 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
       loads root `.env`; migration `0000` generated and **applied** (3 tables
       verified). Host port remapped to 5433 to avoid clashing with a local
       PostgreSQL on 5432. db:\* scripts added. ✓
-- [ ] **2.3 Seed script** — a few employees + entries for an instantly usable app.
+- [x] **2.3 Seed script** — `tsx src/db/seed.ts`: 3 employees (Ana inactive with a
+      historical entry), Jane's 45.5h week (sketch), John's 32h week pre-approved to
+      demo locking. Idempotent (clears then inserts). ✓
 - [x] **2.4 Common layer** — `AppError` + status map, i18n (Accept-Language parse +
       en/es messages), central `onError` → envelope, locale middleware, zValidator
       wrapper. `app.ts` factory + `main.ts` bootstrap. 4 i18n unit tests; api
