@@ -13,10 +13,13 @@ import { validate } from '../../common/validator.js';
 import * as service from './employees.service.js';
 
 const idParam = z.object({ id: employeeIdSchema });
+const listQuery = z.object({
+  includeInactive: z.stringbool().optional().default(false),
+});
 
 export const employeesRoutes = new Hono<AppEnv>()
-  .get('/', async (c) => {
-    const includeInactive = c.req.query('includeInactive') === 'true';
+  .get('/', validate('query', listQuery), async (c) => {
+    const { includeInactive } = c.req.valid('query');
     return c.json(await service.listEmployees(includeInactive));
   })
   .post('/', validate('json', createEmployeeSchema), async (c) => {
