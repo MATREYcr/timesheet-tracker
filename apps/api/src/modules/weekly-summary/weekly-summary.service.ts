@@ -17,6 +17,13 @@ import {
   weeklyApprovals,
 } from '../../db/schema/index.js';
 
+/** Result of approving/rejecting a week (the API confirmation payload). */
+export type WeeklyApprovalResult = {
+  employeeId: string;
+  weekStart: string;
+  status: ApprovalStatus;
+};
+
 export async function getWeeklySummary(
   weekStart: string,
 ): Promise<WeeklySummaryRow[]> {
@@ -54,7 +61,7 @@ async function setStatus(
   employeeId: string,
   weekStart: string,
   status: ApprovalStatus,
-) {
+): Promise<WeeklyApprovalResult> {
   const [employee] = await db
     .select()
     .from(employees)
@@ -72,10 +79,16 @@ async function setStatus(
   return { employeeId, weekStart, status };
 }
 
-export function approveWeek(employeeId: string, weekStart: string) {
+export function approveWeek(
+  employeeId: string,
+  weekStart: string,
+): Promise<WeeklyApprovalResult> {
   return setStatus(employeeId, weekStart, APPROVAL_STATUS.approved);
 }
 
-export function rejectWeek(employeeId: string, weekStart: string) {
+export function rejectWeek(
+  employeeId: string,
+  weekStart: string,
+): Promise<WeeklyApprovalResult> {
   return setStatus(employeeId, weekStart, APPROVAL_STATUS.rejected);
 }

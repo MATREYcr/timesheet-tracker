@@ -9,6 +9,7 @@ import {
   getWeekEnd,
   getWeekStart,
   type CreateTimeEntryInput,
+  type TimeEntry,
   type UpdateTimeEntryInput,
 } from '@timesheet/shared';
 import { and, asc, eq, gte, lte } from 'drizzle-orm';
@@ -49,7 +50,10 @@ async function findEntryOrThrow(tx: Tx, id: string): Promise<TimeEntryRow> {
   return row;
 }
 
-export async function listTimeEntries(employeeId: string, weekStart?: string) {
+export async function listTimeEntries(
+  employeeId: string,
+  weekStart?: string,
+): Promise<TimeEntry[]> {
   const conditions = [eq(timeEntries.employeeId, employeeId)];
   if (weekStart) {
     conditions.push(
@@ -65,7 +69,9 @@ export async function listTimeEntries(employeeId: string, weekStart?: string) {
   return rows.map(toTimeEntry);
 }
 
-export function createTimeEntry(input: CreateTimeEntryInput) {
+export function createTimeEntry(
+  input: CreateTimeEntryInput,
+): Promise<TimeEntry> {
   return db.transaction(async (tx) => {
     const [employee] = await tx
       .select()
@@ -81,7 +87,10 @@ export function createTimeEntry(input: CreateTimeEntryInput) {
   });
 }
 
-export function updateTimeEntry(id: string, input: UpdateTimeEntryInput) {
+export function updateTimeEntry(
+  id: string,
+  input: UpdateTimeEntryInput,
+): Promise<TimeEntry> {
   return db.transaction(async (tx) => {
     const entry = await findEntryOrThrow(tx, id);
     // The current week must be open...
@@ -100,7 +109,7 @@ export function updateTimeEntry(id: string, input: UpdateTimeEntryInput) {
   });
 }
 
-export function deleteTimeEntry(id: string) {
+export function deleteTimeEntry(id: string): Promise<void> {
   return db.transaction(async (tx) => {
     const entry = await findEntryOrThrow(tx, id);
     await assertWeekNotApproved(tx, entry.employeeId, entry.date);

@@ -2,6 +2,7 @@
 
 import type {
   CreateEmployeeInput,
+  Employee,
   UpdateEmployeeInput,
 } from '@timesheet/shared';
 import { asc, eq, isNull } from 'drizzle-orm';
@@ -10,7 +11,9 @@ import { db } from '../../db/client.js';
 import { employees, type EmployeeRow } from '../../db/schema/index.js';
 import { toEmployee } from './employees.mapper.js';
 
-export async function listEmployees(includeInactive: boolean) {
+export async function listEmployees(
+  includeInactive: boolean,
+): Promise<Employee[]> {
   const rows = await db
     .select()
     .from(employees)
@@ -25,12 +28,17 @@ async function findOrThrow(id: string): Promise<EmployeeRow> {
   return row;
 }
 
-export async function createEmployee(input: CreateEmployeeInput) {
+export async function createEmployee(
+  input: CreateEmployeeInput,
+): Promise<Employee> {
   const [row] = await db.insert(employees).values(input).returning();
   return toEmployee(row);
 }
 
-export async function updateEmployee(id: string, input: UpdateEmployeeInput) {
+export async function updateEmployee(
+  id: string,
+  input: UpdateEmployeeInput,
+): Promise<Employee> {
   await findOrThrow(id);
   const [row] = await db
     .update(employees)
@@ -40,7 +48,7 @@ export async function updateEmployee(id: string, input: UpdateEmployeeInput) {
   return toEmployee(row);
 }
 
-export async function deactivateEmployee(id: string) {
+export async function deactivateEmployee(id: string): Promise<Employee> {
   await findOrThrow(id);
   const [row] = await db
     .update(employees)
@@ -50,7 +58,7 @@ export async function deactivateEmployee(id: string) {
   return toEmployee(row);
 }
 
-export async function reactivateEmployee(id: string) {
+export async function reactivateEmployee(id: string): Promise<Employee> {
   await findOrThrow(id);
   const [row] = await db
     .update(employees)
