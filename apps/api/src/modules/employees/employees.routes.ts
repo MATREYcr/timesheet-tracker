@@ -6,7 +6,7 @@ import {
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AppEnv } from '../../common/types.js';
-import { validate } from '../../common/validator.js';
+import { validate } from '../../middleware/validate.js';
 import * as service from './employees.service.js';
 
 const idParam = z.object({ id: employeeIdSchema });

@@ -4,7 +4,7 @@ import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { env } from './config/env.js';
-import { localeMiddleware } from './common/locale.middleware.js';
+import { localeMiddleware } from './middleware/locale.js';
 import { onError } from './common/on-error.js';
 import type { AppEnv } from './common/types.js';
 import { apiRoutes } from './routes/index.js';

@@ -2,7 +2,7 @@ import { weekStartSchema, weeklyApprovalActionSchema } from '@timesheet/shared';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AppEnv } from '../../common/types.js';
-import { validate } from '../../common/validator.js';
+import { validate } from '../../middleware/validate.js';
 import * as service from './weekly-summary.service.js';
 
 const summaryQuery = z.object({ weekStart: weekStartSchema });

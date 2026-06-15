@@ -3,7 +3,7 @@
 
 import { zValidator } from '@hono/zod-validator';
 import type { ZodType } from 'zod';
-import { AppError } from './errors.js';
+import { AppError } from '../common/errors.js';
 
 type Target = 'json' | 'query' | 'param' | 'header' | 'form';
 
