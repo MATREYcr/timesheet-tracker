@@ -7,25 +7,26 @@ and the pay calculation. Server state via TanStack Query; UI via shadcn/ui + Tai
 
 ## Structure — feature folders (Option A; see `web-architecture-options.md`)
 
-Routes stay thin; each domain owns its components + TanStack Query hooks under
-`features/`. All `fetch` is funnelled through `lib/api.ts`.
+Routes stay thin; each domain owns its components, hooks, and API calls under
+`features/`. The shared transport lives in `lib/http.ts`.
 
 ```
 apps/web/src/
 ├── app/                    # routing only (thin pages)
 │   ├── layout.tsx          # providers (TanStack Query, i18n)
+│   ├── providers.tsx
 │   ├── employees/page.tsx
 │   ├── time-entries/page.tsx
 │   └── weekly-summary/page.tsx
 ├── features/
-│   ├── employees/          components/ + hooks/
-│   ├── time-entries/       components/ + hooks/
-│   └── weekly-summary/     components/ (uses calculateWeeklyPay) + hooks/
+│   ├── employees/          api.ts + components/ + hooks/
+│   ├── time-entries/       api.ts + components/ + hooks/
+│   └── weekly-summary/     api.ts + components/ (uses calculateWeeklyPay) + hooks/
 ├── components/
 │   ├── ui/                 shadcn components
 │   └── layout/             nav, locale switch
 ├── lib/
-│   ├── api.ts              typed fetch client (sends Accept-Language, parses envelope)
+│   ├── http.ts             axios instance + interceptors (transport)
 │   ├── query.ts            TanStack Query client
 │   └── utils.ts            cn (shadcn)
 └── i18n/                   en/es translations + locale switch
@@ -35,10 +36,13 @@ UI: decent shadcn defaults first (functional), visual polish pass at the end.
 
 ## Data layer
 
-- A small typed `api` client wraps `fetch`, sets `Accept-Language` from the current
-  locale, and parses the error envelope into a typed error.
-- TanStack Query hooks per resource: `useEmployees`, `useTimeEntries`,
-  `useWeeklySummary`, plus mutations (`useCreateEmployee`, `useApproveWeek`, ...).
+- **Transport (`lib/http.ts`)**: a single axios instance. A request interceptor
+  injects `Accept-Language` (kept in sync via `setApiLocale`); a response interceptor
+  turns the API error envelope into a typed `ApiError` (`code` + `status`).
+- **Per-feature API (`features/<x>/api.ts`)**: typed endpoint functions using the
+  `http` instance (e.g. `employeesApi.list/create/update/...`).
+- **TanStack Query hooks** per feature wrap those calls (`useEmployees`,
+  `useCreateEmployee`, `useApproveWeek`, ...). One seam → swappable for a generated SDK.
 - Forms use `react-hook-form` + `@hookform/resolvers/zod` with the **shared** Zod
   schemas — no schema duplication.
 

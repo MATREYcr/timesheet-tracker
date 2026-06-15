@@ -89,10 +89,11 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 - [x] **3.1 App setup** — Tailwind v4 (PostCSS) + shadcn/ui init (components.json,
       cn util, theme in global.css, Button). Removed Nx welcome scaffold + the
       example Next API route. Home placeholder links to the 3 screens. ✓
-- [x] **3.2 Data layer** — typed `api` client in `lib/api.ts` (only place doing
-      `fetch`; sends Accept-Language via `setApiLocale`, parses envelope → `ApiError`),
-      `lib/query.ts` QueryClient + `Providers`. `@timesheet/shared` linked.
-      Per-feature TanStack Query hooks land with each screen (3.4–3.6). ✓
+- [x] **3.2 Data layer** — `lib/http.ts` axios instance + interceptors (injects
+      Accept-Language via `setApiLocale`, maps envelope → `ApiError`); per-feature
+      `features/<x>/api.ts` endpoint functions; `lib/query.ts` QueryClient +
+      `Providers`. `@timesheet/shared` linked. Per-feature TanStack Query hooks land
+      with each screen (3.4–3.6). ✓
 - [ ] **3.3 i18n** — en/es translation files + locale switch; wires header.
 - [ ] **3.4 Employees screen** — list + show-inactive toggle + create/edit dialog
       (shared Zod via react-hook-form) + deactivate/reactivate.
