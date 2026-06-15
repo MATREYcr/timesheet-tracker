@@ -2,6 +2,14 @@
   "name": "@timesheet/api",
   "version": "0.0.1",
   "private": true,
+  "type": "module",
+  "scripts": {
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
+    "db:seed": "tsx src/db/seed.ts"
+  },
   "nx": {
     "targets": {
       "build": {
@@ -14,14 +22,12 @@
           "platform": "node",
           "outputPath": "apps/api/dist",
           "format": [
-            "cjs"
+            "esm"
           ],
           "bundle": false,
           "main": "apps/api/src/main.ts",
           "tsConfig": "apps/api/tsconfig.app.json",
-          "assets": [
-            "apps/api/src/assets"
-          ],
+          "assets": [],
           "esbuildOptions": {
             "sourcemap": true,
             "outExtension": {
@@ -97,5 +103,18 @@
       }
     }
   },
-  "dependencies": {}
+  "dependencies": {
+    "@hono/node-server": "^2.0.4",
+    "@hono/zod-validator": "^0.8.0",
+    "@timesheet/shared": "workspace:*",
+    "dotenv": "^17.4.2",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.12.25",
+    "postgres": "^3.4.9",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "drizzle-kit": "^0.31.10",
+    "tsx": "^4.22.4"
+  }
 }

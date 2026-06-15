@@ -54,23 +54,33 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 
 ## Phase 2 — `apps/api` (Hono + Drizzle)
 
-- [ ] **2.1 DB schema** — Drizzle tables: `employees`, `time_entries`,
-      `weekly_approvals` (+ unique `(employee_id, week_start)`, indexes).
-- [ ] **2.2 DB client + migrations** — Drizzle Kit config; first migration applied.
-      _Done when:_ `drizzle-kit` generates + pushes the schema to Postgres.
-- [ ] **2.3 Seed script** — a few employees + entries for an instantly usable app.
-- [ ] **2.4 Error envelope + i18n middleware** — central error handler emitting
-      `{ error: { code, message } }`; en/es map by `Accept-Language`.
-      _Done when:_ an intentional error returns the localized envelope + right status.
-- [ ] **2.5 Employees routes** — list (`includeInactive`), create, patch,
-      deactivate, reactivate (soft delete).
-      _Done when:_ inactive hidden by default; their entries still fetchable.
-- [ ] **2.6 Time-entries routes** — list (week filter), create, patch, delete with
-      full validation (active employee, no future date, week not locked).
-- [ ] **2.7 Weekly-summary routes** — compute per-employee summary via shared calc;
-      approve/reject upserts approval; approved week locks entries.
-- [ ] **2.8 Integration test** — approval-locking flow (create → approve →
-      edit/delete blocked with `WEEK_LOCKED` 409). Isolated test DB.
+- [x] **2.1 DB schema** — Drizzle tables: `employees`, `time_entries`,
+      `weekly_approvals` (numeric money/hours, date-only, soft-delete timestamp,
+      FKs, composite index, unique `(employee_id, week_start)`). API set to ESM. ✓
+- [x] **2.2 DB client + migrations** — postgres-js client; `drizzle.config.ts`
+      loads root `.env`; migration `0000` generated and **applied** (3 tables
+      verified). Host port remapped to 5433 to avoid clashing with a local
+      PostgreSQL on 5432. db:\* scripts added. ✓
+- [x] **2.3 Seed script** — `tsx src/db/seed.ts`: 3 employees (Ana inactive with a
+      historical entry), Jane's 45.5h week (sketch), John's 32h week pre-approved to
+      demo locking. Idempotent (clears then inserts). ✓
+- [x] **2.4 Common layer** — `AppError` + status map, i18n (Accept-Language parse +
+      en/es messages), central `onError` → envelope, locale middleware, zValidator
+      wrapper. `app.ts` factory + `main.ts` bootstrap. 4 i18n unit tests; api
+      typecheck/lint/test/build green. ✓
+- [x] **2.5 Employees module** — routes + service + mapper: list (`includeInactive`),
+      create, patch, deactivate, reactivate (soft delete). Verified end-to-end:
+      inactive hidden by default; validation + NOT_FOUND return localized en/es
+      envelope. ✓
+- [x] **2.6 Time-entries module** — list (`?employeeId=&weekStart=`), create, patch,
+      delete; service enforces active employee + week-not-locked (hours/future-date
+      via shared Zod). ✓
+- [x] **2.7 Weekly-summary module** — `GET ?weekStart=` returns the raw aggregate
+      per employee (rows only for those with ≥1 entry that week); approve/reject
+      upsert the approval. The API does NOT compute pay (client does). ✓
+- [x] **2.8 Integration test** — approval-locking flow via `app.request()` against
+      real Postgres: create (pending) → approve → create/edit/delete blocked with
+      `WEEK_LOCKED` 409 → reject re-opens. 4 tests pass. CI runs a Postgres service. ✓
 
 ---
 

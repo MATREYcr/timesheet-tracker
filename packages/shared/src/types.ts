@@ -1,10 +1,28 @@
 // Domain types shared across API and web. Plain TypeScript, no framework imports.
+// Status values use `as const` (not TS enum): reusable constants + the literal type.
 
 /** Derived from `deactivatedAt`: active when null, otherwise inactive. */
-export type EmployeeStatus = 'active' | 'inactive';
+export const EMPLOYEE_STATUS = {
+  active: 'active',
+  inactive: 'inactive',
+} as const;
+export type EmployeeStatus =
+  (typeof EMPLOYEE_STATUS)[keyof typeof EMPLOYEE_STATUS];
 
 /** Absence of a stored row means `pending`. Only `approved` locks the week. */
-export type ApprovalStatus = 'pending' | 'approved' | 'rejected';
+export const APPROVAL_STATUS = {
+  pending: 'pending',
+  approved: 'approved',
+  rejected: 'rejected',
+} as const;
+export type ApprovalStatus =
+  (typeof APPROVAL_STATUS)[keyof typeof APPROVAL_STATUS];
+
+/** Tuple of approval values for places that need an array (Drizzle pgEnum, Zod). */
+export const APPROVAL_STATUS_VALUES = Object.values(APPROVAL_STATUS) as [
+  ApprovalStatus,
+  ...ApprovalStatus[],
+];
 
 export interface Employee {
   id: string;

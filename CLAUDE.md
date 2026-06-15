@@ -156,6 +156,9 @@ timesheet-tracker/
 - **Naming:** `camelCase` in TS, `snake_case` in the database (map via Drizzle).
 - **i18n:** UI ships in English and Spanish (bonus scope). Keep all user-facing
   strings in translation files, never hardcoded.
+- **Comments:** only when they add value — explain the **why** (non-obvious
+  decisions, trade-offs, gotchas), never restate the **what** the code already says.
+  No redundant file-header summaries; prefer self-documenting code and names.
 - **Commits:** small, conventional (`feat:`, `fix:`, `chore:`, `test:`, `docs:`).
 
 ---

@@ -14,6 +14,25 @@ permissions:
 jobs:
   main:
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: timesheet
+          POSTGRES_PASSWORD: timesheet
+          POSTGRES_DB: timesheet
+        ports:
+          - 5433:5432
+        options: >-
+          --health-cmd "pg_isready -U timesheet -d timesheet"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_URL: postgresql://timesheet:timesheet@localhost:5433/timesheet
+
     steps:
       - uses: actions/checkout@v4
         with:
@@ -28,6 +47,8 @@ jobs:
 
       - run: pnpm install --frozen-lockfile
 
-      # Run affected tasks against the base branch; falls back to all on push.
+      # Apply DB migrations so the API integration test has its schema.
+      - run: pnpm --filter @timesheet/api run db:migrate
+
       - run: pnpm exec nx format:check
       - run: pnpm exec nx run-many -t lint typecheck test build

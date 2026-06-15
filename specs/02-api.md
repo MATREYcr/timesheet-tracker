@@ -1,7 +1,50 @@
 # Spec 02 — `apps/api`
 
 Hono + Drizzle + PostgreSQL REST API. Consumes `packages/shared` for types,
-schemas, the pay calculation, and error codes.
+schemas, the pay calculation, and error codes. The app is ESM (aligned with shared).
+
+---
+
+## Architecture — modular by feature
+
+Organised by feature (a "module" owns everything for its domain), not by technical
+layer. Hono is unopinionated, so structure is by convention: each module exports a
+Hono sub-router mounted with `app.route()`, and plain service functions (no DI
+container — Hono has none, unlike Nest). Cross-cutting concerns live in `common/`
+and `db/`. Keep modules lean: a service exists where there is real logic (locking,
+soft delete, weekly aggregation), not anaemic CRUD pass-throughs.
+
+```
+apps/api/src/
+├── main.ts                       # bootstrap @hono/node-server, listen
+├── app.ts                        # build app: middleware, mount modules, onError
+├── db/
+│   ├── schema.ts                 # drizzle tables
+│   └── client.ts                 # drizzle client (postgres-js)
+├── common/
+│   ├── errors.ts                 # AppError + ErrorCode -> HTTP status map
+│   ├── i18n.ts                   # Accept-Language parse + code -> { en, es }
+│   ├── on-error.ts               # central handler -> { error: { code, message } }
+│   └── locale.middleware.ts      # resolve locale onto the context
+└── modules/
+    ├── employees/
+    │   ├── employees.routes.ts   # HTTP: zValidator(shared schema) -> service -> respond
+    │   ├── employees.service.ts  # business logic + drizzle queries
+    │   └── employees.mapper.ts   # db row -> API DTO (shared types)
+    ├── time-entries/
+    │   ├── time-entries.routes.ts
+    │   └── time-entries.service.ts
+    └── weekly-summary/
+        ├── weekly-summary.routes.ts
+        └── weekly-summary.service.ts
+```
+
+Request flow: `locale middleware -> zValidator (shared Zod) -> route -> service
+(drizzle + rules, throws AppError) -> onError -> localized envelope`.
+
+Validation uses `@hono/zod-validator` with the schemas from `@timesheet/shared`, so
+the API and web validate against the exact same rules. RPC client (`hc`) is not used,
+so separating handlers into services is fine (no loss of route type inference).
 
 ---
 
@@ -19,20 +62,20 @@ so the app is usable immediately after setup.
 
 ## Endpoints
 
-| Method | Path                                     | Notes                                  |
-| ------ | ---------------------------------------- | -------------------------------------- |
-| GET    | `/employees?includeInactive=bool`        | Inactive hidden unless flag set        |
-| POST   | `/employees`                             | Validates via shared schema            |
-| PATCH  | `/employees/:id`                         | Edit name/rate                         |
-| POST   | `/employees/:id/deactivate`              | Sets `deactivatedAt` (soft delete)     |
-| POST   | `/employees/:id/reactivate`              | Clears `deactivatedAt`                 |
-| GET    | `/employees/:id/time-entries?weekStart=` | Optional week filter                   |
-| POST   | `/time-entries`                          | Full validation (see below)            |
-| PATCH  | `/time-entries/:id`                      | Blocked if week approved               |
-| DELETE | `/time-entries/:id`                      | Blocked if week approved               |
-| GET    | `/weekly-summary?weekStart=`             | Raw aggregate per employee (see below) |
-| POST   | `/weekly-summary/approve`                | `{ employeeId, weekStart }`            |
-| POST   | `/weekly-summary/reject`                 | `{ employeeId, weekStart }`            |
+| Method | Path                                   | Notes                                  |
+| ------ | -------------------------------------- | -------------------------------------- |
+| GET    | `/employees?includeInactive=bool`      | Inactive hidden unless flag set        |
+| POST   | `/employees`                           | Validates via shared schema            |
+| PATCH  | `/employees/:id`                       | Edit name/rate                         |
+| POST   | `/employees/:id/deactivate`            | Sets `deactivatedAt` (soft delete)     |
+| POST   | `/employees/:id/reactivate`            | Clears `deactivatedAt`                 |
+| GET    | `/time-entries?employeeId=&weekStart=` | List for an employee; optional week    |
+| POST   | `/time-entries`                        | Full validation (see below)            |
+| PATCH  | `/time-entries/:id`                    | Blocked if week approved               |
+| DELETE | `/time-entries/:id`                    | Blocked if week approved               |
+| GET    | `/weekly-summary?weekStart=`           | Raw aggregate per employee (see below) |
+| POST   | `/weekly-summary/approve`              | `{ employeeId, weekStart }`            |
+| POST   | `/weekly-summary/reject`               | `{ employeeId, weekStart }`            |
 
 ## Weekly summary response (raw — client computes pay)
 
