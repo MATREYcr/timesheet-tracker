@@ -3,6 +3,7 @@
 // regular/overtime/pay via calculateWeeklyPay from @timesheet/shared.
 
 import {
+  APPROVAL_STATUS,
   getWeekEnd,
   type ApprovalStatus,
   type WeeklySummaryRow,
@@ -72,9 +73,9 @@ async function setStatus(
 }
 
 export function approveWeek(employeeId: string, weekStart: string) {
-  return setStatus(employeeId, weekStart, 'approved');
+  return setStatus(employeeId, weekStart, APPROVAL_STATUS.approved);
 }
 
 export function rejectWeek(employeeId: string, weekStart: string) {
-  return setStatus(employeeId, weekStart, 'rejected');
+  return setStatus(employeeId, weekStart, APPROVAL_STATUS.rejected);
 }

@@ -5,6 +5,7 @@
 // week-locked check and the write are atomic.
 
 import {
+  APPROVAL_STATUS,
   getWeekEnd,
   getWeekStart,
   type CreateTimeEntryInput,
@@ -34,7 +35,7 @@ async function assertWeekNotApproved(tx: Tx, employeeId: string, date: string) {
         eq(weeklyApprovals.weekStart, weekStart),
       ),
     );
-  if (approval?.status === 'approved') {
+  if (approval?.status === APPROVAL_STATUS.approved) {
     throw new AppError('WEEK_LOCKED');
   }
 }

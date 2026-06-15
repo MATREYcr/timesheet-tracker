@@ -1,3 +1,4 @@
+import { APPROVAL_STATUS, APPROVAL_STATUS_VALUES } from '@timesheet/shared';
 import {
   date,
   pgEnum,
@@ -8,11 +9,7 @@ import {
 } from 'drizzle-orm/pg-core';
 import { employees } from './employees.js';
 
-export const approvalStatus = pgEnum('approval_status', [
-  'pending',
-  'approved',
-  'rejected',
-]);
+export const approvalStatus = pgEnum('approval_status', APPROVAL_STATUS_VALUES);
 
 export const weeklyApprovals = pgTable(
   'weekly_approvals',
@@ -22,7 +19,7 @@ export const weeklyApprovals = pgTable(
       .notNull()
       .references(() => employees.id),
     weekStart: date('week_start', { mode: 'string' }).notNull(),
-    status: approvalStatus('status').notNull().default('pending'),
+    status: approvalStatus('status').notNull().default(APPROVAL_STATUS.pending),
     createdAt: timestamp('created_at', { withTimezone: true })
       .notNull()
       .defaultNow(),
