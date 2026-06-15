@@ -118,6 +118,26 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 
 ---
 
+## Bonus backlog (optional — only after required scope, document in WRITEUP)
+
+Do these only if time remains; none are required. Order = priority.
+
+- [ ] **Swagger / OpenAPI** for the API — generate the spec from the Zod schemas
+      (`hono-openapi`) + Swagger UI (`@hono/swagger-ui`) at `/docs`. On-theme with
+      OCMI's OpenAPI stack. Verify Zod v4 compatibility first. Additive (annotate
+      existing routes; no rewrite). **After the web.**
+- [ ] **`nx affected` in CI** — switch CI from `run-many` to `affected` to run only
+      what changed. Leverages the Nx task graph we already have.
+- [ ] **Extra API tests** — soft-delete visibility, future-date/inactive validation,
+      weekly aggregation correctness.
+- [ ] **E2E test** (Playwright) — the core flow: create employee → log time →
+      approve → entries locked. Higher value than Storybook for 3 screens.
+- [ ] **Storybook** — component catalog. Lowest priority for this scope.
+- [ ] **Generated API client (SDK)** — only meaningful across repos/clients; the
+      monorepo + shared types already give type-safety, so likely skipped.
+
+---
+
 ## Progress notes
 
 > Append short notes as phases complete (decisions made, deviations from spec).
