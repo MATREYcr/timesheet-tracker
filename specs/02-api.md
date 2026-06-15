@@ -9,42 +9,54 @@ schemas, the pay calculation, and error codes. The app is ESM (aligned with shar
 
 Organised by feature (a "module" owns everything for its domain), not by technical
 layer. Hono is unopinionated, so structure is by convention: each module exports a
-Hono sub-router mounted with `app.route()`, and plain service functions (no DI
-container — Hono has none, unlike Nest). Cross-cutting concerns live in `common/`
-and `db/`. Keep modules lean: a service exists where there is real logic (locking,
-soft delete, weekly aggregation), not anaemic CRUD pass-throughs.
+Hono sub-router, aggregated in `routes/index.ts` and mounted once by `app.ts`. Plain
+service functions (no DI container — Hono has none, unlike Nest). Cross-cutting code
+lives in `common/`, `middleware/`, `config/`, `db/`. Keep modules lean: a service
+exists where there is real logic (locking, soft delete, weekly aggregation), not
+anaemic CRUD pass-throughs. Folders only where ≥2 related files; singletons stay flat.
 
 ```
 apps/api/src/
-├── main.ts                       # bootstrap @hono/node-server, listen
-├── app.ts                        # build app: middleware, mount modules, onError
-├── db/
-│   ├── schema.ts                 # drizzle tables
-│   └── client.ts                 # drizzle client (postgres-js)
-├── common/
+├── main.ts                       # bootstrap @hono/node-server + graceful shutdown
+├── app.ts                        # middleware, /health, mount apiRoutes, onError
+├── config/
+│   └── env.ts                    # process.env validated with Zod (fail-fast)
+├── common/                       # cross-cutting helpers/types (no barrel — avoids cycles)
 │   ├── errors.ts                 # AppError + ErrorCode -> HTTP status map
-│   ├── i18n.ts                   # Accept-Language parse + code -> { en, es }
 │   ├── on-error.ts               # central handler -> { error: { code, message } }
-│   └── locale.middleware.ts      # resolve locale onto the context
+│   ├── i18n.ts                   # Accept-Language parse + code -> { en, es }
+│   └── types.ts                  # AppEnv (Hono context type)
+├── middleware/                   # request-pipeline middleware
+│   ├── locale.ts                 # resolve locale onto the context
+│   └── validate.ts               # zValidator wrapper -> VALIDATION_ERROR envelope
+├── db/
+│   ├── client.ts                 # drizzle client (postgres-js) + closeDb
+│   ├── schema/                   # one file per entity + index barrel
+│   └── seed.ts                   # sketch-matching seed (tsx)
+├── routes/
+│   └── index.ts                  # aggregates the module routers
 └── modules/
-    ├── employees/
-    │   ├── employees.routes.ts   # HTTP: zValidator(shared schema) -> service -> respond
-    │   ├── employees.service.ts  # business logic + drizzle queries
-    │   └── employees.mapper.ts   # db row -> API DTO (shared types)
-    ├── time-entries/
-    │   ├── time-entries.routes.ts
-    │   └── time-entries.service.ts
-    └── weekly-summary/
-        ├── weekly-summary.routes.ts
-        └── weekly-summary.service.ts
+    ├── employees/                # routes + service + mapper
+    ├── time-entries/             # routes + service (no mapper needed beyond rows)
+    └── weekly-summary/           # routes + service
 ```
 
-Request flow: `locale middleware -> zValidator (shared Zod) -> route -> service
+Request flow: `logger -> cors -> locale -> validate (shared Zod) -> route -> service
 (drizzle + rules, throws AppError) -> onError -> localized envelope`.
 
-Validation uses `@hono/zod-validator` with the schemas from `@timesheet/shared`, so
-the API and web validate against the exact same rules. RPC client (`hc`) is not used,
-so separating handlers into services is fine (no loss of route type inference).
+Key decisions:
+
+- **env** validated once with Zod (`config/env.ts`); no hardcoded fallbacks. CORS
+  origin configurable via `CORS_ORIGIN`.
+- **Mutations run in a transaction** (time entries) so the week-locked check and the
+  write are atomic.
+- `updatedAt` is maintained by Drizzle `$onUpdate` (not set manually).
+- Status values come from `@timesheet/shared` (`EMPLOYEE_STATUS`/`APPROVAL_STATUS`),
+  reused in mappers, services and the Drizzle pgEnum — no bare string literals.
+- Explicit return types on exported service functions (module-boundary contract).
+- Validation uses `@hono/zod-validator` with the schemas from `@timesheet/shared`,
+  so API and web validate against the exact same rules. RPC client (`hc`) is not
+  used, so separating handlers into services is fine.
 
 ---
 
