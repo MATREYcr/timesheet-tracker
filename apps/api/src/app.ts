@@ -1,5 +1,4 @@
-// Builds the Hono app: global middleware, feature modules, and the central error
-// handler. Exported as a factory so tests can spin up a fresh instance.
+// Factory so tests can spin up a fresh instance.
 
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';

@@ -1,6 +1,4 @@
-// Seed script: a small, realistic dataset so the app is usable immediately after
-// setup. Numbers mirror the assessment sketch (Jane: 45.5h @ $22.50 -> $1,085.63).
-// Idempotent: clears the tables, then inserts.
+// Seed mirroring the assessment sketch (Jane 45.5h @ $22.50). Idempotent.
 
 import './load-env.js';
 import { db } from './client.js';

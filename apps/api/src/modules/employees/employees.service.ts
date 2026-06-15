@@ -1,5 +1,3 @@
-// Employees business logic + persistence. Soft delete via `deactivatedAt`.
-
 import type {
   CreateEmployeeInput,
   Employee,

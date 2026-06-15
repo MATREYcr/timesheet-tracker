@@ -1,8 +1,5 @@
 // Domain types shared across API and web. Plain TypeScript, no framework imports.
-
-// Status values as `as const` objects (preferred over TS `enum`): they give both
-// reusable constants and the literal type, with no runtime enum overhead. Use the
-// constants everywhere instead of bare string literals.
+// Status values use `as const` (not TS enum): reusable constants + the literal type.
 
 /** Derived from `deactivatedAt`: active when null, otherwise inactive. */
 export const EMPLOYEE_STATUS = {

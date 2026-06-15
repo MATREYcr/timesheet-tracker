@@ -1,6 +1,3 @@
-// API entrypoint. Loads env (repo-root .env when run via `nx serve`), validates it,
-// starts the Hono app, and shuts down cleanly.
-
 import 'dotenv/config';
 import { serve } from '@hono/node-server';
 import { createApp } from './app.js';

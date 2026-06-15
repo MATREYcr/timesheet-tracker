@@ -1,8 +1,6 @@
-// Time entries business logic. Enforces the DB-dependent rules: the employee must
-// be active (on create), and the entry's week must not be approved/locked
-// (create/edit/delete). Hours range / no-future-date are enforced by the shared
-// Zod schema at the route boundary. Mutations run in a transaction so the
-// week-locked check and the write are atomic.
+// DB-dependent rules live here (active employee, week-not-locked); hours/future-date
+// come from the shared Zod schema. Mutations run in a transaction so the lock check
+// and the write are atomic.
 
 import {
   APPROVAL_STATUS,

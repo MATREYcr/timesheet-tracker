@@ -1,5 +1,4 @@
-// Maps a DB row to the API DTO (shared Employee type): derives `status` from
-// `deactivatedAt` and serializes timestamps to ISO strings.
+// DB row -> API DTO: derives `status` and serializes timestamps to ISO.
 
 import { EMPLOYEE_STATUS, type Employee } from '@timesheet/shared';
 import type { EmployeeRow } from '../../db/schema/index.js';

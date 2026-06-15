@@ -1,5 +1,3 @@
-// Weekly summary HTTP routes, mounted at /weekly-summary.
-
 import { weekStartSchema, weeklyApprovalActionSchema } from '@timesheet/shared';
 import { Hono } from 'hono';
 import { z } from 'zod';

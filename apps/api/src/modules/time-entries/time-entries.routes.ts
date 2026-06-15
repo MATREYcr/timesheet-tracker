@@ -1,4 +1,3 @@
-// Time entries HTTP routes, mounted at /time-entries.
 // List is query-based: GET /time-entries?employeeId=<uuid>&weekStart=<monday>.
 
 import {

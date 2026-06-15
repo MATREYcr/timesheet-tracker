@@ -1,6 +1,4 @@
-// Aggregates every feature module router into a single API router. app.ts mounts
-// this once, keeping app-level concerns (middleware, health, error handling)
-// separate from route wiring. Adding a feature = one line here.
+// Aggregates the feature module routers; app.ts mounts this once.
 
 import { Hono } from 'hono';
 import type { AppEnv } from '../common/types.js';

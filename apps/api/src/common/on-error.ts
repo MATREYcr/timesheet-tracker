@@ -1,6 +1,5 @@
-// Central error handler: turns any thrown error into the consistent envelope
-// `{ error: { code, message } }`, localized, with the right HTTP status. Internal
-// errors never leak — they collapse to INTERNAL_ERROR.
+// Central handler -> localized `{ error: { code, message } }`. Unexpected errors
+// collapse to INTERNAL_ERROR so internals never leak.
 
 import type { ErrorHandler } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';

@@ -1,5 +1,4 @@
-// Resolves the request locale from Accept-Language and stores it on the context,
-// so the error handler (and anything else) can localize without re-parsing.
+// Resolves the locale once and stores it on the context for downstream handlers.
 
 import { createMiddleware } from 'hono/factory';
 import { parseAcceptLanguage } from './i18n.js';

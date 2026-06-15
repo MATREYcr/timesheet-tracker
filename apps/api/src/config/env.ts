@@ -1,6 +1,4 @@
-// Validated environment. Parsed once at startup so the app fails fast with a clear
-// message instead of blowing up later on an undefined value. No scattered
-// `process.env` reads or hardcoded fallbacks elsewhere.
+// Validated env, parsed once at startup so the app fails fast on bad config.
 
 import { z } from 'zod';
 

@@ -1,6 +1,5 @@
-// Integration test (the prime required test): approving a week locks its time
-// entries. Runs the real Hono app against the real database via app.request().
-// Requires Postgres (DATABASE_URL); CI provides it as a service.
+// Approving a week locks its entries. Runs the real app against real Postgres via
+// app.request() (CI provides the DB).
 
 import type { TimeEntry, WeeklySummaryRow } from '@timesheet/shared';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';

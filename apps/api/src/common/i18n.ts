@@ -1,6 +1,4 @@
-// Error message localization. The canonical en/es text for each ErrorCode lives
-// here (the codes themselves are the shared contract). Locale is chosen from the
-// Accept-Language header, defaulting to English.
+// Canonical en/es text per ErrorCode (the codes are the shared contract).
 
 import type { ErrorCode } from '@timesheet/shared';
 

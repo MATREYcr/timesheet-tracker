@@ -1,6 +1,5 @@
-// Weekly summary: the API returns the RAW aggregate per employee (total hours,
-// rate, approval status). It does NOT compute pay — the web client derives
-// regular/overtime/pay via calculateWeeklyPay from @timesheet/shared.
+// Returns the RAW aggregate (hours, rate, status); it does NOT compute pay — the
+// web client derives that via calculateWeeklyPay from @timesheet/shared.
 
 import {
   APPROVAL_STATUS,

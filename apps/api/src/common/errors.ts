@@ -1,6 +1,5 @@
-// Domain error type for the API. Carries a stable ErrorCode (from shared); the
-// HTTP status and the localized message are derived from it. Services throw these;
-// the central onError handler turns them into the response envelope.
+// Domain error with a stable ErrorCode -> HTTP status. Services throw it; the
+// central onError formats it into the response envelope.
 
 import type { ErrorCode } from '@timesheet/shared';
 

@@ -1,6 +1,3 @@
-// Employees HTTP routes. Thin: validate input (shared Zod via zValidator), call
-// the service, shape the response. Mounted at /employees.
-
 import {
   createEmployeeSchema,
   employeeIdSchema,
