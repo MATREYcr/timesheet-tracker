@@ -86,7 +86,9 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 
 ## Phase 3 — `apps/web` (Next.js 16)
 
-- [ ] **3.1 App setup** — Next.js App Router, Tailwind, shadcn/ui init.
+- [x] **3.1 App setup** — Tailwind v4 (PostCSS) + shadcn/ui init (components.json,
+      cn util, theme in global.css, Button). Removed Nx welcome scaffold + the
+      example Next API route. Home placeholder links to the 3 screens. ✓
 - [ ] **3.2 Data layer** — typed `api` client (sets `Accept-Language`, parses
       envelope) + TanStack Query provider/hooks.
 - [ ] **3.3 i18n** — en/es translation files + locale switch; wires header.
