@@ -97,18 +97,17 @@ reuse is less natural; diverges from the API's `modules/` naming.
 
 ---
 
-## Recommendation
+## Decision & rationale
 
 There is no single "most professional" structure — both are recognized, clean
-patterns, and the real differentiator is _consistency and fit_, not the folder
-names. For **this app** — three screens that map almost one-to-one to routes, with no
-expected cross-route reuse — **Option B (colocation)** reads as the more idiomatic,
-Next-native choice: a reviewer familiar with the App Router immediately recognizes
-the `_components`/`_hooks` convention, and keeping a feature's UI and data hooks right
-beside the route that renders them minimizes indirection. **Option A** is equally
-defensible and has the edge if you value a domain layer fully decoupled from routing
-or want the web to mirror the API's modular `modules/` layout exactly. Either way the
-important architectural decisions are the same: routes stay thin, all HTTP is funneled
-through `lib/api.ts` (a clean seam that could later be swapped for a generated SDK),
-server state goes through TanStack Query hooks, and UI is composed from shadcn/ui
-while business types, validation and the pay calculation come from `@timesheet/shared`.
+patterns, and the real differentiator is _consistency and fit_, not the folder names.
+**We chose Option A (`features/`)** for two reasons: a domain layer fully decoupled
+from routing (a feature isn't tied to a route path), and a mental model consistent
+with the API's modular `modules/` across the monorepo. **Option B (colocation)** was
+the close alternative — it's the more Next-idiomatic choice given our ~1:1
+feature↔route mapping — and would be equally defensible; the trade-off was simply
+consistency-with-the-API (A) vs Next-nativeness (B). Either way the important
+architectural decisions are identical: routes stay thin, all HTTP is funnelled through
+`lib/api.ts` (a clean seam that could later be swapped for a generated SDK), server
+state goes through TanStack Query hooks, and UI is composed from shadcn/ui while
+business types, validation and the pay calculation come from `@timesheet/shared`.
