@@ -5,20 +5,33 @@ and the pay calculation. Server state via TanStack Query; UI via shadcn/ui + Tai
 
 ---
 
-## Structure
+## Structure — feature folders (Option A; see `web-architecture-options.md`)
+
+Routes stay thin; each domain owns its components + TanStack Query hooks under
+`features/`. All `fetch` is funnelled through `lib/api.ts`.
 
 ```
 apps/web/src/
-├── app/
-│   ├── employees/          Screen 1
-│   ├── time-entries/       Screen 2
-│   └── weekly-summary/     Screen 3 (core)
+├── app/                    # routing only (thin pages)
+│   ├── layout.tsx          # providers (TanStack Query, i18n)
+│   ├── employees/page.tsx
+│   ├── time-entries/page.tsx
+│   └── weekly-summary/page.tsx
+├── features/
+│   ├── employees/          components/ + hooks/
+│   ├── time-entries/       components/ + hooks/
+│   └── weekly-summary/     components/ (uses calculateWeeklyPay) + hooks/
+├── components/
+│   ├── ui/                 shadcn components
+│   └── layout/             nav, locale switch
 ├── lib/
-│   ├── api.ts              typed fetch client (sends Accept-Language)
-│   └── query.ts            TanStack Query client/provider
-├── components/             shared UI (shadcn-based)
+│   ├── api.ts              typed fetch client (sends Accept-Language, parses envelope)
+│   ├── query.ts            TanStack Query client
+│   └── utils.ts            cn (shadcn)
 └── i18n/                   en/es translations + locale switch
 ```
+
+UI: decent shadcn defaults first (functional), visual polish pass at the end.
 
 ## Data layer
 
