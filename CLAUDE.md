@@ -156,6 +156,11 @@ timesheet-tracker/
 - **Naming:** `camelCase` in TS, `snake_case` in the database (map via Drizzle).
 - **i18n:** UI ships in English and Spanish (bonus scope). Keep all user-facing
   strings in translation files, never hardcoded.
+- **UI (shadcn first):** always prefer a shadcn/ui component when one fits —
+  search/compose existing components before writing custom markup (e.g. `Dialog`,
+  `Table`, `Select`, `Badge`, `Skeleton`, `Alert`, `Empty`, `Spinner`). Use built-in
+  variants and semantic tokens (`bg-primary`, `text-muted-foreground`), not raw
+  colors. Follow the `shadcn` skill. Only hand-roll markup when nothing fits.
 - **Comments:** only when they add value — explain the **why** (non-obvious
   decisions, trade-offs, gotchas), never restate the **what** the code already says.
   No redundant file-header summaries; prefer self-documenting code and names.
