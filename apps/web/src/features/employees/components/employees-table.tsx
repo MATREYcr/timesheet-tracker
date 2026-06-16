@@ -29,7 +29,11 @@ export function EmployeesTable({ employees, onEdit }: Props) {
   const locale = useLocale();
   const deactivate = useDeactivateEmployee();
   const reactivate = useReactivateEmployee();
-  const isMutating = deactivate.isPending || reactivate.isPending;
+  // Only the row whose status is currently being toggled, so we don't disable
+  // every other row's action while one request is in flight.
+  const pendingId =
+    (deactivate.isPending ? deactivate.variables?.id : undefined) ??
+    (reactivate.isPending ? reactivate.variables?.id : undefined);
 
   const toggleStatus = async (employee: Employee) => {
     const isActive = employee.status === 'active';
@@ -47,7 +51,7 @@ export function EmployeesTable({ employees, onEdit }: Props) {
   };
 
   return (
-    <Table>
+    <Table aria-label={t('employees.title')}>
       <TableHeader>
         <TableRow>
           <TableHead>{t('employees.columns.name')}</TableHead>
@@ -87,7 +91,7 @@ export function EmployeesTable({ employees, onEdit }: Props) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    disabled={isMutating}
+                    disabled={pendingId === employee.id}
                     onClick={() => toggleStatus(employee)}
                   >
                     {isActive ? (
