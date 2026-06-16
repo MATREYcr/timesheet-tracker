@@ -8,9 +8,8 @@ export function makeQueryClient() {
     defaultOptions: {
       queries: { staleTime: 30_000, retry: 1 },
     },
-    // Generic error feedback for every mutation in one place. ApiError messages
-    // are already localized by the API; fall back to the i18n singleton for the
-    // rest (this runs outside React, so we can't use the useTranslation hook).
+    // ApiError messages are already localized by the API; for the rest use the
+    // i18n singleton (this runs outside React, so no useTranslation hook).
     mutationCache: new MutationCache({
       onError: (error) => {
         const message =
