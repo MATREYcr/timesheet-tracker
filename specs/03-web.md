@@ -56,10 +56,15 @@ UI: decent shadcn defaults first (functional), visual polish pass at the end.
 
 ### Screen 2 — Time entries
 
-- Employee selector (shadcn `Select`).
-- List of that employee's entries (date + hours) with Edit/Delete.
-- Log-time form (date + hours), validated. Entries in approved weeks render as
-  read-only / disabled.
+- Employee selector (shadcn `Select`) and a week picker (prev/next, Monday–Sunday
+  range label) — the screen is **week-scoped** because locking is per week.
+- List of that employee's entries for the selected week (date + hours) with
+  Edit/Delete.
+- Log-time form (date within the week + hours), validated via shared schemas.
+- Lock state comes from `GET /weekly-summary/approval?employeeId=&weekStart=`.
+  When the week is `approved`, entries render read-only and the form is hidden;
+  the form is also disabled for inactive employees (no entries allowed).
+- Reuses the same `WeekPicker` as Screen 3.
 
 ### Screen 3 — Weekly summary (core)
 

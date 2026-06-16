@@ -60,6 +60,17 @@ export interface WeeklyApproval {
 }
 
 /**
+ * Approval status of a single (employee, week). `status` is `pending` when no
+ * approval row exists. Returned by the approval lookup and the approve/reject
+ * actions; the web uses it to lock entries in approved weeks.
+ */
+export interface WeekApprovalStatus {
+  employeeId: string;
+  weekStart: string;
+  status: ApprovalStatus;
+}
+
+/**
  * Raw per-employee aggregate the API returns for a week. The API does NOT
  * compute pay — the web client derives it via `calculateWeeklyPay`.
  */

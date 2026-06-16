@@ -86,6 +86,7 @@ so the app is usable immediately after setup.
 | PATCH  | `/time-entries/:id`                    | Blocked if week approved               |
 | DELETE | `/time-entries/:id`                    | Blocked if week approved               |
 | GET    | `/weekly-summary?weekStart=`           | Raw aggregate per employee (see below) |
+| GET    | `/weekly-summary/approval?employeeId=&weekStart=` | Status of one (employee, week); `pending` if no row, 404 if employee missing |
 | POST   | `/weekly-summary/approve`              | `{ employeeId, weekStart }`            |
 | POST   | `/weekly-summary/reject`               | `{ employeeId, weekStart }`            |
 
@@ -96,6 +97,12 @@ in that week** (active or inactive, so inactive employees' historical weeks stay
 visible). Each row: `{ employeeId, firstName, lastName, hourlyRate, totalHours,
 status }`. The API does **not** compute pay or the regular/overtime split — the web
 client derives those with `calculateWeeklyPay` from `shared`.
+
+`GET /weekly-summary/approval?employeeId=&weekStart=` returns `{ employeeId,
+weekStart, status }` (`WeekApprovalStatus`) for a single employee/week — `pending`
+when no approval row exists, `404` when the employee does not exist. The Time
+entries screen uses it to render approved weeks as read-only without over-fetching
+the full weekly summary.
 
 ## Validation rules (server-enforced, via shared schemas)
 

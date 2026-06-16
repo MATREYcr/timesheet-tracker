@@ -1,7 +1,11 @@
 // Approving a week locks its entries. Runs the real app against real Postgres via
 // app.request() (CI provides the DB).
 
-import type { TimeEntry, WeeklySummaryRow } from '@timesheet/shared';
+import type {
+  TimeEntry,
+  WeekApprovalStatus,
+  WeeklySummaryRow,
+} from '@timesheet/shared';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createApp } from '../../app.js';
 import { closeDb, db } from '../../db/client.js';
@@ -122,5 +126,35 @@ describe('approval locking flow (integration)', () => {
       status: 'rejected',
     });
     expect(rows[0]).not.toHaveProperty('totalPay');
+  });
+
+  it('exposes the approval status for an (employee, week)', async () => {
+    const approve = await postJson('/weekly-summary/approve', {
+      employeeId,
+      weekStart: WEEK_START,
+    });
+    expect(approve.status).toBe(200);
+
+    const res = await app.request(
+      `/weekly-summary/approval?employeeId=${employeeId}&weekStart=${WEEK_START}`,
+    );
+    expect(res.status).toBe(200);
+    expect(await body<WeekApprovalStatus>(res)).toMatchObject({
+      employeeId,
+      weekStart: WEEK_START,
+      status: 'approved',
+    });
+
+    // A week with no approval row is implicitly pending.
+    const pending = await app.request(
+      `/weekly-summary/approval?employeeId=${employeeId}&weekStart=2026-06-15`,
+    );
+    expect((await body<WeekApprovalStatus>(pending)).status).toBe('pending');
+
+    // Unknown employee → 404.
+    const missing = await app.request(
+      `/weekly-summary/approval?employeeId=00000000-0000-0000-0000-000000000000&weekStart=${WEEK_START}`,
+    );
+    expect(missing.status).toBe(404);
   });
 });

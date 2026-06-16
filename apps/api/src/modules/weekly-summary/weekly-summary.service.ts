@@ -5,6 +5,7 @@ import {
   APPROVAL_STATUS,
   getWeekEnd,
   type ApprovalStatus,
+  type WeekApprovalStatus,
   type WeeklySummaryRow,
 } from '@timesheet/shared';
 import { and, asc, eq, gte, lte, sql } from 'drizzle-orm';
@@ -17,11 +18,7 @@ import {
 } from '../../db/schema/index.js';
 
 /** Result of approving/rejecting a week (the API confirmation payload). */
-export type WeeklyApprovalResult = {
-  employeeId: string;
-  weekStart: string;
-  status: ApprovalStatus;
-};
+export type WeeklyApprovalResult = WeekApprovalStatus;
 
 export async function getWeeklySummary(
   weekStart: string,
@@ -54,6 +51,33 @@ export async function getWeeklySummary(
 
   // sum() comes back as a string from Postgres numeric — normalize to number.
   return rows.map((row) => ({ ...row, totalHours: Number(row.totalHours) }));
+}
+
+export async function getApprovalStatus(
+  employeeId: string,
+  weekStart: string,
+): Promise<WeekApprovalStatus> {
+  const [employee] = await db
+    .select({ id: employees.id })
+    .from(employees)
+    .where(eq(employees.id, employeeId));
+  if (!employee) throw new AppError('NOT_FOUND');
+
+  const [approval] = await db
+    .select({ status: weeklyApprovals.status })
+    .from(weeklyApprovals)
+    .where(
+      and(
+        eq(weeklyApprovals.employeeId, employeeId),
+        eq(weeklyApprovals.weekStart, weekStart),
+      ),
+    );
+
+  return {
+    employeeId,
+    weekStart,
+    status: approval?.status ?? APPROVAL_STATUS.pending,
+  };
 }
 
 async function setStatus(
