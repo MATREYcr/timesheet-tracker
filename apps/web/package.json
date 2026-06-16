@@ -6,10 +6,6 @@
     "targets": {
       "typecheck": {
         "command": "tsc --noEmit -p apps/web/tsconfig.json"
-      },
-      "dev": {
-        "command": "next dev --port 3000",
-        "options": { "cwd": "apps/web" }
       }
     }
   },
