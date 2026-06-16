@@ -21,7 +21,6 @@ import {
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ApiError } from '@/lib/http';
 import { useCreateEmployee, useUpdateEmployee } from '../hooks';
 
 interface Props {
@@ -76,8 +75,8 @@ export function EmployeeFormDialog({ open, onOpenChange, employee }: Props) {
         toast.success(t('employees.toast.created'));
       }
       onOpenChange(false);
-    } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : t('common.error'));
+    } catch {
+      // Error toast is handled globally; keep the dialog open so the user can retry.
     }
   });
 

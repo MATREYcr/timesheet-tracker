@@ -14,7 +14,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { formatCurrency } from '@/lib/format';
-import { ApiError } from '@/lib/http';
 import { useLocale } from '@/i18n/use-locale';
 import { useDeactivateEmployee, useReactivateEmployee } from '../hooks';
 import { EmployeeStatusBadge } from './employee-status-badge';
@@ -35,19 +34,19 @@ export function EmployeesTable({ employees, onEdit }: Props) {
     (deactivate.isPending ? deactivate.variables?.id : undefined) ??
     (reactivate.isPending ? reactivate.variables?.id : undefined);
 
-  const toggleStatus = async (employee: Employee) => {
+  const toggleStatus = (employee: Employee) => {
     const isActive = employee.status === EMPLOYEE_STATUS.active;
-    try {
-      if (isActive) {
-        await deactivate.mutateAsync(employee);
-        toast.success(t('employees.toast.deactivated'));
-      } else {
-        await reactivate.mutateAsync(employee);
-        toast.success(t('employees.toast.reactivated'));
-      }
-    } catch (err) {
-      toast.error(err instanceof ApiError ? err.message : t('common.error'));
-    }
+    const mutation = isActive ? deactivate : reactivate;
+    mutation.mutate(employee, {
+      onSuccess: () =>
+        toast.success(
+          t(
+            isActive
+              ? 'employees.toast.deactivated'
+              : 'employees.toast.reactivated',
+          ),
+        ),
+    });
   };
 
   return (
