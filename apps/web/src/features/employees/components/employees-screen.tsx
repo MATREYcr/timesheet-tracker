@@ -45,17 +45,6 @@ export function EmployeesScreen() {
     setDialogOpen(true);
   };
 
-  const content = () => {
-    if (isPending) return <SkeletonRows />;
-    if (isError) return <ErrorState onRetry={refetch} />;
-    if (data.length === 0) return <EmptyState onCreate={openCreate} />;
-    return (
-      <div className="rounded-lg border">
-        <EmployeesTable employees={data} onEdit={openEdit} />
-      </div>
-    );
-  };
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -74,9 +63,7 @@ export function EmployeesScreen() {
               checked={includeInactive}
               onCheckedChange={setIncludeInactive}
             />
-            <Label htmlFor="show-inactive">
-              {t('employees.showInactive')}
-            </Label>
+            <Label htmlFor="show-inactive">{t('employees.showInactive')}</Label>
           </div>
           <Button onClick={openCreate}>
             <Plus className="size-4" />
@@ -85,7 +72,45 @@ export function EmployeesScreen() {
         </div>
       </div>
 
-      {content()}
+      {isPending ? (
+        <div className="space-y-2">
+          {Array.from({ length: SKELETON_ROWS }).map((_, i) => (
+            <Skeleton key={i} className="h-12 w-full" />
+          ))}
+        </div>
+      ) : isError ? (
+        <Alert variant="destructive">
+          <AlertTitle>{t('common.error')}</AlertTitle>
+          <AlertDescription>{t('common.errorBody')}</AlertDescription>
+          <AlertAction>
+            <Button variant="outline" size="sm" onClick={() => refetch()}>
+              {t('common.retry')}
+            </Button>
+          </AlertAction>
+        </Alert>
+      ) : data.length === 0 ? (
+        <Empty className="border">
+          <EmptyHeader>
+            <EmptyMedia variant="icon">
+              <Users />
+            </EmptyMedia>
+            <EmptyTitle>{t('employees.empty.title')}</EmptyTitle>
+            <EmptyDescription>
+              {t('employees.empty.description')}
+            </EmptyDescription>
+          </EmptyHeader>
+          <EmptyContent>
+            <Button onClick={openCreate}>
+              <Plus className="size-4" />
+              {t('employees.add')}
+            </Button>
+          </EmptyContent>
+        </Empty>
+      ) : (
+        <div className="rounded-lg border">
+          <EmployeesTable employees={data} onEdit={openEdit} />
+        </div>
+      )}
 
       <EmployeeFormDialog
         open={dialogOpen}
@@ -93,51 +118,5 @@ export function EmployeesScreen() {
         employee={editing}
       />
     </div>
-  );
-}
-
-function SkeletonRows() {
-  return (
-    <div className="space-y-2">
-      {Array.from({ length: SKELETON_ROWS }).map((_, i) => (
-        <Skeleton key={i} className="h-12 w-full" />
-      ))}
-    </div>
-  );
-}
-
-function ErrorState({ onRetry }: { onRetry: () => void }) {
-  const { t } = useTranslation();
-  return (
-    <Alert variant="destructive">
-      <AlertTitle>{t('common.error')}</AlertTitle>
-      <AlertDescription>{t('common.errorBody')}</AlertDescription>
-      <AlertAction>
-        <Button variant="outline" size="sm" onClick={onRetry}>
-          {t('common.retry')}
-        </Button>
-      </AlertAction>
-    </Alert>
-  );
-}
-
-function EmptyState({ onCreate }: { onCreate: () => void }) {
-  const { t } = useTranslation();
-  return (
-    <Empty className="border">
-      <EmptyHeader>
-        <EmptyMedia variant="icon">
-          <Users />
-        </EmptyMedia>
-        <EmptyTitle>{t('employees.empty.title')}</EmptyTitle>
-        <EmptyDescription>{t('employees.empty.description')}</EmptyDescription>
-      </EmptyHeader>
-      <EmptyContent>
-        <Button onClick={onCreate}>
-          <Plus className="size-4" />
-          {t('employees.add')}
-        </Button>
-      </EmptyContent>
-    </Empty>
   );
 }
