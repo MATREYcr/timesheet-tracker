@@ -94,9 +94,10 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
       `features/<x>/api.ts` endpoint functions; `lib/query.ts` QueryClient +
       `Providers`. `@timesheet/shared` linked. Per-feature TanStack Query hooks land
       with each screen (3.4–3.6). ✓
-- [x] **3.3 i18n** — lightweight custom i18n (Context + `en.ts`/`es.ts` typed
-      dictionaries, `useI18n`, `LocaleSwitch`); persists to localStorage and syncs
-      `setApiLocale` so API errors match the UI locale. No dependency. ✓
+- [x] **3.3 i18n** — `react-i18next` (cross-platform: same JSON works in a future
+      Expo app) with `locales/en.json`/`es.json`, typed keys via i18next module
+      augmentation, `LanguageDetector` (localStorage), `LocaleSwitch`. Provider syncs
+      `setApiLocale` so API errors match the UI locale. ✓
 - [ ] **3.4 Employees screen** — list + show-inactive toggle + create/edit dialog
       (shared Zod via react-hook-form) + deactivate/reactivate.
 - [ ] **3.5 Time-entries screen** — employee selector + list + log/edit/delete;
