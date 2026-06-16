@@ -27,7 +27,6 @@ import { useCreateEmployee, useUpdateEmployee } from '../hooks';
 interface Props {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  /** Presence switches the dialog to edit mode. */
   employee?: Employee;
 }
 
@@ -53,8 +52,7 @@ export function EmployeeFormDialog({ open, onOpenChange, employee }: Props) {
     defaultValues: EMPTY,
   });
 
-  // Sync form state whenever the dialog opens (load the employee for edit,
-  // or clear it for create).
+  // RHF keeps values between opens, so re-seed the form each time it opens.
   useEffect(() => {
     if (!open) return;
     reset(
