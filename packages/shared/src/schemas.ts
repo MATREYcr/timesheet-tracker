@@ -63,6 +63,14 @@ export const updateTimeEntrySchema = z
   })
   .partial();
 
+/**
+ * Fields of the time-entry form (the employee comes from screen context, not the
+ * form). Derived from `createTimeEntrySchema` so validation stays single-sourced.
+ */
+export const timeEntryFormSchema = createTimeEntrySchema.omit({
+  employeeId: true,
+});
+
 /** A `weekStart` must be the Monday of its week. */
 export const weekStartSchema = dateOnly.refine(
   (value) => getWeekStart(value) === value,
@@ -78,6 +86,7 @@ export type CreateEmployeeInput = z.infer<typeof createEmployeeSchema>;
 export type UpdateEmployeeInput = z.infer<typeof updateEmployeeSchema>;
 export type CreateTimeEntryInput = z.infer<typeof createTimeEntrySchema>;
 export type UpdateTimeEntryInput = z.infer<typeof updateTimeEntrySchema>;
+export type TimeEntryFormInput = z.infer<typeof timeEntryFormSchema>;
 export type WeeklyApprovalActionInput = z.infer<
   typeof weeklyApprovalActionSchema
 >;

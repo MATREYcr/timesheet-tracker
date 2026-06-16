@@ -61,5 +61,53 @@
       "deactivated": "Employee deactivated.",
       "reactivated": "Employee reactivated."
     }
+  },
+  "week": {
+    "previous": "Previous week",
+    "next": "Next week"
+  },
+  "timeEntries": {
+    "title": "Time entries",
+    "subtitle": "Log hours worked per employee, by week.",
+    "selectEmployee": "Select an employee",
+    "add": "Log time",
+    "columns": {
+      "date": "Date",
+      "hours": "Hours",
+      "actions": "Actions"
+    },
+    "form": {
+      "createTitle": "Log time",
+      "editTitle": "Edit entry",
+      "createDescription": "Add hours worked for this week.",
+      "editDescription": "Update this time entry.",
+      "date": "Date",
+      "hours": "Hours",
+      "submitCreate": "Log",
+      "submitEdit": "Save changes"
+    },
+    "delete": {
+      "title": "Delete this entry?",
+      "description": "This permanently removes the time entry. This cannot be undone."
+    },
+    "locked": {
+      "title": "Week approved",
+      "description": "This week is approved and locked — entries can't be changed."
+    },
+    "inactive": {
+      "title": "Inactive employee",
+      "description": "You can view past entries, but can't log time for an inactive employee."
+    },
+    "empty": {
+      "noEmployee": "Select an employee",
+      "noEmployeeHint": "Choose an employee to view and log their time.",
+      "noEntries": "No entries this week",
+      "noEntriesHint": "Log time to add the first entry for this week."
+    },
+    "toast": {
+      "created": "Time logged.",
+      "updated": "Entry updated.",
+      "deleted": "Entry deleted."
+    }
   }
 }

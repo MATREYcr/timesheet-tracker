@@ -61,5 +61,53 @@
       "deactivated": "Empleado desactivado.",
       "reactivated": "Empleado reactivado."
     }
+  },
+  "week": {
+    "previous": "Semana anterior",
+    "next": "Semana siguiente"
+  },
+  "timeEntries": {
+    "title": "Registros de tiempo",
+    "subtitle": "Registra las horas trabajadas por empleado, por semana.",
+    "selectEmployee": "Selecciona un empleado",
+    "add": "Registrar tiempo",
+    "columns": {
+      "date": "Fecha",
+      "hours": "Horas",
+      "actions": "Acciones"
+    },
+    "form": {
+      "createTitle": "Registrar tiempo",
+      "editTitle": "Editar registro",
+      "createDescription": "Agrega horas trabajadas para esta semana.",
+      "editDescription": "Actualiza este registro de tiempo.",
+      "date": "Fecha",
+      "hours": "Horas",
+      "submitCreate": "Registrar",
+      "submitEdit": "Guardar cambios"
+    },
+    "delete": {
+      "title": "¿Eliminar este registro?",
+      "description": "Esto elimina el registro de tiempo de forma permanente. No se puede deshacer."
+    },
+    "locked": {
+      "title": "Semana aprobada",
+      "description": "Esta semana está aprobada y bloqueada — no se pueden cambiar los registros."
+    },
+    "inactive": {
+      "title": "Empleado inactivo",
+      "description": "Puedes ver registros pasados, pero no registrar tiempo para un empleado inactivo."
+    },
+    "empty": {
+      "noEmployee": "Selecciona un empleado",
+      "noEmployeeHint": "Elige un empleado para ver y registrar su tiempo.",
+      "noEntries": "Sin registros esta semana",
+      "noEntriesHint": "Registra tiempo para agregar el primer registro de la semana."
+    },
+    "toast": {
+      "created": "Tiempo registrado.",
+      "updated": "Registro actualizado.",
+      "deleted": "Registro eliminado."
+    }
   }
 }

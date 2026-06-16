@@ -1,0 +1,121 @@
+'use client';
+
+import type { TimeEntry } from '@timesheet/shared';
+import { Pencil, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
+import { toast } from 'sonner';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
+import { Button } from '@/components/ui/button';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { useLocale } from '@/i18n/use-locale';
+import { formatDate, formatHours } from '@/lib/format';
+import { useDeleteTimeEntry } from '../hooks';
+
+interface Props {
+  entries: TimeEntry[];
+  locked: boolean;
+  onEdit: (entry: TimeEntry) => void;
+}
+
+export function TimeEntriesTable({ entries, locked, onEdit }: Props) {
+  const { t } = useTranslation();
+  const locale = useLocale();
+  const remove = useDeleteTimeEntry();
+
+  const handleDelete = (entry: TimeEntry) => {
+    remove.mutate(entry.id, {
+      onSuccess: () => toast.success(t('timeEntries.toast.deleted')),
+    });
+  };
+
+  return (
+    <Table aria-label={t('timeEntries.title')}>
+      <TableHeader>
+        <TableRow>
+          <TableHead>{t('timeEntries.columns.date')}</TableHead>
+          <TableHead className="text-right">
+            {t('timeEntries.columns.hours')}
+          </TableHead>
+          <TableHead className="text-right">
+            {t('timeEntries.columns.actions')}
+          </TableHead>
+        </TableRow>
+      </TableHeader>
+      <TableBody>
+        {entries.map((entry) => {
+          const deleting = remove.isPending && remove.variables === entry.id;
+          return (
+            <TableRow key={entry.id}>
+              <TableCell className="font-medium">
+                {formatDate(entry.date, locale)}
+              </TableCell>
+              <TableCell className="text-right tabular-nums">
+                {formatHours(entry.hours, locale)}
+              </TableCell>
+              <TableCell>
+                <div className="flex justify-end gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    disabled={locked || deleting}
+                    onClick={() => onEdit(entry)}
+                  >
+                    <Pencil className="size-4" />
+                    {t('common.edit')}
+                  </Button>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        disabled={locked || deleting}
+                      >
+                        <Trash2 className="size-4" />
+                        {t('common.delete')}
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>
+                          {t('timeEntries.delete.title')}
+                        </AlertDialogTitle>
+                        <AlertDialogDescription>
+                          {t('timeEntries.delete.description')}
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>
+                          {t('common.cancel')}
+                        </AlertDialogCancel>
+                        <AlertDialogAction onClick={() => handleDelete(entry)}>
+                          {t('common.delete')}
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
+              </TableCell>
+            </TableRow>
+          );
+        })}
+      </TableBody>
+    </Table>
+  );
+}

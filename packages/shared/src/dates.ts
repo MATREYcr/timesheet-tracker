@@ -32,6 +32,11 @@ export function getWeekStart(date: string): string {
   return addDays(date, -daysSinceMonday);
 }
 
+/** Monday of the current local week — the default week for week-scoped screens. */
+export function getCurrentWeekStart(): string {
+  return getWeekStart(todayLocal());
+}
+
 /** Sunday (date-only) of the week that starts on `weekStart` (a Monday). */
 export function getWeekEnd(weekStart: string): string {
   return addDays(weekStart, 6);

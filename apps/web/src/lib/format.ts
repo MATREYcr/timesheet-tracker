@@ -21,3 +21,39 @@ export function formatHours(hours: number, locale: Locale): string {
     maximumFractionDigits: 2,
   }).format(hours);
 }
+
+// Date-only strings are parsed as UTC and formatted with timeZone UTC, so the day
+// never shifts across timezones (same rule as the shared date helpers).
+function parseUtc(date: string): Date {
+  const [year, month, day] = date.split('-').map(Number);
+  return new Date(Date.UTC(year, month - 1, day));
+}
+
+export function formatDate(
+  date: string,
+  locale: Locale,
+  options: Intl.DateTimeFormatOptions = {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  },
+): string {
+  return new Intl.DateTimeFormat(INTL_LOCALE[locale], {
+    ...options,
+    timeZone: 'UTC',
+  }).format(parseUtc(date));
+}
+
+/** Compact range label for a Monday–Sunday week, e.g. "Jun 16 – 22, 2026". */
+export function formatWeekRange(
+  weekStart: string,
+  weekEnd: string,
+  locale: Locale,
+): string {
+  return new Intl.DateTimeFormat(INTL_LOCALE[locale], {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+    timeZone: 'UTC',
+  }).formatRange(parseUtc(weekStart), parseUtc(weekEnd));
+}

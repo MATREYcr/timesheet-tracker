@@ -1,10 +1,16 @@
-import type { WeeklySummaryRow } from '@timesheet/shared';
+import type { WeekApprovalStatus, WeeklySummaryRow } from '@timesheet/shared';
 import { http } from '@/lib/http';
 
 export const weeklySummaryApi = {
   get: (weekStart: string) =>
     http
       .get<WeeklySummaryRow[]>('/weekly-summary', { params: { weekStart } })
+      .then((r) => r.data),
+  getApproval: (employeeId: string, weekStart: string) =>
+    http
+      .get<WeekApprovalStatus>('/weekly-summary/approval', {
+        params: { employeeId, weekStart },
+      })
       .then((r) => r.data),
   approve: (employeeId: string, weekStart: string) =>
     http
