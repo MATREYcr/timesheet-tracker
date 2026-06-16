@@ -17,7 +17,8 @@
     "loading": "Cargando…",
     "empty": "Aún no hay nada.",
     "retry": "Reintentar",
-    "error": "Algo salió mal."
+    "error": "Algo salió mal.",
+    "errorBody": "No pudimos cargar estos datos."
   },
   "employees": {
     "title": "Empleados",

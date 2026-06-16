@@ -17,7 +17,8 @@
     "loading": "Loading…",
     "empty": "Nothing here yet.",
     "retry": "Retry",
-    "error": "Something went wrong."
+    "error": "Something went wrong.",
+    "errorBody": "We couldn't load this data."
   },
   "employees": {
     "title": "Employees",

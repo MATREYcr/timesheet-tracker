@@ -4,7 +4,12 @@ import type { Employee } from '@timesheet/shared';
 import { Plus, Users } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import {
+  Alert,
+  AlertAction,
+  AlertDescription,
+  AlertTitle,
+} from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import {
   Empty,
@@ -21,6 +26,8 @@ import { useEmployees } from '../hooks';
 import { EmployeeFormDialog } from './employee-form-dialog';
 import { EmployeesTable } from './employees-table';
 
+const SKELETON_ROWS = 4;
+
 export function EmployeesScreen() {
   const { t } = useTranslation();
   const [includeInactive, setIncludeInactive] = useState(false);
@@ -36,6 +43,17 @@ export function EmployeesScreen() {
   const openEdit = (employee: Employee) => {
     setEditing(employee);
     setDialogOpen(true);
+  };
+
+  const content = () => {
+    if (isPending) return <SkeletonRows />;
+    if (isError) return <ErrorState onRetry={refetch} />;
+    if (data.length === 0) return <EmptyState onCreate={openCreate} />;
+    return (
+      <div className="rounded-lg border">
+        <EmployeesTable employees={data} onEdit={openEdit} />
+      </div>
+    );
   };
 
   return (
@@ -67,44 +85,7 @@ export function EmployeesScreen() {
         </div>
       </div>
 
-      {isPending ? (
-        <div className="space-y-2">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <Skeleton key={i} className="h-12 w-full" />
-          ))}
-        </div>
-      ) : isError ? (
-        <Alert variant="destructive">
-          <AlertTitle>{t('common.error')}</AlertTitle>
-          <AlertDescription>
-            <Button variant="outline" size="sm" onClick={() => refetch()}>
-              {t('common.retry')}
-            </Button>
-          </AlertDescription>
-        </Alert>
-      ) : data.length === 0 ? (
-        <Empty className="border">
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <Users />
-            </EmptyMedia>
-            <EmptyTitle>{t('employees.empty.title')}</EmptyTitle>
-            <EmptyDescription>
-              {t('employees.empty.description')}
-            </EmptyDescription>
-          </EmptyHeader>
-          <EmptyContent>
-            <Button onClick={openCreate}>
-              <Plus className="size-4" />
-              {t('employees.add')}
-            </Button>
-          </EmptyContent>
-        </Empty>
-      ) : (
-        <div className="rounded-lg border">
-          <EmployeesTable employees={data} onEdit={openEdit} />
-        </div>
-      )}
+      {content()}
 
       <EmployeeFormDialog
         open={dialogOpen}
@@ -112,5 +93,51 @@ export function EmployeesScreen() {
         employee={editing}
       />
     </div>
+  );
+}
+
+function SkeletonRows() {
+  return (
+    <div className="space-y-2">
+      {Array.from({ length: SKELETON_ROWS }).map((_, i) => (
+        <Skeleton key={i} className="h-12 w-full" />
+      ))}
+    </div>
+  );
+}
+
+function ErrorState({ onRetry }: { onRetry: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <Alert variant="destructive">
+      <AlertTitle>{t('common.error')}</AlertTitle>
+      <AlertDescription>{t('common.errorBody')}</AlertDescription>
+      <AlertAction>
+        <Button variant="outline" size="sm" onClick={onRetry}>
+          {t('common.retry')}
+        </Button>
+      </AlertAction>
+    </Alert>
+  );
+}
+
+function EmptyState({ onCreate }: { onCreate: () => void }) {
+  const { t } = useTranslation();
+  return (
+    <Empty className="border">
+      <EmptyHeader>
+        <EmptyMedia variant="icon">
+          <Users />
+        </EmptyMedia>
+        <EmptyTitle>{t('employees.empty.title')}</EmptyTitle>
+        <EmptyDescription>{t('employees.empty.description')}</EmptyDescription>
+      </EmptyHeader>
+      <EmptyContent>
+        <Button onClick={onCreate}>
+          <Plus className="size-4" />
+          {t('employees.add')}
+        </Button>
+      </EmptyContent>
+    </Empty>
   );
 }
