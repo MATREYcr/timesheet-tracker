@@ -2,6 +2,13 @@
   "name": "@timesheet/web",
   "version": "0.0.1",
   "private": true,
+  "nx": {
+    "targets": {
+      "typecheck": {
+        "command": "tsc --noEmit -p apps/web/tsconfig.json"
+      }
+    }
+  },
   "dependencies": {
     "@tailwindcss/postcss": "^4.3.1",
     "@tanstack/react-query": "^5.101.0",
