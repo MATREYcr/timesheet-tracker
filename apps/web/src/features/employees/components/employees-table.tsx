@@ -1,6 +1,6 @@
 'use client';
 
-import type { Employee } from '@timesheet/shared';
+import { EMPLOYEE_STATUS, type Employee } from '@timesheet/shared';
 import { Pencil, UserCheck, UserX } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
@@ -36,7 +36,7 @@ export function EmployeesTable({ employees, onEdit }: Props) {
     (reactivate.isPending ? reactivate.variables?.id : undefined);
 
   const toggleStatus = async (employee: Employee) => {
-    const isActive = employee.status === 'active';
+    const isActive = employee.status === EMPLOYEE_STATUS.active;
     try {
       if (isActive) {
         await deactivate.mutateAsync(employee);
@@ -66,7 +66,7 @@ export function EmployeesTable({ employees, onEdit }: Props) {
       </TableHeader>
       <TableBody>
         {employees.map((employee) => {
-          const isActive = employee.status === 'active';
+          const isActive = employee.status === EMPLOYEE_STATUS.active;
           return (
             <TableRow key={employee.id}>
               <TableCell className="font-medium">
