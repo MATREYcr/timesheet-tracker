@@ -18,5 +18,47 @@
     "empty": "Nothing here yet.",
     "retry": "Retry",
     "error": "Something went wrong."
+  },
+  "employees": {
+    "title": "Employees",
+    "subtitle": "Manage your hourly employees and their pay rates.",
+    "add": "Add employee",
+    "showInactive": "Show inactive",
+    "columns": {
+      "name": "Name",
+      "rate": "Hourly rate",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "actions": {
+      "edit": "Edit",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate"
+    },
+    "empty": {
+      "title": "No employees yet",
+      "description": "Add your first employee to start tracking time."
+    },
+    "form": {
+      "createTitle": "Add employee",
+      "editTitle": "Edit employee",
+      "createDescription": "Create a new hourly employee.",
+      "editDescription": "Update this employee's details.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "hourlyRate": "Hourly rate",
+      "submitCreate": "Create",
+      "submitEdit": "Save changes"
+    },
+    "toast": {
+      "created": "Employee created.",
+      "updated": "Employee updated.",
+      "deactivated": "Employee deactivated.",
+      "reactivated": "Employee reactivated."
+    }
   }
 }

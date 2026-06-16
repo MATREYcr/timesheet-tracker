@@ -18,5 +18,47 @@
     "empty": "Aún no hay nada.",
     "retry": "Reintentar",
     "error": "Algo salió mal."
+  },
+  "employees": {
+    "title": "Empleados",
+    "subtitle": "Gestiona tus empleados por hora y sus tarifas de pago.",
+    "add": "Agregar empleado",
+    "showInactive": "Mostrar inactivos",
+    "columns": {
+      "name": "Nombre",
+      "rate": "Tarifa por hora",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "actions": {
+      "edit": "Editar",
+      "deactivate": "Desactivar",
+      "reactivate": "Reactivar"
+    },
+    "empty": {
+      "title": "Aún no hay empleados",
+      "description": "Agrega tu primer empleado para empezar a registrar tiempo."
+    },
+    "form": {
+      "createTitle": "Agregar empleado",
+      "editTitle": "Editar empleado",
+      "createDescription": "Crea un nuevo empleado por hora.",
+      "editDescription": "Actualiza los datos de este empleado.",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "hourlyRate": "Tarifa por hora",
+      "submitCreate": "Crear",
+      "submitEdit": "Guardar cambios"
+    },
+    "toast": {
+      "created": "Empleado creado.",
+      "updated": "Empleado actualizado.",
+      "deactivated": "Empleado desactivado.",
+      "reactivated": "Empleado reactivado."
+    }
   }
 }
