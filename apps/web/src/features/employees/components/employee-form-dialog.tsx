@@ -40,12 +40,13 @@ export function EmployeeFormDialog({ open, onOpenChange, employee }: Props) {
   const isEdit = Boolean(employee);
   const create = useCreateEmployee();
   const update = useUpdateEmployee();
+  const isSaving = create.isPending || update.isPending;
 
   const {
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<CreateEmployeeInput>({
     resolver: standardSchemaResolver(createEmployeeSchema),
     defaultValues: EMPTY,
@@ -65,18 +66,19 @@ export function EmployeeFormDialog({ open, onOpenChange, employee }: Props) {
     );
   }, [open, employee, reset]);
 
-  const onSubmit = handleSubmit(async (values) => {
-    try {
-      if (employee) {
-        await update.mutateAsync({ id: employee.id, body: values });
-        toast.success(t('employees.toast.updated'));
-      } else {
-        await create.mutateAsync(values);
-        toast.success(t('employees.toast.created'));
-      }
+  const onSubmit = handleSubmit((values) => {
+    // On error the global handler shows the toast and the dialog stays open
+    // (onSuccess simply doesn't run), so there's nothing to catch here.
+    const onSuccess = () => {
+      toast.success(
+        t(employee ? 'employees.toast.updated' : 'employees.toast.created'),
+      );
       onOpenChange(false);
-    } catch {
-      // Error toast is handled globally; keep the dialog open so the user can retry.
+    };
+    if (employee) {
+      update.mutate({ id: employee.id, body: values }, { onSuccess });
+    } else {
+      create.mutate(values, { onSuccess });
     }
   });
 
@@ -144,7 +146,7 @@ export function EmployeeFormDialog({ open, onOpenChange, employee }: Props) {
             >
               {t('common.cancel')}
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSaving}>
               {t(
                 isEdit
                   ? 'employees.form.submitEdit'

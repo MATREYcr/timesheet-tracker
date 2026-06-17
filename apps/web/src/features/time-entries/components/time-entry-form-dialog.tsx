@@ -44,6 +44,7 @@ export function TimeEntryFormDialog({
   const isEdit = Boolean(entry);
   const create = useCreateTimeEntry();
   const update = useUpdateTimeEntry();
+  const isSaving = create.isPending || update.isPending;
 
   const weekEnd = getWeekEnd(weekStart);
 
@@ -51,7 +52,7 @@ export function TimeEntryFormDialog({
     register,
     handleSubmit,
     reset,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<TimeEntryFormInput>({
     resolver: standardSchemaResolver(timeEntryFormSchema),
   });
@@ -65,18 +66,19 @@ export function TimeEntryFormDialog({
     );
   }, [open, entry, weekStart, reset]);
 
-  const onSubmit = handleSubmit(async (values) => {
-    try {
-      if (entry) {
-        await update.mutateAsync({ id: entry.id, body: values });
-        toast.success(t('timeEntries.toast.updated'));
-      } else {
-        await create.mutateAsync({ employeeId, ...values });
-        toast.success(t('timeEntries.toast.created'));
-      }
+  const onSubmit = handleSubmit((values) => {
+    // On error the global handler shows the toast and the dialog stays open
+    // (onSuccess simply doesn't run), so there's nothing to catch here.
+    const onSuccess = () => {
+      toast.success(
+        t(entry ? 'timeEntries.toast.updated' : 'timeEntries.toast.created'),
+      );
       onOpenChange(false);
-    } catch {
-      // Error toast is handled globally; keep the dialog open so the user can retry.
+    };
+    if (entry) {
+      update.mutate({ id: entry.id, body: values }, { onSuccess });
+    } else {
+      create.mutate({ employeeId, ...values }, { onSuccess });
     }
   });
 
@@ -139,7 +141,7 @@ export function TimeEntryFormDialog({
             >
               {t('common.cancel')}
             </Button>
-            <Button type="submit" disabled={isSubmitting}>
+            <Button type="submit" disabled={isSaving}>
               {t(
                 isEdit
                   ? 'timeEntries.form.submitEdit'
