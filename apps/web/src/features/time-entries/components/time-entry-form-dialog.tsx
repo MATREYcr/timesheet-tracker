@@ -72,8 +72,6 @@ export function TimeEntryFormDialog({
   }, [open, entry, weekStart, reset]);
 
   const onSubmit = handleSubmit((values) => {
-    // On error the global handler shows the toast and the dialog stays open
-    // (onSuccess simply doesn't run), so there's nothing to catch here.
     const onSuccess = () => {
       toast.success(
         t(entry ? 'timeEntries.toast.updated' : 'timeEntries.toast.created'),
