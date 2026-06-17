@@ -32,7 +32,8 @@ apps/web/src/
 └── i18n/                   en/es translations + locale switch
 ```
 
-UI: decent shadcn defaults first (functional), visual polish pass at the end.
+UI: functional shadcn defaults first, then a hi-fi design pass — see
+**Visual design (design system)** below (driven by `docs/design/`).
 
 ## Data layer
 
@@ -79,6 +80,33 @@ UI: decent shadcn defaults first (functional), visual polish pass at the end.
   cache immediately, roll back on error). The status badge reflects the state;
   approved rows offer **Reopen** (reject) so an approval can be undone — consistent
   with the domain rule that rejected weeks reopen for editing.
+
+## Visual design (design system)
+
+The functional UI ships first; this pass elevates it to a hi-fi design. **Source of
+truth: `docs/design/`** — a Claude Design handoff (`README.md` with exact tokens,
+`prototype.dc.html` reference, `screenshots/`) plus `DESIGN_BRIEF.md`. Recreate it
+with our shadcn primitives — never copy the `.dc.html` (it's a design-tool artifact).
+
+- **Theme tokens (`app/global.css`)**: map the handoff tokens onto shadcn's semantic
+  variables for **light + dark**. Accent = **purple** (Monedín brand: `#7c3aed`
+  light / `#9d6bff` dark); neutral zinc palette; `destructive` red. Plus extra
+  semantic tokens consumed by the domain UI: `overtime` (amber), `success` (approved),
+  `destructive-bg/border` (rejected), `subtle` (tertiary text), `primary-soft`
+  (active badge). Exposed via `@theme` so Tailwind utilities resolve them.
+- **Dark mode**: `next-themes` (`.dark` class) with a header theme toggle. No
+  hardcoded colors — semantic tokens only.
+- **Typography**: Geist (already wired). Scale per handoff — `h1` 24/700, section
+  subtitle 14, table headers 11px uppercase tracking in `subtle`, cells 14,
+  total pay 15/700, badges 12/600. Tabular figures for money/hours.
+- **Radii**: cards ~12px, controls (button/input/select) 8px, badges full, dialog 14.
+- **Global shell**: sticky header (logo + app title, a **segmented** nav with an
+  active pill, EN/ES toggle, theme toggle); centered `max-w-5xl` container; each
+  screen = heading + subtitle + toolbar + a **card-wrapped table**.
+- **Status badges**: employee `Active` (primary-soft pill + dot) / `Inactive` (muted);
+  approval `Pending` (muted) / `Approved` (success) / `Rejected` (destructive).
+- **Overtime** renders as an **amber pill** when > 0 — the headline insight.
+- Animations kept subtle (dialog/toast/skeleton shimmer); honor reduced-motion.
 
 ## UX requirements
 

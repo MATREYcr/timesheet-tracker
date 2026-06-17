@@ -114,6 +114,18 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 - [x] **3.9 Frontend test** — Vitest + Testing Library component test asserting the
       weekly summary row renders the shared regular/overtime/pay split. ✓
 
+### UI redesign (hi-fi pass — driven by `docs/design/` handoff)
+
+- [ ] **3.10 Design tokens + theme** — map the handoff tokens onto shadcn semantic
+      vars in `global.css` (light + dark): purple accent, zinc neutrals, plus
+      `overtime`/`success`/`destructive-bg`/`subtle`/`primary-soft`.
+- [ ] **3.11 Dark mode + global shell** — `next-themes` + theme toggle; sticky header
+      with segmented nav (active pill), EN/ES + theme toggles; card-wrapped tables.
+- [ ] **3.12 Screen polish** — match the screenshots: status badges (dot/soft pill),
+      amber overtime pill, table header style, spacing/density, empty/loading/error.
+- [ ] **3.13 Visual QA** — verify each screen in en/es × light/dark against
+      `docs/design/screenshots/`; typecheck + lint + build + test green.
+
 ---
 
 ## Phase 4 — Docs & delivery
