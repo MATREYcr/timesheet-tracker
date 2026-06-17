@@ -20,8 +20,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useCreateTimeEntry, useUpdateTimeEntry } from '../hooks';
 
 interface Props {
@@ -99,23 +104,26 @@ export function TimeEntryFormDialog({
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="date">{t('timeEntries.form.date')}</Label>
+          <FieldGroup className="py-4">
+            <Field data-invalid={!!errors.date}>
+              <FieldLabel htmlFor="date">
+                {t('timeEntries.form.date')}
+              </FieldLabel>
               <Input
                 id="date"
                 type="date"
                 min={weekStart}
                 max={weekEnd}
+                aria-invalid={!!errors.date}
                 {...register('date')}
               />
-              {errors.date && (
-                <p className="text-destructive text-sm">{errors.date.message}</p>
-              )}
-            </div>
+              <FieldError errors={[errors.date]} />
+            </Field>
 
-            <div className="grid gap-2">
-              <Label htmlFor="hours">{t('timeEntries.form.hours')}</Label>
+            <Field data-invalid={!!errors.hours}>
+              <FieldLabel htmlFor="hours">
+                {t('timeEntries.form.hours')}
+              </FieldLabel>
               <Input
                 id="hours"
                 type="number"
@@ -123,15 +131,12 @@ export function TimeEntryFormDialog({
                 min="0.25"
                 max="24"
                 inputMode="decimal"
+                aria-invalid={!!errors.hours}
                 {...register('hours', { valueAsNumber: true })}
               />
-              {errors.hours && (
-                <p className="text-destructive text-sm">
-                  {errors.hours.message}
-                </p>
-              )}
-            </div>
-          </div>
+              <FieldError errors={[errors.hours]} />
+            </Field>
+          </FieldGroup>
 
           <DialogFooter>
             <Button

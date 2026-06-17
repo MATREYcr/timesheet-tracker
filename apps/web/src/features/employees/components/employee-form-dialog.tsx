@@ -19,8 +19,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { useCreateEmployee, useUpdateEmployee } from '../hooks';
 
 interface Props {
@@ -99,44 +104,48 @@ export function EmployeeFormDialog({ open, onOpenChange, employee }: Props) {
             </DialogDescription>
           </DialogHeader>
 
-          <div className="grid gap-4 py-4">
-            <div className="grid gap-2">
-              <Label htmlFor="firstName">{t('employees.form.firstName')}</Label>
-              <Input id="firstName" autoFocus {...register('firstName')} />
-              {errors.firstName && (
-                <p className="text-destructive text-sm">
-                  {errors.firstName.message}
-                </p>
-              )}
-            </div>
+          <FieldGroup className="py-4">
+            <Field data-invalid={!!errors.firstName}>
+              <FieldLabel htmlFor="firstName">
+                {t('employees.form.firstName')}
+              </FieldLabel>
+              <Input
+                id="firstName"
+                autoFocus
+                aria-invalid={!!errors.firstName}
+                {...register('firstName')}
+              />
+              <FieldError errors={[errors.firstName]} />
+            </Field>
 
-            <div className="grid gap-2">
-              <Label htmlFor="lastName">{t('employees.form.lastName')}</Label>
-              <Input id="lastName" {...register('lastName')} />
-              {errors.lastName && (
-                <p className="text-destructive text-sm">
-                  {errors.lastName.message}
-                </p>
-              )}
-            </div>
+            <Field data-invalid={!!errors.lastName}>
+              <FieldLabel htmlFor="lastName">
+                {t('employees.form.lastName')}
+              </FieldLabel>
+              <Input
+                id="lastName"
+                aria-invalid={!!errors.lastName}
+                {...register('lastName')}
+              />
+              <FieldError errors={[errors.lastName]} />
+            </Field>
 
-            <div className="grid gap-2">
-              <Label htmlFor="hourlyRate">{t('employees.form.hourlyRate')}</Label>
+            <Field data-invalid={!!errors.hourlyRate}>
+              <FieldLabel htmlFor="hourlyRate">
+                {t('employees.form.hourlyRate')}
+              </FieldLabel>
               <Input
                 id="hourlyRate"
                 type="number"
                 step="0.01"
                 min="0"
                 inputMode="decimal"
+                aria-invalid={!!errors.hourlyRate}
                 {...register('hourlyRate', { valueAsNumber: true })}
               />
-              {errors.hourlyRate && (
-                <p className="text-destructive text-sm">
-                  {errors.hourlyRate.message}
-                </p>
-              )}
-            </div>
-          </div>
+              <FieldError errors={[errors.hourlyRate]} />
+            </Field>
+          </FieldGroup>
 
           <DialogFooter>
             <Button
