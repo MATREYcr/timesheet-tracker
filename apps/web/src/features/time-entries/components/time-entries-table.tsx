@@ -1,7 +1,6 @@
 'use client';
 
 import type { TimeEntry } from '@timesheet/shared';
-import { Pencil, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import {
@@ -70,24 +69,23 @@ export function TimeEntriesTable({ entries, locked, onEdit }: Props) {
                 {formatHours(entry.hours, locale)}
               </TableCell>
               <TableCell>
-                <div className="flex justify-end gap-1">
+                <div className="flex items-center justify-end gap-2 text-sm">
                   <Button
-                    variant="ghost"
-                    size="sm"
+                    variant="link"
                     disabled={locked || deleting}
+                    className="text-primary h-auto p-0"
                     onClick={() => onEdit(entry)}
                   >
-                    <Pencil className="size-4" />
                     {t('common.edit')}
                   </Button>
+                  <span className="text-border">·</span>
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
                       <Button
-                        variant="ghost"
-                        size="sm"
+                        variant="link"
                         disabled={locked || deleting}
+                        className="text-destructive h-auto p-0"
                       >
-                        <Trash2 className="size-4" />
                         {t('common.delete')}
                       </Button>
                     </AlertDialogTrigger>

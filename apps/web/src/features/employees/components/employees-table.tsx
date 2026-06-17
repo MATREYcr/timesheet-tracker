@@ -1,7 +1,6 @@
 'use client';
 
 import { EMPLOYEE_STATUS, type Employee } from '@timesheet/shared';
-import { Pencil, UserCheck, UserX } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -78,26 +77,21 @@ export function EmployeesTable({ employees, onEdit }: Props) {
                 <EmployeeStatusBadge status={employee.status} />
               </TableCell>
               <TableCell>
-                <div className="flex justify-end gap-1">
+                <div className="flex items-center justify-end gap-2 text-sm">
                   <Button
-                    variant="ghost"
-                    size="sm"
+                    variant="link"
+                    className="text-primary h-auto p-0"
                     onClick={() => onEdit(employee)}
                   >
-                    <Pencil className="size-4" />
                     {t('employees.actions.edit')}
                   </Button>
+                  <span className="text-border">·</span>
                   <Button
-                    variant="ghost"
-                    size="sm"
+                    variant="link"
                     disabled={pendingId === employee.id}
                     onClick={() => toggleStatus(employee)}
+                    className="text-muted-foreground hover:text-foreground h-auto p-0 no-underline hover:no-underline"
                   >
-                    {isActive ? (
-                      <UserX className="size-4" />
-                    ) : (
-                      <UserCheck className="size-4" />
-                    )}
                     {t(
                       isActive
                         ? 'employees.actions.deactivate'

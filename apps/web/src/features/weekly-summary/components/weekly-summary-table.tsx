@@ -5,7 +5,7 @@ import {
   calculateWeeklyPay,
   type WeeklySummaryRow,
 } from '@timesheet/shared';
-import { Check, X } from 'lucide-react';
+import { ChevronUp, Lock } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -85,11 +85,14 @@ export function WeeklySummaryTable({ rows, weekStart }: Props) {
               </TableCell>
               <TableCell className="text-right tabular-nums">
                 {pay.overtimeHours > 0 ? (
-                  <span className="text-amber-600 dark:text-amber-500">
+                  <span className="bg-overtime-bg text-overtime border-overtime-border inline-flex items-center gap-0.5 rounded-full border px-2 py-0.5 text-xs font-bold">
+                    <ChevronUp className="size-3" />
                     {formatHours(pay.overtimeHours, locale)}
                   </span>
                 ) : (
-                  formatHours(pay.overtimeHours, locale)
+                  <span className="text-subtle">
+                    {formatHours(pay.overtimeHours, locale)}
+                  </span>
                 )}
               </TableCell>
               <TableCell className="text-right tabular-nums">
@@ -108,32 +111,42 @@ export function WeeklySummaryTable({ rows, weekStart }: Props) {
                 <ApprovalStatusBadge status={row.status} />
               </TableCell>
               <TableCell>
-                <div className="flex justify-end gap-1">
+                <div className="flex items-center justify-end gap-2">
                   {row.status !== APPROVAL_STATUS.approved && (
                     <Button
-                      variant="ghost"
                       size="sm"
+                      variant="outline"
                       disabled={pending}
                       onClick={() => onApprove(row.employeeId)}
+                      className="bg-success-bg text-success border-success-border hover:bg-success-bg hover:text-success"
                     >
-                      <Check className="size-4" />
                       {t('approval.actions.approve')}
                     </Button>
                   )}
-                  {row.status !== APPROVAL_STATUS.rejected && (
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      disabled={pending}
-                      onClick={() => onReject(row.employeeId)}
-                    >
-                      <X className="size-4" />
-                      {t(
-                        row.status === APPROVAL_STATUS.approved
-                          ? 'approval.actions.reopen'
-                          : 'approval.actions.reject',
-                      )}
-                    </Button>
+                  {row.status === APPROVAL_STATUS.approved ? (
+                    <span className="flex items-center gap-1.5">
+                      <Lock className="text-subtle size-3.5" />
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        disabled={pending}
+                        onClick={() => onReject(row.employeeId)}
+                      >
+                        {t('approval.actions.reopen')}
+                      </Button>
+                    </span>
+                  ) : (
+                    row.status !== APPROVAL_STATUS.rejected && (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        disabled={pending}
+                        onClick={() => onReject(row.employeeId)}
+                        className="text-muted-foreground hover:text-destructive"
+                      >
+                        {t('approval.actions.reject')}
+                      </Button>
+                    )
                   )}
                 </div>
               </TableCell>

@@ -67,7 +67,7 @@ export function WeeklySummaryScreen() {
           </EmptyHeader>
         </Empty>
       ) : (
-        <div className="rounded-lg border">
+        <div className="bg-card overflow-hidden rounded-xl border shadow-sm">
           <WeeklySummaryTable rows={data} weekStart={weekStart} />
         </div>
       )}

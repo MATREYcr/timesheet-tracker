@@ -142,7 +142,7 @@ export function TimeEntriesScreen() {
           </EmptyHeader>
         </Empty>
       ) : (
-        <div className="rounded-lg border">
+        <div className="bg-card overflow-hidden rounded-xl border shadow-sm">
           <TimeEntriesTable
             entries={entries.data}
             locked={isLocked}

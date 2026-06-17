@@ -116,13 +116,13 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 
 ### UI redesign (hi-fi pass — driven by `docs/design/` handoff)
 
-- [ ] **3.10 Design tokens + theme** — map the handoff tokens onto shadcn semantic
+- [x] **3.10 Design tokens + theme** — mapped the handoff tokens onto shadcn semantic
       vars in `global.css` (light + dark): purple accent, zinc neutrals, plus
-      `overtime`/`success`/`destructive-bg`/`subtle`/`primary-soft`.
-- [ ] **3.11 Dark mode + global shell** — `next-themes` + theme toggle; sticky header
-      with segmented nav (active pill), EN/ES + theme toggles; card-wrapped tables.
-- [ ] **3.12 Screen polish** — match the screenshots: status badges (dot/soft pill),
-      amber overtime pill, table header style, spacing/density, empty/loading/error.
+      `overtime`/`success`/`destructive-bg`/`subtle`/`primary-soft`. ✓
+- [x] **3.11 Dark mode + global shell** — `next-themes` + theme toggle; sticky header
+      with segmented nav (active pill), EN/ES + theme toggles; card-wrapped tables. ✓
+- [x] **3.12 Screen polish** — status badges (dot/soft pill), amber overtime pill,
+      table header style, card tables, link-style row actions, week picker group. ✓
 - [ ] **3.13 Visual QA** — verify each screen in en/es × light/dark against
       `docs/design/screenshots/`; typecheck + lint + build + test green.
 

@@ -8,6 +8,9 @@
     "timeEntries": "Registros de tiempo",
     "weeklySummary": "Resumen semanal"
   },
+  "theme": {
+    "toggle": "Cambiar tema"
+  },
   "common": {
     "add": "Agregar",
     "edit": "Editar",

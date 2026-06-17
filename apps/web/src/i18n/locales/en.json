@@ -8,6 +8,9 @@
     "timeEntries": "Time entries",
     "weeklySummary": "Weekly summary"
   },
+  "theme": {
+    "toggle": "Toggle theme"
+  },
   "common": {
     "add": "Add",
     "edit": "Edit",

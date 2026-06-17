@@ -107,7 +107,7 @@ export function EmployeesScreen() {
           </EmptyContent>
         </Empty>
       ) : (
-        <div className="rounded-lg border">
+        <div className="bg-card overflow-hidden rounded-xl border shadow-sm">
           <EmployeesTable employees={data} onEdit={openEdit} />
         </div>
       )}
