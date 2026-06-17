@@ -98,17 +98,21 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
       Expo app) with `locales/en.json`/`es.json`, typed keys via i18next module
       augmentation, `LanguageDetector` (localStorage), `LocaleSwitch`. Provider syncs
       `setApiLocale` so API errors match the UI locale. ✓
-- [ ] **3.4 Employees screen** — list + show-inactive toggle + create/edit dialog
-      (shared Zod via react-hook-form) + deactivate/reactivate.
-- [ ] **3.5 Time-entries screen** — employee selector + list + log/edit/delete;
-      entries in approved weeks are read-only.
-- [ ] **3.6 Weekly-summary screen (core)** — week picker, per-employee
-      regular/overtime/pay (shared calc), approve/reject, locked state.
-- [ ] **3.7 Loading/error states** — every async view has skeleton/spinner + envelope
-      error display.
-- [ ] **3.8 Optimistic updates** — approve/reject + quick mutations update cache
-      immediately, roll back on error.
-- [ ] **3.9 Frontend test** — one meaningful component/hook test.
+- [x] **3.4 Employees screen** — list + show-inactive toggle + create/edit dialog
+      (shared Zod via react-hook-form + standardSchemaResolver) + deactivate/reactivate.
+      Per-row pending, global mutation error toasts, shadcn Field forms. ✓
+- [x] **3.5 Time-entries screen** — employee selector + week picker + log/edit/delete;
+      approved weeks render read-only (lock via new `GET /weekly-summary/approval`),
+      inactive employees viewable but not editable; delete behind a confirm. ✓
+- [x] **3.6 Weekly-summary screen (core)** — week picker, per-employee
+      regular/overtime/pay derived client-side via `calculateWeeklyPay`, approve/reject
+      with optimistic updates + reopen, locked state. ✓
+- [x] **3.7 Loading/error states** — every async view has skeleton + envelope error
+      (Alert + retry) + empty state (shadcn Empty). ✓
+- [x] **3.8 Optimistic updates** — approve/reject flip the cached row immediately and
+      roll back on error; invalidate the time-entry lock state. ✓
+- [x] **3.9 Frontend test** — Vitest + Testing Library component test asserting the
+      weekly summary row renders the shared regular/overtime/pay split. ✓
 
 ---
 
