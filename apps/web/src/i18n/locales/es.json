@@ -109,5 +109,38 @@
       "updated": "Registro actualizado.",
       "deleted": "Registro eliminado."
     }
+  },
+  "weeklySummary": {
+    "title": "Resumen semanal",
+    "subtitle": "Horas normales vs extra y pago por empleado, por semana.",
+    "columns": {
+      "employee": "Empleado",
+      "regularHours": "H. normales",
+      "overtimeHours": "H. extra",
+      "totalHours": "H. totales",
+      "pay": "Pago",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "empty": {
+      "title": "Sin horas esta semana",
+      "description": "Ningún empleado ha registrado tiempo para esta semana."
+    }
+  },
+  "approval": {
+    "status": {
+      "pending": "Pendiente",
+      "approved": "Aprobada",
+      "rejected": "Rechazada"
+    },
+    "actions": {
+      "approve": "Aprobar",
+      "reject": "Rechazar",
+      "reopen": "Reabrir"
+    },
+    "toast": {
+      "approved": "Semana aprobada.",
+      "rejected": "Semana rechazada."
+    }
   }
 }

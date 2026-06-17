@@ -109,5 +109,38 @@
       "updated": "Entry updated.",
       "deleted": "Entry deleted."
     }
+  },
+  "weeklySummary": {
+    "title": "Weekly summary",
+    "subtitle": "Regular vs overtime hours and pay per employee, by week.",
+    "columns": {
+      "employee": "Employee",
+      "regularHours": "Regular h",
+      "overtimeHours": "Overtime h",
+      "totalHours": "Total h",
+      "pay": "Pay",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No hours this week",
+      "description": "No employee has logged time for this week yet."
+    }
+  },
+  "approval": {
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject",
+      "reopen": "Reopen"
+    },
+    "toast": {
+      "approved": "Week approved.",
+      "rejected": "Week rejected."
+    }
   }
 }

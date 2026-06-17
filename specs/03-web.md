@@ -75,7 +75,10 @@ UI: decent shadcn defaults first (functional), visual polish pass at the end.
   (`regular + overtime = total`). The client computes the pay — not the API.
 - Monetary values formatted with `Intl.NumberFormat` for the active locale
   (en → `$1,085.63`, es → `$1.085,63`).
-- Pending/rejected rows show Approve / Reject; approved rows show a locked indicator.
+- Approve / Reject per row, with **optimistic updates** (flip the row status in the
+  cache immediately, roll back on error). The status badge reflects the state;
+  approved rows offer **Reopen** (reject) so an approval can be undone — consistent
+  with the domain rule that rejected weeks reopen for editing.
 
 ## UX requirements
 
