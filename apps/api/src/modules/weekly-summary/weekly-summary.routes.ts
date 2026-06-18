@@ -1,16 +1,22 @@
-import { weekStartSchema, weeklyApprovalActionSchema } from '@timesheet/shared';
+import {
+  paginationQuerySchema,
+  weekStartSchema,
+  weeklyApprovalActionSchema,
+} from '@timesheet/shared';
 import { Hono } from 'hono';
 import { z } from 'zod';
 import type { AppEnv } from '../../common/types.js';
 import { validate } from '../../middleware/validate.js';
 import * as service from './weekly-summary.service.js';
 
-const summaryQuery = z.object({ weekStart: weekStartSchema });
+const summaryQuery = z
+  .object({ weekStart: weekStartSchema })
+  .extend(paginationQuerySchema.shape);
 
 export const weeklySummaryRoutes = new Hono<AppEnv>()
   .get('/', validate('query', summaryQuery), async (c) => {
-    const { weekStart } = c.req.valid('query');
-    return c.json(await service.getWeeklySummary(weekStart));
+    const { weekStart, page, pageSize } = c.req.valid('query');
+    return c.json(await service.getWeeklySummary(weekStart, { page, pageSize }));
   })
   // Approval status for one (employee, week) — the web uses it to lock entries.
   .get('/approval', validate('query', weeklyApprovalActionSchema), async (c) => {

@@ -1,6 +1,7 @@
 import {
   createEmployeeSchema,
   employeeIdSchema,
+  paginationQuerySchema,
   updateEmployeeSchema,
 } from '@timesheet/shared';
 import { Hono } from 'hono';
@@ -10,14 +11,16 @@ import { validate } from '../../middleware/validate.js';
 import * as service from './employees.service.js';
 
 const idParam = z.object({ id: employeeIdSchema });
-const listQuery = z.object({
-  includeInactive: z.stringbool().optional().default(false),
-});
+const listQuery = z
+  .object({ includeInactive: z.stringbool().optional().default(false) })
+  .extend(paginationQuerySchema.shape);
 
 export const employeesRoutes = new Hono<AppEnv>()
   .get('/', validate('query', listQuery), async (c) => {
-    const { includeInactive } = c.req.valid('query');
-    return c.json(await service.listEmployees(includeInactive));
+    const { includeInactive, page, pageSize } = c.req.valid('query');
+    return c.json(
+      await service.listEmployees(includeInactive, { page, pageSize }),
+    );
   })
   .post('/', validate('json', createEmployeeSchema), async (c) => {
     const created = await service.createEmployee(c.req.valid('json'));

@@ -3,12 +3,15 @@
 
 import {
   APPROVAL_STATUS,
+  buildPaginated,
   getWeekEnd,
   type ApprovalStatus,
+  type Paginated,
+  type PaginationQuery,
   type WeekApprovalStatus,
   type WeeklySummaryRow,
 } from '@timesheet/shared';
-import { and, asc, eq, gte, lte, sql } from 'drizzle-orm';
+import { and, asc, countDistinct, eq, gte, lte, sql } from 'drizzle-orm';
 import { AppError } from '../../common/errors.js';
 import { db } from '../../db/client.js';
 import {
@@ -22,8 +25,19 @@ export type WeeklyApprovalResult = WeekApprovalStatus;
 
 export async function getWeeklySummary(
   weekStart: string,
-): Promise<WeeklySummaryRow[]> {
+  { page, pageSize }: PaginationQuery,
+): Promise<Paginated<WeeklySummaryRow>> {
   const weekEnd = getWeekEnd(weekStart);
+  const inWeek = and(
+    gte(timeEntries.date, weekStart),
+    lte(timeEntries.date, weekEnd),
+  );
+
+  // One row per employee with ≥1 entry that week → count distinct employees.
+  const [{ total }] = await db
+    .select({ total: countDistinct(timeEntries.employeeId) })
+    .from(timeEntries)
+    .where(inWeek);
 
   const rows = await db
     .select({
@@ -43,14 +57,15 @@ export async function getWeeklySummary(
         eq(weeklyApprovals.weekStart, weekStart),
       ),
     )
-    .where(
-      and(gte(timeEntries.date, weekStart), lte(timeEntries.date, weekEnd)),
-    )
+    .where(inWeek)
     .groupBy(employees.id, weeklyApprovals.status)
-    .orderBy(asc(employees.firstName), asc(employees.lastName));
+    .orderBy(asc(employees.firstName), asc(employees.lastName))
+    .limit(pageSize)
+    .offset((page - 1) * pageSize);
 
   // sum() comes back as a string from Postgres numeric — normalize to number.
-  return rows.map((row) => ({ ...row, totalHours: Number(row.totalHours) }));
+  const data = rows.map((row) => ({ ...row, totalHours: Number(row.totalHours) }));
+  return buildPaginated(data, total, page, pageSize);
 }
 
 export async function getApprovalStatus(

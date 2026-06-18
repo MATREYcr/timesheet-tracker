@@ -130,8 +130,8 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 
 - [x] **3.14 Contract** — `shared`: `Paginated<T>`, `paginationQuerySchema`
       (`page`/`pageSize`), `buildPaginated` helper; spec the envelope (02-api, 03-web). ✓
-- [ ] **3.15 API** — `/employees` and `/weekly-summary` accept `page`/`pageSize`,
-      return `Paginated<T>` (limit/offset + count); integration test updated.
+- [x] **3.15 API** — `/employees` and `/weekly-summary` accept `page`/`pageSize`,
+      return `Paginated<T>` (limit/offset + count); integration test updated. ✓
 - [ ] **3.16 Web** — feature `api.ts` consumes the envelope; hooks use
       `keepPreviousData`; shadcn `Pagination` in the card footer. Time entries unchanged.
 

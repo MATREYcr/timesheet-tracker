@@ -2,6 +2,7 @@
 // app.request() (CI provides the DB).
 
 import type {
+  Paginated,
   TimeEntry,
   WeekApprovalStatus,
   WeeklySummaryRow,
@@ -117,15 +118,16 @@ describe('approval locking flow (integration)', () => {
   it('returns the raw weekly aggregate (no pay computed by the API)', async () => {
     const res = await app.request(`/weekly-summary?weekStart=${WEEK_START}`);
     expect(res.status).toBe(200);
-    const rows = await body<WeeklySummaryRow[]>(res);
-    expect(rows).toHaveLength(1);
-    expect(rows[0]).toMatchObject({
+    const summary = await body<Paginated<WeeklySummaryRow>>(res);
+    expect(summary.total).toBe(1);
+    expect(summary.data).toHaveLength(1);
+    expect(summary.data[0]).toMatchObject({
       employeeId,
       hourlyRate: 20,
       totalHours: 6,
       status: 'rejected',
     });
-    expect(rows[0]).not.toHaveProperty('totalPay');
+    expect(summary.data[0]).not.toHaveProperty('totalPay');
   });
 
   it('exposes the approval status for an (employee, week)', async () => {
