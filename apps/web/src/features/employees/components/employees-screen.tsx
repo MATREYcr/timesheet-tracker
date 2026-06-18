@@ -51,7 +51,7 @@ export function EmployeesScreen() {
   };
 
   return (
-    <div className="flex h-full min-h-0 flex-col gap-6">
+    <div className="space-y-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
@@ -115,12 +115,8 @@ export function EmployeesScreen() {
           </EmptyContent>
         </Empty>
       ) : (
-        <div className="bg-card flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border shadow-sm">
-          <EmployeesTable
-            employees={data.data}
-            onEdit={openEdit}
-            containerClassName="min-h-0 flex-1 overflow-auto"
-          />
+        <div className="bg-card overflow-hidden rounded-xl border shadow-sm">
+          <EmployeesTable employees={data.data} onEdit={openEdit} />
           <TablePagination
             page={data.page}
             totalPages={data.totalPages}

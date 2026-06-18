@@ -20,14 +20,9 @@ import { EmployeeStatusBadge } from './employee-status-badge';
 interface Props {
   employees: Employee[];
   onEdit: (employee: Employee) => void;
-  containerClassName?: string;
 }
 
-export function EmployeesTable({
-  employees,
-  onEdit,
-  containerClassName,
-}: Props) {
+export function EmployeesTable({ employees, onEdit }: Props) {
   const { t } = useTranslation();
   const locale = useLocale();
   const deactivate = useDeactivateEmployee();
@@ -54,7 +49,7 @@ export function EmployeesTable({
   };
 
   return (
-    <Table aria-label={t('employees.title')} containerClassName={containerClassName}>
+    <Table aria-label={t('employees.title')}>
       <TableHeader>
         <TableRow>
           <TableHead>{t('employees.columns.name')}</TableHead>

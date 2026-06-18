@@ -19,14 +19,8 @@ export function Providers({ children }: { children: ReactNode }) {
         disableTransitionOnChange
       >
         <I18nProvider>
-          <div className="flex h-dvh flex-col overflow-hidden">
-            <SiteHeader />
-            <main className="flex-1 overflow-hidden">
-              <div className="mx-auto flex h-full max-w-5xl flex-col px-6 py-8">
-                {children}
-              </div>
-            </main>
-          </div>
+          <SiteHeader />
+          <main className="mx-auto max-w-5xl px-6 py-8">{children}</main>
           <Toaster richColors />
         </I18nProvider>
       </ThemeProvider>
