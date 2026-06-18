@@ -126,6 +126,15 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 - [ ] **3.13 Visual QA** — verify each screen in en/es × light/dark against
       `docs/design/screenshots/`; typecheck + lint + build + test green.
 
+### Server-side pagination (Employees + Weekly summary)
+
+- [x] **3.14 Contract** — `shared`: `Paginated<T>`, `paginationQuerySchema`
+      (`page`/`pageSize`), `buildPaginated` helper; spec the envelope (02-api, 03-web). ✓
+- [ ] **3.15 API** — `/employees` and `/weekly-summary` accept `page`/`pageSize`,
+      return `Paginated<T>` (limit/offset + count); integration test updated.
+- [ ] **3.16 Web** — feature `api.ts` consumes the envelope; hooks use
+      `keepPreviousData`; shadcn `Pagination` in the card footer. Time entries unchanged.
+
 ---
 
 ## Phase 4 — Docs & delivery

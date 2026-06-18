@@ -70,6 +70,15 @@ export interface WeekApprovalStatus {
   status: ApprovalStatus;
 }
 
+/** Standard envelope for paginated list endpoints. `page` is 1-based. */
+export interface Paginated<T> {
+  data: T[];
+  page: number;
+  pageSize: number;
+  total: number;
+  totalPages: number;
+}
+
 /**
  * Raw per-employee aggregate the API returns for a week. The API does NOT
  * compute pay — the web client derives it via `calculateWeeklyPay`.

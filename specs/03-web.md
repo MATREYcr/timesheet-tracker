@@ -116,6 +116,11 @@ with our shadcn primitives — never copy the `.dc.html` (it's a design-tool art
   the cache immediately, roll back on error.
 - **i18n** (bonus): all user-facing strings in en/es translation files, with a
   locale switch; the `Accept-Language` header follows the active locale.
+- **Pagination**: server-side on **Employees** and **Weekly summary** (the lists
+  that grow) — `page`/`pageSize` query params, the `Paginated<T>` envelope, a
+  shadcn `Pagination` control in the card footer, and TanStack Query
+  `placeholderData: keepPreviousData` so the table doesn't flash between pages.
+  **Time entries** is not paginated (bounded to one employee/week).
 
 ## Frontend test (bonus)
 

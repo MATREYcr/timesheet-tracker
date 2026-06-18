@@ -76,7 +76,7 @@ so the app is usable immediately after setup.
 
 | Method | Path                                   | Notes                                  |
 | ------ | -------------------------------------- | -------------------------------------- |
-| GET    | `/employees?includeInactive=bool`      | Inactive hidden unless flag set        |
+| GET    | `/employees?includeInactive=bool&page=&pageSize=` | Inactive hidden unless flag set; **paginated** |
 | POST   | `/employees`                           | Validates via shared schema            |
 | PATCH  | `/employees/:id`                       | Edit name/rate                         |
 | POST   | `/employees/:id/deactivate`            | Sets `deactivatedAt` (soft delete)     |
@@ -85,18 +85,34 @@ so the app is usable immediately after setup.
 | POST   | `/time-entries`                        | Full validation (see below)            |
 | PATCH  | `/time-entries/:id`                    | Blocked if week approved               |
 | DELETE | `/time-entries/:id`                    | Blocked if week approved               |
-| GET    | `/weekly-summary?weekStart=`           | Raw aggregate per employee (see below) |
+| GET    | `/weekly-summary?weekStart=&page=&pageSize=` | Raw aggregate per employee (see below); **paginated** |
 | GET    | `/weekly-summary/approval?employeeId=&weekStart=` | Status of one (employee, week); `pending` if no row, 404 if employee missing |
 | POST   | `/weekly-summary/approve`              | `{ employeeId, weekStart }`            |
 | POST   | `/weekly-summary/reject`               | `{ employeeId, weekStart }`            |
 
+## Pagination
+
+List endpoints that can grow are **paginated server-side** (`/employees`,
+`/weekly-summary`). Query: `page` (1-based, default 1) + `pageSize` (default 10,
+max 100), validated by `paginationQuerySchema` from `shared`. Response is the
+`Paginated<T>` envelope:
+
+```json
+{ "data": [ ... ], "page": 1, "pageSize": 10, "total": 42, "totalPages": 5 }
+```
+
+`page`/`pageSize` echo the request; `total` is the full row count (pre-pagination)
+so the client can render a pager. `/time-entries` is **not** paginated — it is
+already bounded to one (employee, week) (≤ 7 rows).
+
 ## Weekly summary response (raw — client computes pay)
 
-`GET /weekly-summary?weekStart=` returns one row per employee with **≥1 time entry
-in that week** (active or inactive, so inactive employees' historical weeks stay
-visible). Each row: `{ employeeId, firstName, lastName, hourlyRate, totalHours,
-status }`. The API does **not** compute pay or the regular/overtime split — the web
-client derives those with `calculateWeeklyPay` from `shared`.
+`GET /weekly-summary?weekStart=` returns a `Paginated<WeeklySummaryRow>` — one row
+per employee with **≥1 time entry in that week** (active or inactive, so inactive
+employees' historical weeks stay visible). Each row: `{ employeeId, firstName,
+lastName, hourlyRate, totalHours, status }`. The API does **not** compute pay or the
+regular/overtime split — the web client derives those with `calculateWeeklyPay`
+from `shared`.
 
 `GET /weekly-summary/approval?employeeId=&weekStart=` returns `{ employeeId,
 weekStart, status }` (`WeekApprovalStatus`) for a single employee/week — `pending`

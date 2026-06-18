@@ -82,6 +82,15 @@ export const weeklyApprovalActionSchema = z.object({
   weekStart: weekStartSchema,
 });
 
+/**
+ * Pagination query for list endpoints. `page` is 1-based. Values arrive as query
+ * strings, so they're coerced; both have sane defaults and bounds.
+ */
+export const paginationQuerySchema = z.object({
+  page: z.coerce.number().int().min(1).default(1),
+  pageSize: z.coerce.number().int().min(1).max(100).default(10),
+});
+
 export type CreateEmployeeInput = z.infer<typeof createEmployeeSchema>;
 export type UpdateEmployeeInput = z.infer<typeof updateEmployeeSchema>;
 export type CreateTimeEntryInput = z.infer<typeof createTimeEntrySchema>;
@@ -90,3 +99,4 @@ export type TimeEntryFormInput = z.infer<typeof timeEntryFormSchema>;
 export type WeeklyApprovalActionInput = z.infer<
   typeof weeklyApprovalActionSchema
 >;
+export type PaginationQuery = z.infer<typeof paginationQuerySchema>;
