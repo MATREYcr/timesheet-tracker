@@ -1,10 +1,16 @@
-import type { WeekApprovalStatus, WeeklySummaryRow } from '@timesheet/shared';
+import type {
+  Paginated,
+  WeekApprovalStatus,
+  WeeklySummaryRow,
+} from '@timesheet/shared';
 import { http } from '@/lib/http';
 
 export const weeklySummaryApi = {
-  get: (weekStart: string) =>
+  get: (weekStart: string, page: number, pageSize: number) =>
     http
-      .get<WeeklySummaryRow[]>('/weekly-summary', { params: { weekStart } })
+      .get<Paginated<WeeklySummaryRow>>('/weekly-summary', {
+        params: { weekStart, page, pageSize },
+      })
       .then((r) => r.data),
   getApproval: (employeeId: string, weekStart: string) =>
     http

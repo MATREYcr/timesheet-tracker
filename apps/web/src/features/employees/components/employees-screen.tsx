@@ -22,6 +22,7 @@ import {
 import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Switch } from '@/components/ui/switch';
+import { TablePagination } from '@/components/table-pagination';
 import { useEmployees } from '../hooks';
 import { EmployeeFormDialog } from './employee-form-dialog';
 import { EmployeesTable } from './employees-table';
@@ -31,10 +32,14 @@ const SKELETON_ROWS = 4;
 export function EmployeesScreen() {
   const { t } = useTranslation();
   const [includeInactive, setIncludeInactive] = useState(false);
+  const [page, setPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Employee | undefined>(undefined);
 
-  const { data, isPending, isError, refetch } = useEmployees(includeInactive);
+  const { data, isPending, isError, refetch } = useEmployees(
+    includeInactive,
+    page,
+  );
 
   const openCreate = () => {
     setEditing(undefined);
@@ -61,7 +66,10 @@ export function EmployeesScreen() {
             <Switch
               id="show-inactive"
               checked={includeInactive}
-              onCheckedChange={setIncludeInactive}
+              onCheckedChange={(checked) => {
+                setIncludeInactive(checked);
+                setPage(1);
+              }}
             />
             <Label htmlFor="show-inactive">{t('employees.showInactive')}</Label>
           </div>
@@ -88,7 +96,7 @@ export function EmployeesScreen() {
             </Button>
           </AlertAction>
         </Alert>
-      ) : data.length === 0 ? (
+      ) : data.data.length === 0 ? (
         <Empty className="border">
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -108,7 +116,12 @@ export function EmployeesScreen() {
         </Empty>
       ) : (
         <div className="bg-card overflow-hidden rounded-xl border shadow-sm">
-          <EmployeesTable employees={data} onEdit={openEdit} />
+          <EmployeesTable employees={data.data} onEdit={openEdit} />
+          <TablePagination
+            page={data.page}
+            totalPages={data.totalPages}
+            onPageChange={setPage}
+          />
         </div>
       )}
 

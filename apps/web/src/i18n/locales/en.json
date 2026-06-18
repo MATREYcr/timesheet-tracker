@@ -11,6 +11,11 @@
   "theme": {
     "toggle": "Toggle theme"
   },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {{page}} of {{total}}"
+  },
   "common": {
     "add": "Add",
     "edit": "Edit",

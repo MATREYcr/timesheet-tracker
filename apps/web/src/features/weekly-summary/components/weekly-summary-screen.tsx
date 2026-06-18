@@ -15,6 +15,7 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
+import { TablePagination } from '@/components/table-pagination';
 import { useWeeklySummary } from '../hooks';
 import { WeeklySummaryTable } from './weekly-summary-table';
 
@@ -23,7 +24,16 @@ const SKELETON_ROWS = 4;
 export function WeeklySummaryScreen() {
   const { t } = useTranslation();
   const [weekStart, setWeekStart] = useState(getCurrentWeekStart);
-  const { data, isPending, isError, refetch } = useWeeklySummary(weekStart);
+  const [page, setPage] = useState(1);
+  const { data, isPending, isError, refetch } = useWeeklySummary(
+    weekStart,
+    page,
+  );
+
+  const changeWeek = (next: string) => {
+    setWeekStart(next);
+    setPage(1);
+  };
 
   return (
     <div className="space-y-6">
@@ -36,7 +46,7 @@ export function WeeklySummaryScreen() {
             {t('weeklySummary.subtitle')}
           </p>
         </div>
-        <WeekPicker weekStart={weekStart} onChange={setWeekStart} />
+        <WeekPicker weekStart={weekStart} onChange={changeWeek} />
       </div>
 
       {isPending ? (
@@ -54,7 +64,7 @@ export function WeeklySummaryScreen() {
             </Button>
           </AlertDescription>
         </Alert>
-      ) : data.length === 0 ? (
+      ) : data.data.length === 0 ? (
         <Empty className="border">
           <EmptyHeader>
             <EmptyMedia variant="icon">
@@ -68,7 +78,12 @@ export function WeeklySummaryScreen() {
         </Empty>
       ) : (
         <div className="bg-card overflow-hidden rounded-xl border shadow-sm">
-          <WeeklySummaryTable rows={data} weekStart={weekStart} />
+          <WeeklySummaryTable rows={data.data} weekStart={weekStart} />
+          <TablePagination
+            page={data.page}
+            totalPages={data.totalPages}
+            onPageChange={setPage}
+          />
         </div>
       )}
     </div>

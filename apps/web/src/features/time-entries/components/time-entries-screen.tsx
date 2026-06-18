@@ -35,11 +35,13 @@ export function TimeEntriesScreen() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<TimeEntry | undefined>(undefined);
 
-  const employees = useEmployees(true);
+  // The selector needs the whole roster (incl. inactive), not a page.
+  const employees = useEmployees(true, 1, 100);
   const entries = useTimeEntries(employeeId, weekStart);
   const approval = useWeekApproval(employeeId, weekStart);
 
-  const selected = employees.data?.find((e) => e.id === employeeId);
+  const roster = employees.data?.data ?? [];
+  const selected = roster.find((e) => e.id === employeeId);
   const isInactive = selected?.status === EMPLOYEE_STATUS.inactive;
   const isLocked = approval.data?.status === APPROVAL_STATUS.approved;
   const canAdd = Boolean(employeeId) && !isInactive && !isLocked;
@@ -66,7 +68,7 @@ export function TimeEntriesScreen() {
 
       <div className="flex flex-wrap items-center justify-between gap-4">
         <EmployeeSelect
-          employees={employees.data ?? []}
+          employees={roster}
           value={employeeId}
           onChange={setEmployeeId}
         />

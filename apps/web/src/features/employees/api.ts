@@ -1,14 +1,17 @@
 import type {
   CreateEmployeeInput,
   Employee,
+  Paginated,
   UpdateEmployeeInput,
 } from '@timesheet/shared';
 import { http } from '@/lib/http';
 
 export const employeesApi = {
-  list: (includeInactive: boolean) =>
+  list: (includeInactive: boolean, page: number, pageSize: number) =>
     http
-      .get<Employee[]>('/employees', { params: { includeInactive } })
+      .get<Paginated<Employee>>('/employees', {
+        params: { includeInactive, page, pageSize },
+      })
       .then((r) => r.data),
   create: (body: CreateEmployeeInput) =>
     http.post<Employee>('/employees', body).then((r) => r.data),

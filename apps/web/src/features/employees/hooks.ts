@@ -6,6 +6,7 @@ import type {
   UpdateEmployeeInput,
 } from '@timesheet/shared';
 import {
+  keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
@@ -14,14 +15,19 @@ import { employeesApi } from './api';
 
 export const employeeKeys = {
   all: ['employees'] as const,
-  list: (includeInactive: boolean) =>
-    [...employeeKeys.all, { includeInactive }] as const,
+  list: (includeInactive: boolean, page: number, pageSize: number) =>
+    [...employeeKeys.all, { includeInactive, page, pageSize }] as const,
 };
 
-export function useEmployees(includeInactive: boolean) {
+export function useEmployees(
+  includeInactive: boolean,
+  page = 1,
+  pageSize = 10,
+) {
   return useQuery({
-    queryKey: employeeKeys.list(includeInactive),
-    queryFn: () => employeesApi.list(includeInactive),
+    queryKey: employeeKeys.list(includeInactive, page, pageSize),
+    queryFn: () => employeesApi.list(includeInactive, page, pageSize),
+    placeholderData: keepPreviousData,
   });
 }
 

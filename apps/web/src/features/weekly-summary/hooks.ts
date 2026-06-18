@@ -3,21 +3,30 @@
 import {
   APPROVAL_STATUS,
   type ApprovalStatus,
+  type Paginated,
   type WeeklySummaryRow,
 } from '@timesheet/shared';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import { weekApprovalKeys } from '../time-entries/hooks';
 import { weeklySummaryApi } from './api';
 
 export const weeklySummaryKeys = {
   all: ['weekly-summary'] as const,
   week: (weekStart: string) => [...weeklySummaryKeys.all, weekStart] as const,
+  page: (weekStart: string, page: number, pageSize: number) =>
+    [...weeklySummaryKeys.week(weekStart), { page, pageSize }] as const,
 };
 
-export function useWeeklySummary(weekStart: string) {
+export function useWeeklySummary(weekStart: string, page = 1, pageSize = 10) {
   return useQuery({
-    queryKey: weeklySummaryKeys.week(weekStart),
-    queryFn: () => weeklySummaryApi.get(weekStart),
+    queryKey: weeklySummaryKeys.page(weekStart, page, pageSize),
+    queryFn: () => weeklySummaryApi.get(weekStart, page, pageSize),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -26,9 +35,11 @@ interface ApprovalVars {
   weekStart: string;
 }
 
-// Approve and reject share the optimistic flow: flip the row's status in the
-// cache immediately, roll back on error (the global handler shows the toast),
-// then revalidate the week and the time-entry lock state.
+type SummaryPage = Paginated<WeeklySummaryRow>;
+
+// Approve and reject share the optimistic flow: flip the row's status in every
+// cached page of that week, roll back on error (the global handler shows the
+// toast), then revalidate the week and the time-entry lock state.
 function useSetApproval(
   mutationFn: (employeeId: string, weekStart: string) => Promise<unknown>,
   optimisticStatus: ApprovalStatus,
@@ -40,23 +51,23 @@ function useSetApproval(
     onMutate: async ({ employeeId, weekStart }) => {
       const key = weeklySummaryKeys.week(weekStart);
       await qc.cancelQueries({ queryKey: key });
-      const previous = qc.getQueryData<WeeklySummaryRow[]>(key);
-      qc.setQueryData<WeeklySummaryRow[]>(key, (rows) =>
-        rows?.map((row) =>
-          row.employeeId === employeeId
-            ? { ...row, status: optimisticStatus }
-            : row,
-        ),
+      const previous = qc.getQueriesData<SummaryPage>({ queryKey: key });
+      qc.setQueriesData<SummaryPage>({ queryKey: key }, (current) =>
+        current
+          ? {
+              ...current,
+              data: current.data.map((row) =>
+                row.employeeId === employeeId
+                  ? { ...row, status: optimisticStatus }
+                  : row,
+              ),
+            }
+          : current,
       );
-      return { previous, weekStart };
+      return { previous };
     },
     onError: (_error, _vars, context) => {
-      if (context?.previous) {
-        qc.setQueryData(
-          weeklySummaryKeys.week(context.weekStart),
-          context.previous,
-        );
-      }
+      context?.previous?.forEach(([key, data]) => qc.setQueryData(key, data));
     },
     onSettled: (_data, _error, { weekStart }) => {
       qc.invalidateQueries({ queryKey: weeklySummaryKeys.week(weekStart) });
