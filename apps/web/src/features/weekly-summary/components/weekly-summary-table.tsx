@@ -25,9 +25,14 @@ import { ApprovalStatusBadge } from './approval-status-badge';
 interface Props {
   rows: WeeklySummaryRow[];
   weekStart: string;
+  containerClassName?: string;
 }
 
-export function WeeklySummaryTable({ rows, weekStart }: Props) {
+export function WeeklySummaryTable({
+  rows,
+  weekStart,
+  containerClassName,
+}: Props) {
   const { t } = useTranslation();
   const locale = useLocale();
   const approve = useApproveWeek();
@@ -49,7 +54,10 @@ export function WeeklySummaryTable({ rows, weekStart }: Props) {
     );
 
   return (
-    <Table aria-label={t('weeklySummary.title')}>
+    <Table
+      aria-label={t('weeklySummary.title')}
+      containerClassName={containerClassName}
+    >
       <TableHeader>
         <TableRow>
           <TableHead>{t('weeklySummary.columns.employee')}</TableHead>

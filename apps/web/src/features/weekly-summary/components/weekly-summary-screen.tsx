@@ -77,8 +77,12 @@ export function WeeklySummaryScreen() {
           </EmptyHeader>
         </Empty>
       ) : (
-        <div className="bg-card overflow-hidden rounded-xl border shadow-sm">
-          <WeeklySummaryTable rows={data.data} weekStart={weekStart} />
+        <div className="bg-card flex flex-col overflow-hidden rounded-xl border shadow-sm">
+          <WeeklySummaryTable
+            rows={data.data}
+            weekStart={weekStart}
+            containerClassName="max-h-[calc(100dvh-20rem)] overflow-auto"
+          />
           <TablePagination
             page={data.page}
             totalPages={data.totalPages}

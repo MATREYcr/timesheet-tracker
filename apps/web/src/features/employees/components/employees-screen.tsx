@@ -115,8 +115,12 @@ export function EmployeesScreen() {
           </EmptyContent>
         </Empty>
       ) : (
-        <div className="bg-card overflow-hidden rounded-xl border shadow-sm">
-          <EmployeesTable employees={data.data} onEdit={openEdit} />
+        <div className="bg-card flex flex-col overflow-hidden rounded-xl border shadow-sm">
+          <EmployeesTable
+            employees={data.data}
+            onEdit={openEdit}
+            containerClassName="max-h-[calc(100dvh-20rem)] overflow-auto"
+          />
           <TablePagination
             page={data.page}
             totalPages={data.totalPages}
