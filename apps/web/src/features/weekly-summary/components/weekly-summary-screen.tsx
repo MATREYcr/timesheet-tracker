@@ -36,7 +36,7 @@ export function WeeklySummaryScreen() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="flex h-full min-h-0 flex-col gap-6">
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
@@ -77,8 +77,12 @@ export function WeeklySummaryScreen() {
           </EmptyHeader>
         </Empty>
       ) : (
-        <div className="bg-card overflow-hidden rounded-xl border shadow-sm">
-          <WeeklySummaryTable rows={data.data} weekStart={weekStart} />
+        <div className="bg-card flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border shadow-sm">
+          <WeeklySummaryTable
+            rows={data.data}
+            weekStart={weekStart}
+            containerClassName="min-h-0 flex-1 overflow-auto"
+          />
           <TablePagination
             page={data.page}
             totalPages={data.totalPages}
