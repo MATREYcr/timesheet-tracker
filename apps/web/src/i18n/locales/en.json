@@ -11,6 +11,10 @@
   "theme": {
     "toggle": "Toggle theme"
   },
+  "sidebar": {
+    "collapse": "Collapse",
+    "expand": "Expand"
+  },
   "pagination": {
     "previous": "Previous",
     "next": "Next",
