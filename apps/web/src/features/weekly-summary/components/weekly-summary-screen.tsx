@@ -4,6 +4,7 @@ import { getCurrentWeekStart } from '@timesheet/shared';
 import { CalendarRange } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { EmployeeCombobox } from '@/components/employee-combobox';
 import { WeekPicker } from '@/components/week-picker';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -16,6 +17,7 @@ import {
 } from '@/components/ui/empty';
 import { Skeleton } from '@/components/ui/skeleton';
 import { TablePagination } from '@/components/table-pagination';
+import { useEmployees } from '../../employees/hooks';
 import { useWeeklySummary } from '../hooks';
 import { WeeklySummaryTable } from './weekly-summary-table';
 
@@ -24,10 +26,15 @@ const SKELETON_ROWS = 4;
 export function WeeklySummaryScreen() {
   const { t } = useTranslation();
   const [weekStart, setWeekStart] = useState(getCurrentWeekStart);
+  const [employeeId, setEmployeeId] = useState<string | undefined>(undefined);
   const [page, setPage] = useState(1);
+
+  const roster = useEmployees(true, 1, 100);
   const { data, isPending, isError, refetch } = useWeeklySummary(
     weekStart,
     page,
+    10,
+    employeeId,
   );
 
   const changeWeek = (next: string) => {
@@ -46,7 +53,18 @@ export function WeeklySummaryScreen() {
             {t('weeklySummary.subtitle')}
           </p>
         </div>
-        <WeekPicker weekStart={weekStart} onChange={changeWeek} />
+        <div className="flex flex-wrap items-center gap-3">
+          <EmployeeCombobox
+            employees={roster.data?.data ?? []}
+            value={employeeId}
+            onChange={(id) => {
+              setEmployeeId(id);
+              setPage(1);
+            }}
+            allLabel={t('common.allEmployees')}
+          />
+          <WeekPicker weekStart={weekStart} onChange={changeWeek} />
+        </div>
       </div>
 
       {isPending ? (

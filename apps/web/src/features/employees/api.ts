@@ -7,10 +7,15 @@ import type {
 import { http } from '@/lib/http';
 
 export const employeesApi = {
-  list: (includeInactive: boolean, page: number, pageSize: number) =>
+  list: (
+    includeInactive: boolean,
+    page: number,
+    pageSize: number,
+    employeeId?: string,
+  ) =>
     http
       .get<Paginated<Employee>>('/employees', {
-        params: { includeInactive, page, pageSize },
+        params: { includeInactive, page, pageSize, employeeId },
       })
       .then((r) => r.data),
   create: (body: CreateEmployeeInput) =>

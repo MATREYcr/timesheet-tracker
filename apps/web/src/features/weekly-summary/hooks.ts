@@ -18,14 +18,27 @@ import { weeklySummaryApi } from './api';
 export const weeklySummaryKeys = {
   all: ['weekly-summary'] as const,
   week: (weekStart: string) => [...weeklySummaryKeys.all, weekStart] as const,
-  page: (weekStart: string, page: number, pageSize: number) =>
-    [...weeklySummaryKeys.week(weekStart), { page, pageSize }] as const,
+  page: (
+    weekStart: string,
+    page: number,
+    pageSize: number,
+    employeeId?: string,
+  ) =>
+    [
+      ...weeklySummaryKeys.week(weekStart),
+      { page, pageSize, employeeId },
+    ] as const,
 };
 
-export function useWeeklySummary(weekStart: string, page = 1, pageSize = 10) {
+export function useWeeklySummary(
+  weekStart: string,
+  page = 1,
+  pageSize = 10,
+  employeeId?: string,
+) {
   return useQuery({
-    queryKey: weeklySummaryKeys.page(weekStart, page, pageSize),
-    queryFn: () => weeklySummaryApi.get(weekStart, page, pageSize),
+    queryKey: weeklySummaryKeys.page(weekStart, page, pageSize, employeeId),
+    queryFn: () => weeklySummaryApi.get(weekStart, page, pageSize, employeeId),
     placeholderData: keepPreviousData,
   });
 }

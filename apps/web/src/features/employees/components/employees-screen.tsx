@@ -4,6 +4,7 @@ import type { Employee } from '@timesheet/shared';
 import { Plus, Users } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { EmployeeCombobox } from '@/components/employee-combobox';
 import {
   Alert,
   AlertAction,
@@ -32,13 +33,18 @@ const SKELETON_ROWS = 4;
 export function EmployeesScreen() {
   const { t } = useTranslation();
   const [includeInactive, setIncludeInactive] = useState(false);
+  const [employeeId, setEmployeeId] = useState<string | undefined>(undefined);
   const [page, setPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Employee | undefined>(undefined);
 
+  // Full roster for the filter combobox (independent of the paginated table).
+  const roster = useEmployees(true, 1, 100);
   const { data, isPending, isError, refetch } = useEmployees(
     includeInactive,
     page,
+    10,
+    employeeId,
   );
 
   const openCreate = () => {
@@ -61,7 +67,16 @@ export function EmployeesScreen() {
             {t('employees.subtitle')}
           </p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-wrap items-center gap-4">
+          <EmployeeCombobox
+            employees={roster.data?.data ?? []}
+            value={employeeId}
+            onChange={(id) => {
+              setEmployeeId(id);
+              setPage(1);
+            }}
+            allLabel={t('common.allEmployees')}
+          />
           <div className="flex items-center gap-2">
             <Switch
               id="show-inactive"

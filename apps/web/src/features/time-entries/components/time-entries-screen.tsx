@@ -9,6 +9,7 @@ import {
 import { CalendarOff, Lock, Plus, Users } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { EmployeeCombobox } from '@/components/employee-combobox';
 import { WeekPicker } from '@/components/week-picker';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
@@ -22,7 +23,6 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { useEmployees } from '../../employees/hooks';
 import { useTimeEntries, useWeekApproval } from '../hooks';
-import { EmployeeSelect } from './employee-select';
 import { TimeEntriesTable } from './time-entries-table';
 import { TimeEntryFormDialog } from './time-entry-form-dialog';
 
@@ -67,10 +67,11 @@ export function TimeEntriesScreen() {
       </div>
 
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <EmployeeSelect
+        <EmployeeCombobox
           employees={roster}
           value={employeeId}
           onChange={setEmployeeId}
+          placeholder={t('timeEntries.selectEmployee')}
         />
         <div className="flex items-center gap-3">
           <WeekPicker weekStart={weekStart} onChange={setWeekStart} />

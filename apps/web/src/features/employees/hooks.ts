@@ -15,18 +15,28 @@ import { employeesApi } from './api';
 
 export const employeeKeys = {
   all: ['employees'] as const,
-  list: (includeInactive: boolean, page: number, pageSize: number) =>
-    [...employeeKeys.all, { includeInactive, page, pageSize }] as const,
+  list: (
+    includeInactive: boolean,
+    page: number,
+    pageSize: number,
+    employeeId?: string,
+  ) =>
+    [
+      ...employeeKeys.all,
+      { includeInactive, page, pageSize, employeeId },
+    ] as const,
 };
 
 export function useEmployees(
   includeInactive: boolean,
   page = 1,
   pageSize = 10,
+  employeeId?: string,
 ) {
   return useQuery({
-    queryKey: employeeKeys.list(includeInactive, page, pageSize),
-    queryFn: () => employeesApi.list(includeInactive, page, pageSize),
+    queryKey: employeeKeys.list(includeInactive, page, pageSize, employeeId),
+    queryFn: () =>
+      employeesApi.list(includeInactive, page, pageSize, employeeId),
     placeholderData: keepPreviousData,
   });
 }

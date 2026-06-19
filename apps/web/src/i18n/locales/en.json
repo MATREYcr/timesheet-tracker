@@ -26,7 +26,10 @@
     "empty": "Nothing here yet.",
     "retry": "Retry",
     "error": "Something went wrong.",
-    "errorBody": "We couldn't load this data."
+    "errorBody": "We couldn't load this data.",
+    "searchEmployee": "Search employee…",
+    "noEmployees": "No employee found.",
+    "allEmployees": "All employees"
   },
   "employees": {
     "title": "Employees",

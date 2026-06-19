@@ -139,9 +139,9 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 
 - [x] **3.17 API filter** — optional `employeeId` on `/employees` and
       `/weekly-summary` (server-side `where`); `total` reflects the filtered set. ✓
-- [ ] **3.18 Web combobox** — reusable searchable `EmployeeCombobox`
+- [x] **3.18 Web combobox** — reusable searchable `EmployeeCombobox`
       (shadcn Popover + Command). Time entries uses it to pick the employee;
-      Employees + Weekly summary use it to filter the table (resets to page 1).
+      Employees + Weekly summary use it to filter the table (resets to page 1). ✓
 
 ---
 

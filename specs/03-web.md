@@ -121,6 +121,11 @@ with our shadcn primitives — never copy the `.dc.html` (it's a design-tool art
   shadcn `Pagination` control in the card footer, and TanStack Query
   `placeholderData: keepPreviousData` so the table doesn't flash between pages.
   **Time entries** is not paginated (bounded to one employee/week).
+- **Employee filter**: a reusable searchable **combobox** (shadcn Popover + Command)
+  — type to match employees. Time entries uses it to pick the employee; Employees
+  and Weekly summary use it (with an "All employees" option) to filter the table
+  **server-side** via the `employeeId` param (resets to page 1). Options come from
+  the full roster (fetched once), filtered client-side as you type.
 
 ## Frontend test (bonus)
 
