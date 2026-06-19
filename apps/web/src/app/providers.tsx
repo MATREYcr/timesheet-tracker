@@ -7,6 +7,7 @@ import { AppSidebar } from '@/components/layout/app-sidebar';
 import { Topbar } from '@/components/layout/topbar';
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
 import { I18nProvider } from '@/i18n/i18n-provider';
 import { makeQueryClient } from '@/lib/query';
 
@@ -21,13 +22,15 @@ export function Providers({ children }: { children: ReactNode }) {
         disableTransitionOnChange
       >
         <I18nProvider>
-          <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset>
-              <Topbar />
-              <div className="px-6 py-8">{children}</div>
-            </SidebarInset>
-          </SidebarProvider>
+          <TooltipProvider delayDuration={0}>
+            <SidebarProvider>
+              <AppSidebar />
+              <SidebarInset>
+                <Topbar />
+                <div className="px-6 py-8">{children}</div>
+              </SidebarInset>
+            </SidebarProvider>
+          </TooltipProvider>
           <Toaster richColors />
         </I18nProvider>
       </ThemeProvider>
