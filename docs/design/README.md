@@ -52,12 +52,23 @@ La tarea es **recrear este diseño en el entorno del codebase destino** usando s
 
 ## Shell global (compartido por las 3 pantallas)
 
-- **Header sticky**, altura **60px**, fondo `--card`, borde inferior `1px solid --border`. Tres zonas con `flex`:
-  - **Izquierda** (`flex:1`): logo (rayo morado, SVG, 22px) + título "Mini Timesheets" (15px / 700).
-  - **Centro**: nav segmentado dentro de un contenedor `--muted-bg` con `padding:4px`, `border-radius:9px`, borde `--border`. Tres items: **Employees · Time entries · Weekly summary** (en ES: **Empleados · Registros · Resumen semanal**). Item activo = fondo `--card` + sombra suave `0 1px 2px rgba(0,0,0,.10)` + texto `--fg` (peso 600); inactivo = transparente, texto `--fg-muted` (peso 500), hover → `--fg`.
-  - **Derecha** (`flex:1`, `justify-content:flex-end`, `gap:8px`): toggle **EN/ES** (segmentado), botón **tema** (sol/luna, 34×34), botón **preview de estados** (icono matraz, 34×34 — herramienta de demo, ver más abajo).
-- **Contenido**: contenedor centrado, `max-width:1024px`, `margin:0 auto`, `padding:32px 24px 96px`.
+Layout de **dos columnas**: sidebar lateral fijo + columna de contenido (`display:flex` en el root, `min-height:100vh`).
+
+### Sidebar lateral (estilo shadcn, colapsable)
+- **Sticky**, `height:100vh`, fondo `--card`, borde derecho `1px solid --border`. Ancho **232px** expandido / **64px** colapsado, con `transition: width .2s ease`. Estructura `flex` en columna:
+  - **Cabecera** (60px, borde inferior): logo (rayo morado, SVG 24px) + título "Mini Timesheets" (15px / 700). Al colapsar, el título pasa a `display:none` y queda solo el logo.
+  - **Nav** (`flex:1`): los 3 items en columna, cada uno = botón con **icono (18px, Lucide) + label**. Iconos: Empleados=`users`, Registros=`clock`, Resumen=`bar-chart`. Item **activo** = fondo `--primary-soft` + texto/icono `--primary` + peso 600; inactivo = transparente, texto `--fg-muted` (peso 500), hover → fondo `--muted-bg` + texto `--fg`. Radio 8px, padding `9px 11px` (al colapsar: centrado, sin label, con `title` como tooltip).
+  - **Pie** (borde superior): botón **Collapse/Expand** destacado en el color de marca — fondo `--primary-soft`, borde `1px solid --primary-soft`, texto/icono `--primary`, peso 600. Icono chevron-left que **rota 180°** al colapsar. Hover = `filter:brightness(1.05)`.
+- En el build real: persistir el estado colapsado (localStorage) y, en móvil, convertirlo en drawer/sheet (`Sheet` de shadcn) en vez de empujar el contenido.
+
+### Topbar (dentro de la columna de contenido)
+- **Sticky**, altura **60px**, fondo `--card`, borde inferior `1px solid --border`. Izquierda: **título de la pantalla actual** (15px / 600). Derecha (`gap:8px`): toggle **EN/ES** (segmentado), botón **tema** (sol/luna, 34×34), botón **preview de estados** (icono matraz, 34×34 — herramienta de demo, quitar en producción).
+
+### Contenido
+- Contenedor centrado, `max-width:1024px`, `width:100%`, `margin:0 auto`, `padding:32px 24px 96px`.
 - Cada pantalla: **encabezado (h1 24px/700) + subtítulo (14px, --fg-muted)**, luego **toolbar**, luego una **card** que contiene la tabla (fondo `--card`, borde `--border`, `border-radius:12px`, `overflow:hidden`, sombra `0 1px 3px rgba(0,0,0,.04)`).
+
+> Mapeo shadcn: el sidebar corresponde al patrón **`Sidebar`** de shadcn/ui (`SidebarProvider` + `SidebarTrigger` para colapsar). El nav activo = item con estado `isActive`.
 
 ---
 
@@ -157,7 +168,7 @@ pay     = regPay + otPay
 
 ## Interactions & Behavior
 
-- **Navegación**: el nav del header cambia entre las 3 pantallas (estado activo en el item). Al cambiar de pantalla o de semana se dispara un **skeleton de carga breve (~450ms)** antes de mostrar datos (simula fetch).
+- **Navegación**: el sidebar lateral cambia entre las 3 pantallas (item activo resaltado). El botón inferior **colapsa/expande** el sidebar (232px ↔ 64px). Al cambiar de pantalla o de semana se dispara un **skeleton de carga breve (~450ms)** antes de mostrar datos (simula fetch).
 - **Show inactive**: el switch alterna la visibilidad de las filas inactivas en la tabla de empleados.
 - **Add/Edit empleado**: abre Dialog; al guardar valida y, si ok, agrega/actualiza y muestra toast.
 - **Deactivate/Reactivate**: alterna `active` directamente (sin confirmación) + toast.
@@ -304,8 +315,8 @@ Capturas de referencia en `screenshots/` (claro + oscuro + estados):
 
 | Archivo | Pantalla / estado |
 |---|---|
-| `01-employees.png` | Empleados — modo **claro** (con inactivos visibles) |
-| `02-employees.png` | Empleados — modo **oscuro** |
+| `01-employees.png` | Empleados — sidebar **expandido** (modo claro) |
+| `02-employees.png` | Empleados — sidebar **colapsado** (solo iconos, 64px) |
 | `01-time-entries.png` | Registros de tiempo — empleado activo, semana editable (Jane) |
 | `02-time-entries.png` | Registros de tiempo — **semana aprobada/bloqueada** (John): banner ámbar, acciones deshabilitadas, "Log time" deshabilitado |
 | `01-weekly-summary.png` | Resumen semanal — **claro** (overtime ámbar, desglose de pago, Pending/Approved) |

@@ -24,22 +24,36 @@ input,select{font-family:inherit;}
 </helmet>
 <div style="{{ rootStyle }}">
 
-  <header style="position:sticky;top:0;z-index:50;display:flex;align-items:center;gap:16px;padding:0 24px;height:60px;background:var(--card);border-bottom:1px solid var(--border);">
-    <div style="flex:1;display:flex;align-items:center;gap:9px;min-width:0;">
-      <svg width="22" height="22" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M13 2 4.5 13.5H11L9 22 18 9.5H11.5L13 2Z" fill="var(--primary)"></path></svg>
-      <span style="font-size:15px;font-weight:700;color:var(--fg);letter-spacing:-0.01em;white-space:nowrap;">{{ t.appTitle }}</span>
+  <aside style="{{ sidebarStyle }}">
+    <div style="display:flex;align-items:center;gap:10px;height:60px;padding:0 16px;border-bottom:1px solid var(--border);overflow:hidden;">
+      <svg width="24" height="24" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M13 2 4.5 13.5H11L9 22 18 9.5H11.5L13 2Z" fill="var(--primary)"></path></svg>
+      <span style="{{ brandTextStyle }}">{{ t.appTitle }}</span>
     </div>
-    <nav style="display:flex;gap:3px;background:var(--muted-bg);padding:4px;border-radius:9px;border:1px solid var(--border);">
+    <nav style="display:flex;flex-direction:column;gap:3px;padding:12px 10px;flex:1;">
       <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="3">
-        <sc-if value="{{ item.active }}" hint-placeholder-val="{{ true }}">
-          <button onClick="{{ item.onClick }}" style="border:none;border-radius:6px;padding:7px 14px;font-size:13px;font-weight:600;background:var(--card);color:var(--fg);box-shadow:0 1px 2px rgba(0,0,0,.10);white-space:nowrap;">{{ item.label }}</button>
-        </sc-if>
-        <sc-if value="{{ item.inactive }}">
-          <button onClick="{{ item.onClick }}" style="border:none;border-radius:6px;padding:7px 14px;font-size:13px;font-weight:500;background:transparent;color:var(--fg-muted);white-space:nowrap;" style-hover="color:var(--fg)">{{ item.label }}</button>
-        </sc-if>
+        <button onClick="{{ item.onClick }}" title="{{ item.label }}" style="{{ item.btnStyle }}" style-hover="{{ item.hoverStyle }}">
+          <span style="display:inline-flex;flex-shrink:0;width:18px;height:18px;align-items:center;justify-content:center;">
+            <sc-if value="{{ item.isEmp }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg></sc-if>
+            <sc-if value="{{ item.isEnt }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></sc-if>
+            <sc-if value="{{ item.isSum }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><rect x="7" y="12" width="3" height="6"></rect><rect x="13" y="8" width="3" height="10"></rect></svg></sc-if>
+          </span>
+          <span style="{{ navLabelStyle }}">{{ item.label }}</span>
+        </button>
       </sc-for>
     </nav>
-    <div style="flex:1;display:flex;align-items:center;justify-content:flex-end;gap:8px;">
+    <div style="padding:10px;border-top:1px solid var(--border);">
+      <button onClick="{{ onToggleCollapse }}" title="{{ collapseTitle }}" style="{{ collapseBtnStyle }}" style-hover="filter:brightness(1.05)">
+        <span style="display:inline-flex;flex-shrink:0;width:18px;height:18px;align-items:center;justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="{{ collapseIconStyle }}"><polyline points="15 18 9 12 15 6"></polyline></svg></span>
+        <span style="{{ navLabelStyle }}">{{ t.collapse }}</span>
+      </button>
+    </div>
+  </aside>
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
+
+  <header style="position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:16px;padding:0 24px;height:60px;background:var(--card);border-bottom:1px solid var(--border);">
+    <div style="flex:1;font-size:15px;font-weight:600;color:var(--fg);letter-spacing:-0.01em;">{{ screenTitle }}</div>
+    <div style="display:flex;align-items:center;gap:8px;">
       <div style="display:flex;background:var(--muted-bg);border:1px solid var(--border);border-radius:8px;padding:3px;">
         <button onClick="{{ onEn }}" style="{{ enBtnStyle }}">EN</button>
         <button onClick="{{ onEs }}" style="{{ esBtnStyle }}">ES</button>
@@ -54,7 +68,7 @@ input,select{font-family:inherit;}
     </div>
   </header>
 
-  <main style="max-width:1024px;margin:0 auto;padding:32px 24px 96px;">
+  <main style="max-width:1024px;width:100%;margin:0 auto;padding:32px 24px 96px;">
 
     <!-- ════ EMPLOYEES ════ -->
     <sc-if value="{{ isEmployees }}" hint-placeholder-val="{{ true }}">
@@ -253,6 +267,7 @@ input,select{font-family:inherit;}
     </sc-if>
 
   </main>
+  </div>
 
   <!-- ════ EMPLOYEE DIALOG ════ -->
   <sc-if value="{{ ed_open }}">
@@ -347,7 +362,7 @@ input,select{font-family:inherit;}
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:820},&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;purple&quot;,&quot;blue&quot;,&quot;slate&quot;],&quot;default&quot;:&quot;purple&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;comfortable&quot;,&quot;compact&quot;],&quot;default&quot;:&quot;comfortable&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
 class Component extends DCLogic {
   state = {
-    lang: 'en', theme: 'light', screen: 'employees',
+    lang: 'en', theme: 'light', screen: 'employees', collapsed: false,
     showInactive: false, weekOffset: 0, _busy: false,
     force: { employees: null, entries: null, summary: null },
     employees: [
@@ -396,6 +411,7 @@ class Component extends DCLogic {
       toast_time_logged: 'Time logged', toast_entry_updated: 'Entry updated', toast_entry_deleted: 'Entry deleted',
       toast_approved: 'Week approved', toast_rejected: 'Week rejected', toast_reopened: 'Week reopened',
       preview_live: 'Preview: live data', preview_loading: 'Preview: loading state', preview_empty: 'Preview: empty state', preview_error: 'Preview: error state',
+      collapse: 'Collapse', expand: 'Expand',
     },
     es: {
       appTitle: 'Mini Timesheets', nav_employees: 'Empleados', nav_entries: 'Registros', nav_summary: 'Resumen semanal',
@@ -424,6 +440,7 @@ class Component extends DCLogic {
       toast_time_logged: 'Horas registradas', toast_entry_updated: 'Registro actualizado', toast_entry_deleted: 'Registro eliminado',
       toast_approved: 'Semana aprobada', toast_rejected: 'Semana rechazada', toast_reopened: 'Semana reabierta',
       preview_live: 'Vista: datos en vivo', preview_loading: 'Vista: estado de carga', preview_empty: 'Vista: estado vac\u00edo', preview_error: 'Vista: estado de error',
+      collapse: 'Colapsar', expand: 'Expandir',
     },
   };
 
@@ -558,11 +575,31 @@ class Component extends DCLogic {
     const s = this.state, lang = s.lang, T = this.T[lang], dark = s.theme === 'dark';
     const vars = this.themeVars();
     const cellPad = (this.props.density || 'comfortable') === 'compact' ? '8px 16px' : '13px 16px';
-    const rootStyle = { ...vars, '--cell-pad': cellPad, minHeight: '100%', background: 'var(--bg)', color: 'var(--fg)', fontFamily: "'Geist', system-ui, sans-serif" };
+    const rootStyle = { ...vars, '--cell-pad': cellPad, minHeight: '100vh', display: 'flex', background: 'var(--bg)', color: 'var(--fg)', fontFamily: "'Geist', system-ui, sans-serif" };
 
+    // ── sidebar ──
+    const collapsed = s.collapsed;
+    const sidebarStyle = { position: 'sticky', top: 0, alignSelf: 'flex-start', height: '100vh', width: collapsed ? '64px' : '232px', flexShrink: 0, background: 'var(--card)', borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', transition: 'width .2s ease', zIndex: 45 };
+    const brandTextStyle = { fontSize: '15px', fontWeight: 700, color: 'var(--fg)', letterSpacing: '-0.01em', whiteSpace: 'nowrap', display: collapsed ? 'none' : 'inline' };
+    const navLabelStyle = { fontSize: '13.5px', fontWeight: 'inherit', whiteSpace: 'nowrap', overflow: 'hidden', display: collapsed ? 'none' : 'inline' };
+    const navBtnBase = { display: 'flex', alignItems: 'center', gap: '11px', width: '100%', border: 'none', borderRadius: '8px', padding: collapsed ? '9px 0' : '9px 11px', justifyContent: collapsed ? 'center' : 'flex-start', fontSize: '13.5px', textAlign: 'left', cursor: 'pointer', transition: 'background .12s, color .12s' };
     const navItems = [
-      { key: 'employees', label: T.nav_employees }, { key: 'entries', label: T.nav_entries }, { key: 'summary', label: T.nav_summary },
-    ].map(n => ({ label: n.label, active: s.screen === n.key, inactive: s.screen !== n.key, onClick: () => this.go(n.key) }));
+      { key: 'employees', label: T.nav_employees, isEmp: true, isEnt: false, isSum: false },
+      { key: 'entries', label: T.nav_entries, isEmp: false, isEnt: true, isSum: false },
+      { key: 'summary', label: T.nav_summary, isEmp: false, isEnt: false, isSum: true },
+    ].map(n => {
+      const active = s.screen === n.key;
+      return {
+        label: n.label, isEmp: n.isEmp, isEnt: n.isEnt, isSum: n.isSum, onClick: () => this.go(n.key),
+        btnStyle: active
+          ? { ...navBtnBase, background: 'var(--primary-soft)', color: 'var(--primary)', fontWeight: 600 }
+          : { ...navBtnBase, background: 'transparent', color: 'var(--fg-muted)', fontWeight: 500 },
+        hoverStyle: active ? 'background:var(--primary-soft)' : 'background:var(--muted-bg);color:var(--fg)',
+      };
+    });
+    const collapseBtnStyle = { display: 'flex', alignItems: 'center', gap: '11px', width: '100%', border: '1px solid var(--primary-soft)', borderRadius: '8px', padding: collapsed ? '8px 0' : '8px 11px', justifyContent: collapsed ? 'center' : 'flex-start', fontSize: '13.5px', fontWeight: 600, color: 'var(--primary)', background: 'var(--primary-soft)', cursor: 'pointer', transition: 'background .12s, color .12s, filter .12s' };
+    const collapseIconStyle = { transform: collapsed ? 'rotate(180deg)' : 'none', transition: 'transform .2s ease' };
+    const screenTitle = s.screen === 'employees' ? T.emp_title : s.screen === 'entries' ? T.entries_title : T.summary_title;
 
     const segBase = { border: 'none', borderRadius: '6px', padding: '5px 11px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' };
     const segOn = { ...segBase, background: 'var(--card)', color: 'var(--fg)', boxShadow: '0 1px 2px rgba(0,0,0,.10)' };
@@ -644,6 +681,8 @@ class Component extends DCLogic {
       onEn: () => this.setState({ lang: 'en' }), onEs: () => this.setState({ lang: 'es' }),
       onCycleForce: () => this.cycleForce(),
       navItems, isEmployees: s.screen === 'employees', isEntries: s.screen === 'entries', isSummary: s.screen === 'summary',
+      sidebarStyle, brandTextStyle, navLabelStyle, collapseBtnStyle, collapseIconStyle, screenTitle,
+      onToggleCollapse: () => this.setState(st => ({ collapsed: !st.collapsed })), collapseTitle: collapsed ? T.expand : T.collapse,
       stop: (e) => e.stopPropagation(),
       // employees
       switchTrackStyle, switchKnobStyle, onToggleInactive: () => this.setState(st => ({ showInactive: !st.showInactive })),
