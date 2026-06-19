@@ -26,18 +26,22 @@ export type WeeklyApprovalResult = WeekApprovalStatus;
 export async function getWeeklySummary(
   weekStart: string,
   { page, pageSize }: PaginationQuery,
+  employeeId?: string,
 ): Promise<Paginated<WeeklySummaryRow>> {
   const weekEnd = getWeekEnd(weekStart);
   const inWeek = and(
     gte(timeEntries.date, weekStart),
     lte(timeEntries.date, weekEnd),
   );
+  const where = employeeId
+    ? and(inWeek, eq(timeEntries.employeeId, employeeId))
+    : inWeek;
 
   // One row per employee with ≥1 entry that week → count distinct employees.
   const [{ total }] = await db
     .select({ total: countDistinct(timeEntries.employeeId) })
     .from(timeEntries)
-    .where(inWeek);
+    .where(where);
 
   const rows = await db
     .select({
@@ -57,7 +61,7 @@ export async function getWeeklySummary(
         eq(weeklyApprovals.weekStart, weekStart),
       ),
     )
-    .where(inWeek)
+    .where(where)
     .groupBy(employees.id, weeklyApprovals.status)
     .orderBy(asc(employees.firstName), asc(employees.lastName))
     .limit(pageSize)

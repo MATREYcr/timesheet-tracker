@@ -76,7 +76,7 @@ so the app is usable immediately after setup.
 
 | Method | Path                                   | Notes                                  |
 | ------ | -------------------------------------- | -------------------------------------- |
-| GET    | `/employees?includeInactive=bool&page=&pageSize=` | Inactive hidden unless flag set; **paginated** |
+| GET    | `/employees?includeInactive=bool&page=&pageSize=&employeeId=` | Inactive hidden unless flag set; **paginated**; optional `employeeId` filter |
 | POST   | `/employees`                           | Validates via shared schema            |
 | PATCH  | `/employees/:id`                       | Edit name/rate                         |
 | POST   | `/employees/:id/deactivate`            | Sets `deactivatedAt` (soft delete)     |
@@ -85,7 +85,7 @@ so the app is usable immediately after setup.
 | POST   | `/time-entries`                        | Full validation (see below)            |
 | PATCH  | `/time-entries/:id`                    | Blocked if week approved               |
 | DELETE | `/time-entries/:id`                    | Blocked if week approved               |
-| GET    | `/weekly-summary?weekStart=&page=&pageSize=` | Raw aggregate per employee (see below); **paginated** |
+| GET    | `/weekly-summary?weekStart=&page=&pageSize=&employeeId=` | Raw aggregate per employee (see below); **paginated**; optional `employeeId` filter |
 | GET    | `/weekly-summary/approval?employeeId=&weekStart=` | Status of one (employee, week); `pending` if no row, 404 if employee missing |
 | POST   | `/weekly-summary/approve`              | `{ employeeId, weekStart }`            |
 | POST   | `/weekly-summary/reject`               | `{ employeeId, weekStart }`            |
@@ -104,6 +104,10 @@ max 100), validated by `paginationQuerySchema` from `shared`. Response is the
 `page`/`pageSize` echo the request; `total` is the full row count (pre-pagination)
 so the client can render a pager. `/time-entries` is **not** paginated — it is
 already bounded to one (employee, week) (≤ 7 rows).
+
+Both paginated endpoints also accept an optional **`employeeId`** filter (validated
+by the shared uuid schema); `total` reflects the filtered set so the pager stays
+correct. The web combobox uses it to filter the table server-side.
 
 ## Weekly summary response (raw — client computes pay)
 

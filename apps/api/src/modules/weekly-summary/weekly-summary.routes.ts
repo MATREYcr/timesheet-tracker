@@ -1,4 +1,5 @@
 import {
+  employeeIdSchema,
   paginationQuerySchema,
   weekStartSchema,
   weeklyApprovalActionSchema,
@@ -10,13 +11,18 @@ import { validate } from '../../middleware/validate.js';
 import * as service from './weekly-summary.service.js';
 
 const summaryQuery = z
-  .object({ weekStart: weekStartSchema })
+  .object({
+    weekStart: weekStartSchema,
+    employeeId: employeeIdSchema.optional(),
+  })
   .extend(paginationQuerySchema.shape);
 
 export const weeklySummaryRoutes = new Hono<AppEnv>()
   .get('/', validate('query', summaryQuery), async (c) => {
-    const { weekStart, page, pageSize } = c.req.valid('query');
-    return c.json(await service.getWeeklySummary(weekStart, { page, pageSize }));
+    const { weekStart, page, pageSize, employeeId } = c.req.valid('query');
+    return c.json(
+      await service.getWeeklySummary(weekStart, { page, pageSize }, employeeId),
+    );
   })
   // Approval status for one (employee, week) — the web uses it to lock entries.
   .get('/approval', validate('query', weeklyApprovalActionSchema), async (c) => {

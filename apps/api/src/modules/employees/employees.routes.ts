@@ -12,14 +12,18 @@ import * as service from './employees.service.js';
 
 const idParam = z.object({ id: employeeIdSchema });
 const listQuery = z
-  .object({ includeInactive: z.stringbool().optional().default(false) })
+  .object({
+    includeInactive: z.stringbool().optional().default(false),
+    employeeId: employeeIdSchema.optional(),
+  })
   .extend(paginationQuerySchema.shape);
 
 export const employeesRoutes = new Hono<AppEnv>()
   .get('/', validate('query', listQuery), async (c) => {
-    const { includeInactive, page, pageSize } = c.req.valid('query');
+    const { includeInactive, page, pageSize, employeeId } =
+      c.req.valid('query');
     return c.json(
-      await service.listEmployees(includeInactive, { page, pageSize }),
+      await service.listEmployees(includeInactive, { page, pageSize }, employeeId),
     );
   })
   .post('/', validate('json', createEmployeeSchema), async (c) => {
