@@ -3,17 +3,7 @@
 import type { TimeEntry } from '@timesheet/shared';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from '@/components/ui/alert-dialog';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -45,14 +35,16 @@ export function TimeEntriesTable({ entries, locked, onEdit }: Props) {
   };
 
   return (
-    <Table aria-label={t('timeEntries.title')}>
+    <Table aria-label={t('timeEntries.title')} className="min-w-120 table-fixed">
       <TableHeader>
         <TableRow>
-          <TableHead>{t('timeEntries.columns.date')}</TableHead>
-          <TableHead className="text-right">
+          <TableHead className="text-center">
+            {t('timeEntries.columns.date')}
+          </TableHead>
+          <TableHead className="text-center">
             {t('timeEntries.columns.hours')}
           </TableHead>
-          <TableHead className="text-right">
+          <TableHead className="text-center">
             {t('timeEntries.columns.actions')}
           </TableHead>
         </TableRow>
@@ -62,52 +54,39 @@ export function TimeEntriesTable({ entries, locked, onEdit }: Props) {
           const deleting = remove.isPending && remove.variables === entry.id;
           return (
             <TableRow key={entry.id}>
-              <TableCell className="font-medium">
+              <TableCell className="text-center font-medium">
                 {formatDate(entry.date, locale)}
               </TableCell>
-              <TableCell className="text-right tabular-nums">
+              <TableCell className="text-center tabular-nums">
                 {formatHours(entry.hours, locale)}
               </TableCell>
               <TableCell>
-                <div className="flex items-center justify-end gap-2 text-sm">
+                <div className="flex items-center justify-center gap-2">
                   <Button
-                    variant="link"
+                    size="sm"
+                    variant="ghost"
                     disabled={locked || deleting}
-                    className="text-primary h-auto p-0"
+                    className="bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary"
                     onClick={() => onEdit(entry)}
                   >
                     {t('common.edit')}
                   </Button>
-                  <span className="text-border">·</span>
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button
-                        variant="link"
-                        disabled={locked || deleting}
-                        className="text-destructive h-auto p-0"
-                      >
-                        {t('common.delete')}
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>
-                          {t('timeEntries.delete.title')}
-                        </AlertDialogTitle>
-                        <AlertDialogDescription>
-                          {t('timeEntries.delete.description')}
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>
-                          {t('common.cancel')}
-                        </AlertDialogCancel>
-                        <AlertDialogAction onClick={() => handleDelete(entry)}>
-                          {t('common.delete')}
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+                  <ConfirmDialog
+                    title={t('timeEntries.delete.title')}
+                    description={t('timeEntries.delete.description')}
+                    confirmLabel={t('common.delete')}
+                    destructive
+                    onConfirm={() => handleDelete(entry)}
+                  >
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      disabled={locked || deleting}
+                      className="bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive"
+                    >
+                      {t('common.delete')}
+                    </Button>
+                  </ConfirmDialog>
                 </div>
               </TableCell>
             </TableRow>

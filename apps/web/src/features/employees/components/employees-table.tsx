@@ -3,6 +3,7 @@
 import { EMPLOYEE_STATUS, type Employee } from '@timesheet/shared';
 import { useTranslation } from 'react-i18next';
 import { toast } from 'sonner';
+import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@/components/ui/button';
 import {
   Table,
@@ -54,15 +55,23 @@ export function EmployeesTable({
   };
 
   return (
-    <Table aria-label={t('employees.title')} containerClassName={containerClassName}>
+    <Table
+      aria-label={t('employees.title')}
+      containerClassName={containerClassName}
+      className="min-w-160 table-fixed"
+    >
       <TableHeader>
         <TableRow>
-          <TableHead>{t('employees.columns.name')}</TableHead>
-          <TableHead className="text-right">
+          <TableHead className="text-center">
+            {t('employees.columns.name')}
+          </TableHead>
+          <TableHead className="text-center">
             {t('employees.columns.rate')}
           </TableHead>
-          <TableHead>{t('employees.columns.status')}</TableHead>
-          <TableHead className="text-right">
+          <TableHead className="text-center">
+            {t('employees.columns.status')}
+          </TableHead>
+          <TableHead className="text-center">
             {t('employees.columns.actions')}
           </TableHead>
         </TableRow>
@@ -72,37 +81,61 @@ export function EmployeesTable({
           const isActive = employee.status === EMPLOYEE_STATUS.active;
           return (
             <TableRow key={employee.id}>
-              <TableCell className="font-medium">
+              <TableCell className="text-center font-medium">
                 {employee.firstName} {employee.lastName}
               </TableCell>
-              <TableCell className="text-right tabular-nums">
+              <TableCell className="text-center tabular-nums">
                 {formatCurrency(employee.hourlyRate, locale)}
               </TableCell>
-              <TableCell>
+              <TableCell className="text-center">
                 <EmployeeStatusBadge status={employee.status} />
               </TableCell>
               <TableCell>
-                <div className="flex items-center justify-end gap-2 text-sm">
+                <div className="flex items-center justify-center gap-2">
                   <Button
-                    variant="link"
-                    className="text-primary h-auto p-0"
+                    size="sm"
+                    variant="ghost"
+                    className="bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary"
                     onClick={() => onEdit(employee)}
                   >
                     {t('employees.actions.edit')}
                   </Button>
-                  <span className="text-border">·</span>
-                  <Button
-                    variant="link"
-                    disabled={pendingId === employee.id}
-                    onClick={() => toggleStatus(employee)}
-                    className="text-muted-foreground hover:text-foreground h-auto p-0 no-underline hover:no-underline"
-                  >
-                    {t(
+                  <ConfirmDialog
+                    title={t(
+                      isActive
+                        ? 'employees.confirm.deactivate.title'
+                        : 'employees.confirm.reactivate.title',
+                    )}
+                    description={t(
+                      isActive
+                        ? 'employees.confirm.deactivate.description'
+                        : 'employees.confirm.reactivate.description',
+                    )}
+                    confirmLabel={t(
                       isActive
                         ? 'employees.actions.deactivate'
                         : 'employees.actions.reactivate',
                     )}
-                  </Button>
+                    destructive={isActive}
+                    onConfirm={() => toggleStatus(employee)}
+                  >
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      disabled={pendingId === employee.id}
+                      className={
+                        isActive
+                          ? 'bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive'
+                          : 'bg-muted text-muted-foreground hover:bg-foreground/10 hover:text-foreground'
+                      }
+                    >
+                      {t(
+                        isActive
+                          ? 'employees.actions.deactivate'
+                          : 'employees.actions.reactivate',
+                      )}
+                    </Button>
+                  </ConfirmDialog>
                 </div>
               </TableCell>
             </TableRow>
