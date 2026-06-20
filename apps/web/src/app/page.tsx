@@ -66,10 +66,15 @@ export default function Home() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {t('home.title')}
-        </h1>
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {t('home.title')}
+          </h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            {t('home.description')}
+          </p>
+        </div>
         <span className="bg-primary-soft text-primary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold">
           <CalendarDays className="size-4" />
           <span className="uppercase tracking-wide">{t('home.subtitle')}</span>

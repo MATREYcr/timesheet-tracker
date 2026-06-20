@@ -1,19 +1,38 @@
 {
   "app": {
     "title": "Mini Timesheets",
-    "subtitle": "Gestiona empleados por hora, registra tiempo y aprueba semanas."
+    "subtitle": "Gestiona empleados por hora, registra tiempo y aprueba semanas.",
+    "assessment": "Prueba Técnica · OCMI Workers Comp"
   },
   "nav": {
+    "dashboard": "Panel",
     "employees": "Empleados",
     "timeEntries": "Registros de tiempo",
     "weeklySummary": "Resumen semanal"
   },
+  "home": {
+    "title": "Panel",
+    "subtitle": "Esta semana",
+    "description": "Resumen de horas, nómina y aprobaciones pendientes.",
+    "kpi": {
+      "activeEmployees": "Empleados activos",
+      "hours": "Horas registradas",
+      "payroll": "Nómina",
+      "pending": "Aprobaciones pendientes"
+    },
+    "pending": {
+      "title": "Aprobaciones pendientes",
+      "review": "Revisar",
+      "viewAll": "Ver todo",
+      "empty": "Nada pendiente — todas las semanas con horas están revisadas."
+    }
+  },
   "theme": {
     "toggle": "Cambiar tema"
   },
-  "sidebar": {
-    "collapse": "Colapsar",
-    "expand": "Expandir"
+  "account": {
+    "name": "Admin",
+    "role": "Administrador"
   },
   "pagination": {
     "previous": "Anterior",
@@ -54,6 +73,16 @@
       "edit": "Editar",
       "deactivate": "Desactivar",
       "reactivate": "Reactivar"
+    },
+    "confirm": {
+      "deactivate": {
+        "title": "¿Desactivar este empleado?",
+        "description": "Se ocultará de las listas activas y no podrás registrar tiempo para él. Sus registros pasados siguen visibles. Puedes reactivarlo después."
+      },
+      "reactivate": {
+        "title": "¿Reactivar este empleado?",
+        "description": "Volverá a aparecer en las listas activas y podrás registrar tiempo para él."
+      }
     },
     "empty": {
       "title": "Aún no hay empleados",
@@ -152,6 +181,20 @@
       "approve": "Aprobar",
       "reject": "Rechazar",
       "reopen": "Reabrir"
+    },
+    "confirm": {
+      "approve": {
+        "title": "¿Aprobar esta semana?",
+        "description": "Al aprobar se bloquea la semana — sus registros de tiempo ya no se podrán crear, editar ni eliminar."
+      },
+      "reject": {
+        "title": "¿Rechazar esta semana?",
+        "description": "La semana sigue editable para poder corregir los registros y volver a enviarla."
+      },
+      "reopen": {
+        "title": "¿Reabrir esta semana?",
+        "description": "Esto desbloquea la semana para poder editar sus registros de nuevo."
+      }
     },
     "toast": {
       "approved": "Semana aprobada.",

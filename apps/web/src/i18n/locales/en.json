@@ -1,19 +1,38 @@
 {
   "app": {
     "title": "Mini Timesheets",
-    "subtitle": "Track hourly employees, log time, and approve weeks."
+    "subtitle": "Track hourly employees, log time, and approve weeks.",
+    "assessment": "Technical Assessment · OCMI Workers Comp"
   },
   "nav": {
+    "dashboard": "Dashboard",
     "employees": "Employees",
     "timeEntries": "Time entries",
     "weeklySummary": "Weekly summary"
   },
+  "home": {
+    "title": "Dashboard",
+    "subtitle": "This week",
+    "description": "Overview of hours, payroll and pending approvals.",
+    "kpi": {
+      "activeEmployees": "Active employees",
+      "hours": "Hours logged",
+      "payroll": "Payroll",
+      "pending": "Pending approvals"
+    },
+    "pending": {
+      "title": "Pending approvals",
+      "review": "Review",
+      "viewAll": "View all",
+      "empty": "Nothing pending — every week with hours is reviewed."
+    }
+  },
   "theme": {
     "toggle": "Toggle theme"
   },
-  "sidebar": {
-    "collapse": "Collapse",
-    "expand": "Expand"
+  "account": {
+    "name": "Admin",
+    "role": "Administrator"
   },
   "pagination": {
     "previous": "Previous",
@@ -54,6 +73,16 @@
       "edit": "Edit",
       "deactivate": "Deactivate",
       "reactivate": "Reactivate"
+    },
+    "confirm": {
+      "deactivate": {
+        "title": "Deactivate this employee?",
+        "description": "They'll be hidden from active lists and you won't be able to log time for them. Past entries stay visible. You can reactivate them later."
+      },
+      "reactivate": {
+        "title": "Reactivate this employee?",
+        "description": "They'll appear in active lists again and you'll be able to log time for them."
+      }
     },
     "empty": {
       "title": "No employees yet",
@@ -152,6 +181,20 @@
       "approve": "Approve",
       "reject": "Reject",
       "reopen": "Reopen"
+    },
+    "confirm": {
+      "approve": {
+        "title": "Approve this week?",
+        "description": "Approving locks the week — its time entries can no longer be created, edited, or deleted."
+      },
+      "reject": {
+        "title": "Reject this week?",
+        "description": "The week stays editable so entries can be fixed and re-submitted."
+      },
+      "reopen": {
+        "title": "Reopen this week?",
+        "description": "This unlocks the week so its time entries can be edited again."
+      }
     },
     "toast": {
       "approved": "Week approved.",
