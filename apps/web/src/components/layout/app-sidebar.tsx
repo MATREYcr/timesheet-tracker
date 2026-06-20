@@ -1,9 +1,10 @@
 'use client';
 
-import { BarChart3, ChevronLeft, Clock, Users } from 'lucide-react';
+import { BarChart3, Clock, LayoutDashboard, Users } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
+import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Sidebar,
   SidebarContent,
@@ -15,17 +16,17 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
-  useSidebar,
 } from '@/components/ui/sidebar';
 
 const NAV = [
+  { href: '/', key: 'nav.dashboard', icon: LayoutDashboard },
   { href: '/employees', key: 'nav.employees', icon: Users },
   { href: '/time-entries', key: 'nav.timeEntries', icon: Clock },
   { href: '/weekly-summary', key: 'nav.weeklySummary', icon: BarChart3 },
 ] as const;
 
 const NAV_BUTTON =
-  'h-9 gap-[11px] rounded-lg px-[11px] text-[13.5px] font-medium text-muted-foreground [&_svg]:!size-[18px] hover:bg-muted hover:text-foreground data-[active=true]:bg-primary-soft data-[active=true]:font-semibold data-[active=true]:text-primary';
+  'h-11 gap-3 rounded-lg px-3 text-[15px] font-medium text-muted-foreground [&_svg]:size-5! hover:bg-muted hover:text-foreground data-[active=true]:bg-primary-soft data-[active=true]:font-semibold data-[active=true]:text-primary';
 
 function LightningLogo({ className }: { className?: string }) {
   return (
@@ -38,32 +39,34 @@ function LightningLogo({ className }: { className?: string }) {
 export function AppSidebar() {
   const { t } = useTranslation();
   const pathname = usePathname();
-  const { state, toggleSidebar } = useSidebar();
-  const collapsed = state === 'collapsed';
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="h-15 flex-row items-center gap-2.5 border-b px-4 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
+      <SidebarHeader className="h-16 flex-row items-center gap-2.5 border-b px-4 group-data-[collapsible=icon]:justify-center group-data-[collapsible=icon]:px-0">
         <Link
           href="/"
           className="flex items-center gap-2.5 overflow-hidden font-bold tracking-tight"
         >
-          <LightningLogo className="text-primary size-6 shrink-0" />
-          <span className="text-[15px] whitespace-nowrap group-data-[collapsible=icon]:hidden">
+          <LightningLogo className="text-primary size-6.5 shrink-0" />
+          <span className="text-base whitespace-nowrap group-data-[collapsible=icon]:hidden">
             {t('app.title')}
           </span>
         </Link>
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup className="px-2.5 py-3">
+        <SidebarGroup className="p-4">
           <SidebarGroupContent>
-            <SidebarMenu className="gap-[3px]">
+            <SidebarMenu className="gap-1">
               {NAV.map((item) => (
                 <SidebarMenuItem key={item.href}>
                   <SidebarMenuButton
                     asChild
-                    isActive={pathname.startsWith(item.href)}
+                    isActive={
+                      item.href === '/'
+                        ? pathname === '/'
+                        : pathname.startsWith(item.href)
+                    }
                     tooltip={t(item.key)}
                     className={NAV_BUTTON}
                   >
@@ -79,18 +82,27 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
 
-      <SidebarFooter className="border-t p-2.5">
+      <SidebarFooter className="border-t p-4">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton
-              onClick={toggleSidebar}
-              tooltip={t('sidebar.expand')}
-              className="bg-primary-soft text-primary hover:bg-primary-soft border-primary-soft h-9 gap-[11px] rounded-lg border px-[11px] text-[13.5px] font-semibold hover:brightness-105 [&_svg]:!size-[17px]"
+              size="lg"
+              tooltip={t('account.name')}
+              className="h-14 cursor-default gap-3 rounded-lg px-3 hover:bg-transparent active:bg-transparent"
             >
-              <ChevronLeft
-                className={collapsed ? 'rotate-180 transition-transform' : 'transition-transform'}
-              />
-              <span>{t('sidebar.collapse')}</span>
+              <Avatar className="size-10 group-data-[collapsible=icon]:size-8">
+                <AvatarFallback className="bg-primary-soft text-primary text-base font-semibold">
+                  A
+                </AvatarFallback>
+              </Avatar>
+              <div className="grid flex-1 gap-0.5 text-left leading-tight">
+                <span className="truncate text-[15px] font-semibold">
+                  {t('account.name')}
+                </span>
+                <span className="text-muted-foreground truncate text-[13px]">
+                  {t('account.role')}
+                </span>
+              </div>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
