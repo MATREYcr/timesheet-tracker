@@ -16,23 +16,23 @@ export function WeekPicker({ weekStart, onChange }: Props) {
   const { t } = useTranslation();
   const locale = useLocale();
   return (
-    <div className="bg-card flex items-center gap-1 rounded-lg border p-1">
+    <div className="bg-card flex w-full items-center justify-between gap-1 rounded-lg border p-1 sm:w-auto sm:justify-start">
       <Button
         variant="ghost"
         size="icon"
-        className="size-7"
+        className="size-8"
         aria-label={t('week.previous')}
         onClick={() => onChange(addDays(weekStart, -7))}
       >
         <ChevronLeft className="size-4" />
       </Button>
-      <span className="min-w-40 text-center text-sm font-medium tabular-nums">
+      <span className="flex-1 text-center text-sm font-medium tabular-nums sm:min-w-40 sm:flex-none">
         {formatWeekRange(weekStart, getWeekEnd(weekStart), locale)}
       </span>
       <Button
         variant="ghost"
         size="icon"
-        className="size-7"
+        className="size-8"
         aria-label={t('week.next')}
         onClick={() => onChange(addDays(weekStart, 7))}
       >

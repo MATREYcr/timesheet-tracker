@@ -17,7 +17,7 @@ export function Providers({ children }: { children: ReactNode }) {
     <QueryClientProvider client={queryClient}>
       <ThemeProvider
         attribute="class"
-        defaultTheme="light"
+        defaultTheme="dark"
         enableSystem
         disableTransitionOnChange
       >
@@ -25,9 +25,9 @@ export function Providers({ children }: { children: ReactNode }) {
           <TooltipProvider delayDuration={0}>
             <SidebarProvider>
               <AppSidebar />
-              <SidebarInset>
+              <SidebarInset className="min-w-0">
                 <Topbar />
-                <div className="px-6 py-8">{children}</div>
+                <div className="px-4 py-6 sm:px-6 sm:py-8">{children}</div>
               </SidebarInset>
             </SidebarProvider>
           </TooltipProvider>

@@ -67,7 +67,7 @@ export function EmployeesScreen() {
             {t('employees.subtitle')}
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:gap-4">
           <EmployeeCombobox
             employees={roster.data?.data ?? []}
             value={employeeId}
@@ -76,8 +76,9 @@ export function EmployeesScreen() {
               setPage(1);
             }}
             allLabel={t('common.allEmployees')}
+            className="w-full sm:w-64"
           />
-          <div className="flex items-center gap-2">
+          <div className="border-border bg-background dark:border-input dark:bg-input/30 flex h-10 items-center gap-2 rounded-lg border px-3">
             <Switch
               id="show-inactive"
               checked={includeInactive}
@@ -86,9 +87,11 @@ export function EmployeesScreen() {
                 setPage(1);
               }}
             />
-            <Label htmlFor="show-inactive">{t('employees.showInactive')}</Label>
+            <Label htmlFor="show-inactive" className="cursor-pointer">
+              {t('employees.showInactive')}
+            </Label>
           </div>
-          <Button onClick={openCreate}>
+          <Button onClick={openCreate} className="h-10 w-full px-5 sm:w-auto">
             <Plus className="size-4" />
             {t('employees.add')}
           </Button>

@@ -57,25 +57,29 @@ export function TimeEntriesScreen() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight">
-          {t('timeEntries.title')}
-        </h1>
-        <p className="text-muted-foreground mt-1 text-sm">
-          {t('timeEntries.subtitle')}
-        </p>
-      </div>
-
-      <div className="flex flex-wrap items-center justify-between gap-4">
-        <EmployeeCombobox
-          employees={roster}
-          value={employeeId}
-          onChange={setEmployeeId}
-          placeholder={t('timeEntries.selectEmployee')}
-        />
-        <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {t('timeEntries.title')}
+          </h1>
+          <p className="text-muted-foreground mt-1 text-sm">
+            {t('timeEntries.subtitle')}
+          </p>
+        </div>
+        <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:gap-4">
+          <EmployeeCombobox
+            employees={roster}
+            value={employeeId}
+            onChange={setEmployeeId}
+            placeholder={t('timeEntries.selectEmployee')}
+            className="w-full sm:w-64"
+          />
           <WeekPicker weekStart={weekStart} onChange={setWeekStart} />
-          <Button onClick={openCreate} disabled={!canAdd}>
+          <Button
+            onClick={openCreate}
+            disabled={!canAdd}
+            className="h-10 w-full px-5 sm:w-auto"
+          >
             <Plus className="size-4" />
             {t('timeEntries.add')}
           </Button>
@@ -83,7 +87,7 @@ export function TimeEntriesScreen() {
       </div>
 
       {isInactive && (
-        <Alert>
+        <Alert variant="info">
           <CalendarOff className="size-4" />
           <AlertTitle>{t('timeEntries.inactive.title')}</AlertTitle>
           <AlertDescription>
@@ -92,7 +96,7 @@ export function TimeEntriesScreen() {
         </Alert>
       )}
       {isLocked && (
-        <Alert>
+        <Alert variant="info">
           <Lock className="size-4" />
           <AlertTitle>{t('timeEntries.locked.title')}</AlertTitle>
           <AlertDescription>

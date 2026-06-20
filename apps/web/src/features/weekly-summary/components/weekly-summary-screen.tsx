@@ -53,7 +53,7 @@ export function WeeklySummaryScreen() {
             {t('weeklySummary.subtitle')}
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:gap-4">
           <EmployeeCombobox
             employees={roster.data?.data ?? []}
             value={employeeId}
@@ -62,6 +62,7 @@ export function WeeklySummaryScreen() {
               setPage(1);
             }}
             allLabel={t('common.allEmployees')}
+            className="w-full sm:w-64"
           />
           <WeekPicker weekStart={weekStart} onChange={changeWeek} />
         </div>

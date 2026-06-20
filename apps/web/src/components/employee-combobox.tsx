@@ -60,7 +60,7 @@ export function EmployeeCombobox({
           role="combobox"
           aria-expanded={open}
           className={cn(
-            'w-64 justify-between font-normal',
+            'h-10 w-64 justify-between font-normal',
             !selected && 'text-muted-foreground',
             className,
           )}
