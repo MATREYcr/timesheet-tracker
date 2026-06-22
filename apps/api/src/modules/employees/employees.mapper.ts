@@ -1,5 +1,3 @@
-// DB row -> API DTO: derives `status` and serializes timestamps to ISO.
-
 import { EMPLOYEE_STATUS, type Employee } from '@timesheet/shared';
 import type { EmployeeRow } from '../../db/schema/index.js';
 

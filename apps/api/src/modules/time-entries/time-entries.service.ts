@@ -1,7 +1,3 @@
-// DB-dependent rules live here (active employee, week-not-locked); hours/future-date
-// come from the shared Zod schema. Mutations run in a transaction so the lock check
-// and the write are atomic.
-
 import {
   APPROVAL_STATUS,
   getWeekEnd,
@@ -91,9 +87,7 @@ export function updateTimeEntry(
 ): Promise<TimeEntry> {
   return db.transaction(async (tx) => {
     const entry = await findEntryOrThrow(tx, id);
-    // The current week must be open...
     await assertWeekNotApproved(tx, entry.employeeId, entry.date);
-    // ...and if the date moves to another week, that week must be open too.
     if (input.date && input.date !== entry.date) {
       await assertWeekNotApproved(tx, entry.employeeId, input.date);
     }

@@ -1,6 +1,3 @@
-// Returns the RAW aggregate (hours, rate, status); it does NOT compute pay — the
-// web client derives that via calculateWeeklyPay from @timesheet/shared.
-
 import {
   APPROVAL_STATUS,
   buildPaginated,
@@ -20,37 +17,27 @@ import {
   weeklyApprovals,
 } from '../../db/schema/index.js';
 
-/** Result of approving/rejecting a week (the API confirmation payload). */
 export type WeeklyApprovalResult = WeekApprovalStatus;
 
-export async function getWeeklySummary(
+export async function selectWeeklyAggregate(
   weekStart: string,
-  { page, pageSize }: PaginationQuery,
-  employeeId?: string,
-): Promise<Paginated<WeeklySummaryRow>> {
-  const weekEnd = getWeekEnd(weekStart);
-  const inWeek = and(
-    gte(timeEntries.date, weekStart),
-    lte(timeEntries.date, weekEnd),
-  );
+  {
+    employeeId,
+    pagination,
+  }: { employeeId?: string; pagination?: { limit: number; offset: number } } = {},
+): Promise<WeeklySummaryRow[]> {
   const where = employeeId
-    ? and(inWeek, eq(timeEntries.employeeId, employeeId))
-    : inWeek;
+    ? and(inWeek(weekStart), eq(timeEntries.employeeId, employeeId))
+    : inWeek(weekStart);
 
-  // One row per employee with ≥1 entry that week → count distinct employees.
-  const [{ total }] = await db
-    .select({ total: countDistinct(timeEntries.employeeId) })
-    .from(timeEntries)
-    .where(where);
-
-  const rows = await db
+  const base = db
     .select({
       employeeId: employees.id,
       firstName: employees.firstName,
       lastName: employees.lastName,
       hourlyRate: employees.hourlyRate,
       totalHours: sql<string>`sum(${timeEntries.hours})`,
-      status: sql<ApprovalStatus>`coalesce(${weeklyApprovals.status}, 'pending')`,
+      status: sql<ApprovalStatus>`coalesce(${weeklyApprovals.status}, ${APPROVAL_STATUS.pending})`,
     })
     .from(timeEntries)
     .innerJoin(employees, eq(employees.id, timeEntries.employeeId))
@@ -63,12 +50,32 @@ export async function getWeeklySummary(
     )
     .where(where)
     .groupBy(employees.id, weeklyApprovals.status)
-    .orderBy(asc(employees.firstName), asc(employees.lastName))
-    .limit(pageSize)
-    .offset((page - 1) * pageSize);
+    .orderBy(asc(employees.firstName), asc(employees.lastName));
 
-  // sum() comes back as a string from Postgres numeric — normalize to number.
-  const data = rows.map((row) => ({ ...row, totalHours: Number(row.totalHours) }));
+  const rows = pagination
+    ? await base.limit(pagination.limit).offset(pagination.offset)
+    : await base;
+  return rows.map((row) => ({ ...row, totalHours: Number(row.totalHours) }));
+}
+
+export async function getWeeklySummary(
+  weekStart: string,
+  { page, pageSize }: PaginationQuery,
+  employeeId?: string,
+): Promise<Paginated<WeeklySummaryRow>> {
+  const where = employeeId
+    ? and(inWeek(weekStart), eq(timeEntries.employeeId, employeeId))
+    : inWeek(weekStart);
+
+  const [{ total }] = await db
+    .select({ total: countDistinct(timeEntries.employeeId) })
+    .from(timeEntries)
+    .where(where);
+
+  const data = await selectWeeklyAggregate(weekStart, {
+    employeeId,
+    pagination: { limit: pageSize, offset: (page - 1) * pageSize },
+  });
   return buildPaginated(data, total, page, pageSize);
 }
 
@@ -133,4 +140,11 @@ export function rejectWeek(
   weekStart: string,
 ): Promise<WeeklyApprovalResult> {
   return setStatus(employeeId, weekStart, APPROVAL_STATUS.rejected);
+}
+
+function inWeek(weekStart: string) {
+  return and(
+    gte(timeEntries.date, weekStart),
+    lte(timeEntries.date, getWeekEnd(weekStart)),
+  );
 }

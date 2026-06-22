@@ -24,7 +24,6 @@ export const weeklySummaryRoutes = new Hono<AppEnv>()
       await service.getWeeklySummary(weekStart, { page, pageSize }, employeeId),
     );
   })
-  // Approval status for one (employee, week) — the web uses it to lock entries.
   .get('/approval', validate('query', weeklyApprovalActionSchema), async (c) => {
     const { employeeId, weekStart } = c.req.valid('query');
     return c.json(await service.getApprovalStatus(employeeId, weekStart));

@@ -15,15 +15,20 @@ const listQuery = z
   .object({
     includeInactive: z.stringbool().optional().default(false),
     employeeId: employeeIdSchema.optional(),
+    search: z.string().trim().optional(),
   })
   .extend(paginationQuerySchema.shape);
 
 export const employeesRoutes = new Hono<AppEnv>()
   .get('/', validate('query', listQuery), async (c) => {
-    const { includeInactive, page, pageSize, employeeId } =
+    const { includeInactive, page, pageSize, employeeId, search } =
       c.req.valid('query');
     return c.json(
-      await service.listEmployees(includeInactive, { page, pageSize }, employeeId),
+      await service.listEmployees(
+        includeInactive,
+        { page, pageSize },
+        { employeeId, search },
+      ),
     );
   })
   .post('/', validate('json', createEmployeeSchema), async (c) => {

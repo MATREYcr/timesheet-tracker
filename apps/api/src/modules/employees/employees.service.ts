@@ -6,7 +6,7 @@ import {
   type PaginationQuery,
   type UpdateEmployeeInput,
 } from '@timesheet/shared';
-import { and, asc, count, eq, isNull } from 'drizzle-orm';
+import { and, asc, count, eq, ilike, isNull, sql } from 'drizzle-orm';
 import { AppError } from '../../common/errors.js';
 import { db } from '../../db/client.js';
 import { employees, type EmployeeRow } from '../../db/schema/index.js';
@@ -15,11 +15,18 @@ import { toEmployee } from './employees.mapper.js';
 export async function listEmployees(
   includeInactive: boolean,
   { page, pageSize }: PaginationQuery,
-  employeeId?: string,
+  filters: { employeeId?: string; search?: string } = {},
 ): Promise<Paginated<Employee>> {
+  const { employeeId, search } = filters;
   const conditions = [
     includeInactive ? undefined : isNull(employees.deactivatedAt),
     employeeId ? eq(employees.id, employeeId) : undefined,
+    search
+      ? ilike(
+          sql`${employees.firstName} || ' ' || ${employees.lastName}`,
+          `%${search}%`,
+        )
+      : undefined,
   ].filter((c) => c !== undefined);
   const where = conditions.length ? and(...conditions) : undefined;
 

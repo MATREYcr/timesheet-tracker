@@ -1,8 +1,3 @@
-// Idempotent seed. Week 1 (06-08) is the canonical demo: the assessment sketch
-// (Jane 45.5h @ $22.50) and John's approved/locked week. The next three weeks are
-// filled for every active employee with varied hours and a mix of approval
-// statuses, so pagination and the summary statuses are easy to explore.
-
 import './load-env.js';
 import { addDays, APPROVAL_STATUS, type ApprovalStatus } from '@timesheet/shared';
 import { db } from './client.js';

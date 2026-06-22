@@ -1,9 +1,10 @@
 // Canonical en/es text per ErrorCode (the codes are the shared contract).
 
-import type { ErrorCode } from '@timesheet/shared';
+import { DEFAULT_LOCALE, type ErrorCode, type Locale } from '@timesheet/shared';
 
-export type Locale = 'en' | 'es';
-export const DEFAULT_LOCALE: Locale = 'en';
+// The supported-locale contract lives in shared; re-exported here so the rest of
+// the API keeps importing its locale primitives from this module.
+export { DEFAULT_LOCALE, type Locale };
 
 const MESSAGES: Record<ErrorCode, Record<Locale, string>> = {
   VALIDATION_ERROR: {

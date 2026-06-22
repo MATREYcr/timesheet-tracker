@@ -1,5 +1,3 @@
-// List is query-based: GET /time-entries?employeeId=<uuid>&weekStart=<monday>.
-
 import {
   createTimeEntrySchema,
   employeeIdSchema,
