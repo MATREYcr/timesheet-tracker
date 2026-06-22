@@ -1,7 +1,3 @@
-// Validated env, parsed once at module load so the app fails fast on bad config.
-// Next inlines NEXT_PUBLIC_* at build time, so each var must be referenced by its
-// literal name below — a bare `process.env` wouldn't survive the client bundle.
-
 import { z } from 'zod';
 
 const envSchema = z.object({

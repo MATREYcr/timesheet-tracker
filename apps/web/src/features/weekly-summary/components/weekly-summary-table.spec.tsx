@@ -3,9 +3,11 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, within } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { I18nextProvider } from 'react-i18next';
-import { beforeAll, describe, expect, it } from 'vitest';
-import i18n from '@/i18n/i18n';
+import { describe, expect, it } from 'vitest';
+import { createI18n } from '@/i18n/i18n';
 import { WeeklySummaryTable } from './weekly-summary-table';
+
+const i18n = createI18n('en');
 
 function renderWithProviders(ui: ReactNode) {
   const queryClient = new QueryClient({
@@ -19,10 +21,6 @@ function renderWithProviders(ui: ReactNode) {
 }
 
 describe('WeeklySummaryTable', () => {
-  beforeAll(async () => {
-    await i18n.changeLanguage('en');
-  });
-
   it('renders the regular/overtime/pay split derived by calculateWeeklyPay', () => {
     // 45.5h @ $22.50 → 40 regular + 5.5 overtime;
     // pay = 40*22.5 + 5.5*22.5*1.5 = 900 + 185.63 = 1,085.63
