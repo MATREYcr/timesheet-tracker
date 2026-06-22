@@ -111,6 +111,8 @@ timesheet-tracker/
 - **Only `approved` locks** the week's time entries (no create/edit/delete).
   `pending` and `rejected` weeks remain fully editable, so a rejected week can be
   fixed and re-submitted. Re-approving after a reject is allowed.
+- The decision is flipped with the **opposite action** (approve ⇄ reject) — there is
+  no separate "reopen". To unlock an approved week, reject it.
 
 ---
 

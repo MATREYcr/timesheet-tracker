@@ -155,8 +155,9 @@ few numbers:
   active, week not approved.
 - **Create/edit/delete** of an entry whose week is `approved` → `WEEK_LOCKED` (409).
   `pending`/`rejected` weeks are editable.
-- Approving/rejecting upserts the `weekly_approvals` row. Re-approving after a
-  reject is allowed.
+- Approving/rejecting upserts the `weekly_approvals` row. The decision can be
+  flipped at any time with the opposite action (approve ⇄ reject); an approved week
+  is unlocked by rejecting it.
 - `Accept-Language` parsed robustly (`en`, `es`, `en-US`, `es,en;q=0.8`); match
   primary subtag; default `en`.
 

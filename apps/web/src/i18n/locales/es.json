@@ -187,8 +187,7 @@
     },
     "actions": {
       "approve": "Aprobar",
-      "reject": "Rechazar",
-      "reopen": "Reabrir"
+      "reject": "Rechazar"
     },
     "confirm": {
       "approve": {
@@ -198,10 +197,6 @@
       "reject": {
         "title": "¿Rechazar esta semana?",
         "description": "La semana sigue editable para poder corregir los registros y volver a enviarla."
-      },
-      "reopen": {
-        "title": "¿Reabrir esta semana?",
-        "description": "Esto desbloquea la semana para poder editar sus registros de nuevo."
       }
     },
     "toast": {

@@ -187,8 +187,7 @@
     },
     "actions": {
       "approve": "Approve",
-      "reject": "Reject",
-      "reopen": "Reopen"
+      "reject": "Reject"
     },
     "confirm": {
       "approve": {
@@ -198,10 +197,6 @@
       "reject": {
         "title": "Reject this week?",
         "description": "The week stays editable so entries can be fixed and re-submitted."
-      },
-      "reopen": {
-        "title": "Reopen this week?",
-        "description": "This unlocks the week so its time entries can be edited again."
       }
     },
     "toast": {

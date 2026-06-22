@@ -125,6 +125,9 @@ export function WeeklySummaryTable({
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2">
+                  {row.status === APPROVAL_STATUS.approved && (
+                    <Lock className="text-subtle size-3.5" />
+                  )}
                   {row.status !== APPROVAL_STATUS.approved && (
                     <ConfirmDialog
                       title={t('approval.confirm.approve.title')}
@@ -142,34 +145,18 @@ export function WeeklySummaryTable({
                       </Button>
                     </ConfirmDialog>
                   )}
-                  {row.status === APPROVAL_STATUS.approved ? (
-                    <span className="flex items-center gap-1.5">
-                      <Lock className="text-subtle size-3.5" />
-                      <ConfirmDialog
-                        title={t('approval.confirm.reopen.title')}
-                        description={t('approval.confirm.reopen.description')}
-                        confirmLabel={t('approval.actions.reopen')}
-                        onConfirm={() => onReject(row.employeeId)}
-                      >
-                        <Button size="sm" variant="outline" disabled={pending}>
-                          {t('approval.actions.reopen')}
-                        </Button>
-                      </ConfirmDialog>
-                    </span>
-                  ) : (
-                    row.status !== APPROVAL_STATUS.rejected && (
-                      <ConfirmDialog
-                        title={t('approval.confirm.reject.title')}
-                        description={t('approval.confirm.reject.description')}
-                        confirmLabel={t('approval.actions.reject')}
-                        destructive
-                        onConfirm={() => onReject(row.employeeId)}
-                      >
-                        <Button size="sm" variant="destructive" disabled={pending}>
-                          {t('approval.actions.reject')}
-                        </Button>
-                      </ConfirmDialog>
-                    )
+                  {row.status !== APPROVAL_STATUS.rejected && (
+                    <ConfirmDialog
+                      title={t('approval.confirm.reject.title')}
+                      description={t('approval.confirm.reject.description')}
+                      confirmLabel={t('approval.actions.reject')}
+                      destructive
+                      onConfirm={() => onReject(row.employeeId)}
+                    >
+                      <Button size="sm" variant="destructive" disabled={pending}>
+                        {t('approval.actions.reject')}
+                      </Button>
+                    </ConfirmDialog>
                   )}
                 </div>
               </TableCell>
