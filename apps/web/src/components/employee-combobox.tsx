@@ -18,21 +18,19 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { useEmployeeSearch } from '@/features/employees/hooks';
+import { useDebouncedValue } from '@/hooks/use-debounced-value';
 import { cn } from '@/lib/utils';
 
 interface Props {
-  employees: Employee[];
-  value?: string;
-  onChange: (employeeId: string | undefined) => void;
-  /** Trigger text when nothing is selected (selection mode). */
+  value?: Employee;
+  onChange: (employee: Employee | undefined) => void;
   placeholder?: string;
-  /** When set, adds an "all" option and shows this as the empty-state label (filter mode). */
   allLabel?: string;
   className?: string;
 }
 
 export function EmployeeCombobox({
-  employees,
   value,
   onChange,
   placeholder,
@@ -41,19 +39,29 @@ export function EmployeeCombobox({
 }: Props) {
   const { t } = useTranslation();
   const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState('');
+  const debounced = useDebouncedValue(search.trim());
 
-  const selected = employees.find((e) => e.id === value);
-  const label = selected
-    ? `${selected.firstName} ${selected.lastName}`
+  const { data, isFetching } = useEmployeeSearch(debounced);
+  const results = data?.data ?? [];
+
+  const label = value
+    ? `${value.firstName} ${value.lastName}`
     : (allLabel ?? placeholder ?? t('timeEntries.selectEmployee'));
 
-  const select = (employeeId: string | undefined) => {
-    onChange(employeeId);
+  const select = (employee: Employee | undefined) => {
+    onChange(employee);
     setOpen(false);
   };
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (!next) setSearch('');
+      }}
+    >
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -61,7 +69,7 @@ export function EmployeeCombobox({
           aria-expanded={open}
           className={cn(
             'h-10 w-64 justify-between font-normal',
-            !selected && 'text-muted-foreground',
+            !value && 'text-muted-foreground',
             className,
           )}
         >
@@ -70,10 +78,14 @@ export function EmployeeCombobox({
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-64 p-0" align="start">
-        <Command>
-          <CommandInput placeholder={t('common.searchEmployee')} />
+        <Command shouldFilter={false}>
+          <CommandInput
+            value={search}
+            onValueChange={setSearch}
+            placeholder={t('common.searchEmployee')}
+          />
           <CommandList>
-            <CommandEmpty>{t('common.noEmployees')}</CommandEmpty>
+            {!isFetching && <CommandEmpty>{t('common.noEmployees')}</CommandEmpty>}
             <CommandGroup>
               {allLabel && (
                 <CommandItem value="__all__" onSelect={() => select(undefined)}>
@@ -83,16 +95,16 @@ export function EmployeeCombobox({
                   {allLabel}
                 </CommandItem>
               )}
-              {employees.map((employee) => (
+              {results.map((employee) => (
                 <CommandItem
                   key={employee.id}
-                  value={`${employee.firstName} ${employee.lastName}`}
-                  onSelect={() => select(employee.id)}
+                  value={employee.id}
+                  onSelect={() => select(employee)}
                 >
                   <Check
                     className={cn(
                       'size-4',
-                      value === employee.id ? 'opacity-100' : 'opacity-0',
+                      value?.id === employee.id ? 'opacity-100' : 'opacity-0',
                     )}
                   />
                   {employee.firstName} {employee.lastName}

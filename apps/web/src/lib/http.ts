@@ -1,20 +1,7 @@
-// Axios transport: one instance for the whole app. Interceptors inject the active
-// locale (Accept-Language) and turn the API error envelope into a typed ApiError.
-// This is the single seam between the web and the API.
-
-import type { ApiErrorBody, ErrorCode } from '@timesheet/shared';
+import type { ApiErrorBody } from '@timesheet/shared';
 import axios, { type AxiosError } from 'axios';
-
-export class ApiError extends Error {
-  constructor(
-    readonly code: ErrorCode,
-    message: string,
-    readonly status: number,
-  ) {
-    super(message);
-    this.name = 'ApiError';
-  }
-}
+import { ApiError } from './api-error';
+import { env } from './env';
 
 // Current locale for Accept-Language; the i18n provider keeps this in sync.
 let currentLocale = 'en';
@@ -23,7 +10,7 @@ export function setApiLocale(locale: string) {
 }
 
 export const http = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3333',
+  baseURL: env.NEXT_PUBLIC_API_URL,
 });
 
 http.interceptors.request.use((config) => {

@@ -54,6 +54,14 @@
     "noEmployees": "No employee found.",
     "allEmployees": "All employees"
   },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or was moved.",
+    "back": "Back to dashboard"
+  },
+  "errorPage": {
+    "description": "An unexpected error occurred. Please try again."
+  },
   "employees": {
     "title": "Employees",
     "subtitle": "Manage your hourly employees and their pay rates.",

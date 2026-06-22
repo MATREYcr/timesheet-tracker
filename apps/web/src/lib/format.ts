@@ -1,4 +1,4 @@
-import type { Locale } from '@/i18n/config';
+import { parseDateOnly, type Locale } from '@timesheet/shared';
 
 const INTL_LOCALE: Record<Locale, string> = { en: 'en-US', es: 'es-ES' };
 
@@ -22,13 +22,8 @@ export function formatHours(hours: number, locale: Locale): string {
   }).format(hours);
 }
 
-// Date-only strings are parsed as UTC and formatted with timeZone UTC, so the day
-// never shifts across timezones (same rule as the shared date helpers).
-function parseUtc(date: string): Date {
-  const [year, month, day] = date.split('-').map(Number);
-  return new Date(Date.UTC(year, month - 1, day));
-}
-
+// Date-only strings are parsed as UTC (via the shared helper) and formatted with
+// timeZone UTC, so the day never shifts across timezones.
 export function formatDate(
   date: string,
   locale: Locale,
@@ -41,7 +36,7 @@ export function formatDate(
   return new Intl.DateTimeFormat(INTL_LOCALE[locale], {
     ...options,
     timeZone: 'UTC',
-  }).format(parseUtc(date));
+  }).format(parseDateOnly(date));
 }
 
 /** Compact range label for a Monday–Sunday week, e.g. "Jun 16 – 22, 2026". */
@@ -55,5 +50,5 @@ export function formatWeekRange(
     month: 'short',
     year: 'numeric',
     timeZone: 'UTC',
-  }).formatRange(parseUtc(weekStart), parseUtc(weekEnd));
+  }).formatRange(parseDateOnly(weekStart), parseDateOnly(weekEnd));
 }

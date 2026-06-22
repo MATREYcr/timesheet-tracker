@@ -1,8 +1,15 @@
 'use client';
 
-import { BarChart3, Clock, LayoutDashboard, Users } from 'lucide-react';
+import {
+  BarChart3,
+  Clock,
+  ClockArrowUp,
+  LayoutDashboard,
+  Users,
+} from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
@@ -16,6 +23,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarRail,
+  useSidebar,
 } from '@/components/ui/sidebar';
 
 const NAV = [
@@ -28,17 +36,14 @@ const NAV = [
 const NAV_BUTTON =
   'h-11 gap-3 rounded-lg px-3 text-[15px] font-medium text-muted-foreground [&_svg]:size-5! hover:bg-muted hover:text-foreground data-[active=true]:bg-primary-soft data-[active=true]:font-semibold data-[active=true]:text-primary';
 
-function LightningLogo({ className }: { className?: string }) {
-  return (
-    <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-hidden>
-      <path d="M13 2 4.5 13.5H11L9 22 18 9.5H11.5L13 2Z" />
-    </svg>
-  );
-}
-
 export function AppSidebar() {
   const { t } = useTranslation();
   const pathname = usePathname();
+  const { isMobile, setOpenMobile } = useSidebar();
+
+  useEffect(() => {
+    if (isMobile) setOpenMobile(false);
+  }, [pathname, isMobile, setOpenMobile]);
 
   return (
     <Sidebar collapsible="icon">
@@ -47,7 +52,7 @@ export function AppSidebar() {
           href="/"
           className="flex items-center gap-2.5 overflow-hidden font-bold tracking-tight"
         >
-          <LightningLogo className="text-primary size-6.5 shrink-0" />
+          <ClockArrowUp className="text-primary size-6.5 shrink-0" />
           <span className="text-base whitespace-nowrap group-data-[collapsible=icon]:hidden">
             {t('app.title')}
           </span>

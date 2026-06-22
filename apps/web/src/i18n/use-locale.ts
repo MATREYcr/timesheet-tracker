@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import { DEFAULT_LOCALE, LOCALES, type Locale } from './config';
+import { DEFAULT_LOCALE, LOCALES, type Locale } from '@timesheet/shared';
 
 export function useLocale(): Locale {
   const { i18n } = useTranslation();

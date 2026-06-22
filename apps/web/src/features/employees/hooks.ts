@@ -41,6 +41,14 @@ export function useEmployees(
   });
 }
 
+export function useEmployeeSearch(search: string) {
+  return useQuery({
+    queryKey: [...employeeKeys.all, 'search', search] as const,
+    queryFn: () => employeesApi.search(search),
+    placeholderData: keepPreviousData,
+  });
+}
+
 export function useCreateEmployee() {
   const qc = useQueryClient();
   return useMutation({

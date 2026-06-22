@@ -18,6 +18,12 @@ export const employeesApi = {
         params: { includeInactive, page, pageSize, employeeId },
       })
       .then((r) => r.data),
+  search: (search: string) =>
+    http
+      .get<Paginated<Employee>>('/employees', {
+        params: { search, includeInactive: true, pageSize: 10 },
+      })
+      .then((r) => r.data),
   create: (body: CreateEmployeeInput) =>
     http.post<Employee>('/employees', body).then((r) => r.data),
   update: (id: string, body: UpdateEmployeeInput) =>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useTranslation } from 'react-i18next';
-import { LOCALES } from '@/i18n/config';
+import { LOCALES } from '@timesheet/shared';
 import { cn } from '@/lib/utils';
 
 export function LocaleSwitch() {

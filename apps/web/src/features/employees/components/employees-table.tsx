@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/table';
 import { formatCurrency } from '@/lib/format';
 import { useLocale } from '@/i18n/use-locale';
+import { ITEM_ENTER, staggerDelay } from '@/lib/motion';
 import { useDeactivateEmployee, useReactivateEmployee } from '../hooks';
 import { EmployeeStatusBadge } from './employee-status-badge';
 
@@ -33,8 +34,7 @@ export function EmployeesTable({
   const locale = useLocale();
   const deactivate = useDeactivateEmployee();
   const reactivate = useReactivateEmployee();
-  // Only the row whose status is currently being toggled, so we don't disable
-  // every other row's action while one request is in flight.
+  
   const pendingId =
     (deactivate.isPending ? deactivate.variables?.id : undefined) ??
     (reactivate.isPending ? reactivate.variables?.id : undefined);
@@ -62,40 +62,35 @@ export function EmployeesTable({
     >
       <TableHeader>
         <TableRow>
-          <TableHead className="text-center">
-            {t('employees.columns.name')}
-          </TableHead>
-          <TableHead className="text-center">
-            {t('employees.columns.rate')}
-          </TableHead>
-          <TableHead className="text-center">
-            {t('employees.columns.status')}
-          </TableHead>
-          <TableHead className="text-center">
-            {t('employees.columns.actions')}
-          </TableHead>
+          <TableHead>{t('employees.columns.name')}</TableHead>
+          <TableHead>{t('employees.columns.rate')}</TableHead>
+          <TableHead>{t('employees.columns.status')}</TableHead>
+          <TableHead>{t('employees.columns.actions')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {employees.map((employee) => {
+        {employees.map((employee, i) => {
           const isActive = employee.status === EMPLOYEE_STATUS.active;
           return (
-            <TableRow key={employee.id}>
-              <TableCell className="text-center font-medium">
+            <TableRow
+              key={employee.id}
+              className={ITEM_ENTER}
+              style={staggerDelay(i)}
+            >
+              <TableCell className="font-medium">
                 {employee.firstName} {employee.lastName}
               </TableCell>
-              <TableCell className="text-center tabular-nums">
+              <TableCell className="tabular-nums">
                 {formatCurrency(employee.hourlyRate, locale)}
               </TableCell>
-              <TableCell className="text-center">
+              <TableCell>
                 <EmployeeStatusBadge status={employee.status} />
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2">
                   <Button
                     size="sm"
-                    variant="ghost"
-                    className="bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary"
+                    variant="soft"
                     onClick={() => onEdit(employee)}
                   >
                     {t('employees.actions.edit')}
@@ -121,11 +116,11 @@ export function EmployeesTable({
                   >
                     <Button
                       size="sm"
-                      variant="ghost"
+                      variant={isActive ? 'destructive' : 'ghost'}
                       disabled={pendingId === employee.id}
                       className={
                         isActive
-                          ? 'bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive'
+                          ? undefined
                           : 'bg-muted text-muted-foreground hover:bg-foreground/10 hover:text-foreground'
                       }
                     >

@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 export function ThemeToggle() {
   const { t } = useTranslation();
   const { resolvedTheme, setTheme } = useTheme();
-  // Avoid a hydration mismatch: the resolved theme is only known on the client.
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
 

@@ -54,6 +54,14 @@
     "noEmployees": "No se encontró empleado.",
     "allEmployees": "Todos los empleados"
   },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "La página que buscas no existe o fue movida.",
+    "back": "Volver al panel"
+  },
+  "errorPage": {
+    "description": "Ocurrió un error inesperado. Inténtalo de nuevo."
+  },
   "employees": {
     "title": "Empleados",
     "subtitle": "Gestiona tus empleados por hora y sus tarifas de pago.",

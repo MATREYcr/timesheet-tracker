@@ -50,9 +50,6 @@ interface ApprovalVars {
 
 type SummaryPage = Paginated<WeeklySummaryRow>;
 
-// Approve and reject share the optimistic flow: flip the row's status in every
-// cached page of that week, roll back on error (the global handler shows the
-// toast), then revalidate the week and the time-entry lock state.
 function useSetApproval(
   mutationFn: (employeeId: string, weekStart: string) => Promise<unknown>,
   optimisticStatus: ApprovalStatus,

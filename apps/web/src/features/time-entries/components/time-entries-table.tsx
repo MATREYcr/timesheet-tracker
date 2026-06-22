@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/table';
 import { useLocale } from '@/i18n/use-locale';
 import { formatDate, formatHours } from '@/lib/format';
+import { ITEM_ENTER, staggerDelay } from '@/lib/motion';
 import { useDeleteTimeEntry } from '../hooks';
 
 interface Props {
@@ -38,35 +39,32 @@ export function TimeEntriesTable({ entries, locked, onEdit }: Props) {
     <Table aria-label={t('timeEntries.title')} className="min-w-120 table-fixed">
       <TableHeader>
         <TableRow>
-          <TableHead className="text-center">
-            {t('timeEntries.columns.date')}
-          </TableHead>
-          <TableHead className="text-center">
-            {t('timeEntries.columns.hours')}
-          </TableHead>
-          <TableHead className="text-center">
-            {t('timeEntries.columns.actions')}
-          </TableHead>
+          <TableHead>{t('timeEntries.columns.date')}</TableHead>
+          <TableHead>{t('timeEntries.columns.hours')}</TableHead>
+          <TableHead>{t('timeEntries.columns.actions')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
-        {entries.map((entry) => {
+        {entries.map((entry, i) => {
           const deleting = remove.isPending && remove.variables === entry.id;
           return (
-            <TableRow key={entry.id}>
-              <TableCell className="text-center font-medium">
+            <TableRow
+              key={entry.id}
+              className={ITEM_ENTER}
+              style={staggerDelay(i)}
+            >
+              <TableCell className="font-medium">
                 {formatDate(entry.date, locale)}
               </TableCell>
-              <TableCell className="text-center tabular-nums">
+              <TableCell className="tabular-nums">
                 {formatHours(entry.hours, locale)}
               </TableCell>
               <TableCell>
                 <div className="flex items-center justify-center gap-2">
                   <Button
                     size="sm"
-                    variant="ghost"
+                    variant="soft"
                     disabled={locked || deleting}
-                    className="bg-primary/10 text-primary hover:bg-primary/20 hover:text-primary"
                     onClick={() => onEdit(entry)}
                   >
                     {t('common.edit')}
@@ -80,9 +78,8 @@ export function TimeEntriesTable({ entries, locked, onEdit }: Props) {
                   >
                     <Button
                       size="sm"
-                      variant="ghost"
+                      variant="destructive"
                       disabled={locked || deleting}
-                      className="bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive"
                     >
                       {t('common.delete')}
                     </Button>

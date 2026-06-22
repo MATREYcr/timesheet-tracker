@@ -15,12 +15,10 @@ import {
 } from '@/components/ui/alert-dialog';
 
 interface Props {
-  /** The element that opens the dialog (e.g. the table action button). */
   children: ReactNode;
   title: string;
   description: string;
   confirmLabel: string;
-  /** Style the confirm button as a destructive action. */
   destructive?: boolean;
   onConfirm: () => void;
 }

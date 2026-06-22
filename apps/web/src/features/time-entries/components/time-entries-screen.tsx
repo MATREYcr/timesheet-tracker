@@ -4,44 +4,36 @@ import {
   APPROVAL_STATUS,
   EMPLOYEE_STATUS,
   getCurrentWeekStart,
+  type Employee,
   type TimeEntry,
 } from '@timesheet/shared';
 import { CalendarOff, Lock, Plus, Users } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EmployeeCombobox } from '@/components/employee-combobox';
+import { EmptyState } from '@/components/empty-state';
+import { PageHeader } from '@/components/page-header';
+import { QueryError } from '@/components/query-error';
+import { TableSkeleton } from '@/components/table-skeleton';
 import { WeekPicker } from '@/components/week-picker';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import {
-  Empty,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@/components/ui/empty';
-import { Skeleton } from '@/components/ui/skeleton';
-import { useEmployees } from '../../employees/hooks';
+import { ENTER } from '@/lib/motion';
 import { useTimeEntries, useWeekApproval } from '../hooks';
 import { TimeEntriesTable } from './time-entries-table';
 import { TimeEntryFormDialog } from './time-entry-form-dialog';
 
-const SKELETON_ROWS = 4;
-
 export function TimeEntriesScreen() {
   const { t } = useTranslation();
-  const [employeeId, setEmployeeId] = useState<string | undefined>(undefined);
+  const [selected, setSelected] = useState<Employee | undefined>(undefined);
   const [weekStart, setWeekStart] = useState(getCurrentWeekStart);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<TimeEntry | undefined>(undefined);
 
-  // The selector needs the whole roster (incl. inactive), not a page.
-  const employees = useEmployees(true, 1, 100);
+  const employeeId = selected?.id;
   const entries = useTimeEntries(employeeId, weekStart);
   const approval = useWeekApproval(employeeId, weekStart);
 
-  const roster = employees.data?.data ?? [];
-  const selected = roster.find((e) => e.id === employeeId);
   const isInactive = selected?.status === EMPLOYEE_STATUS.inactive;
   const isLocked = approval.data?.status === APPROVAL_STATUS.approved;
   const canAdd = Boolean(employeeId) && !isInactive && !isLocked;
@@ -57,20 +49,14 @@ export function TimeEntriesScreen() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {t('timeEntries.title')}
-          </h1>
-          <p className="text-muted-foreground mt-1 text-sm">
-            {t('timeEntries.subtitle')}
-          </p>
-        </div>
+      <PageHeader
+        title={t('timeEntries.title')}
+        description={t('timeEntries.subtitle')}
+      >
         <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:gap-4">
           <EmployeeCombobox
-            employees={roster}
-            value={employeeId}
-            onChange={setEmployeeId}
+            value={selected}
+            onChange={setSelected}
             placeholder={t('timeEntries.selectEmployee')}
             className="w-full sm:w-64"
           />
@@ -84,7 +70,7 @@ export function TimeEntriesScreen() {
             {t('timeEntries.add')}
           </Button>
         </div>
-      </div>
+      </PageHeader>
 
       {isInactive && (
         <Alert variant="info">
@@ -106,50 +92,25 @@ export function TimeEntriesScreen() {
       )}
 
       {!employeeId ? (
-        <Empty className="border">
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <Users />
-            </EmptyMedia>
-            <EmptyTitle>{t('timeEntries.empty.noEmployee')}</EmptyTitle>
-            <EmptyDescription>
-              {t('timeEntries.empty.noEmployeeHint')}
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
+        <EmptyState
+          icon={<Users />}
+          title={t('timeEntries.empty.noEmployee')}
+          description={t('timeEntries.empty.noEmployeeHint')}
+        />
       ) : entries.isPending ? (
-        <div className="space-y-2">
-          {Array.from({ length: SKELETON_ROWS }).map((_, i) => (
-            <Skeleton key={i} className="h-12 w-full" />
-          ))}
-        </div>
+        <TableSkeleton />
       ) : entries.isError ? (
-        <Alert variant="destructive">
-          <AlertTitle>{t('common.error')}</AlertTitle>
-          <AlertDescription>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => entries.refetch()}
-            >
-              {t('common.retry')}
-            </Button>
-          </AlertDescription>
-        </Alert>
+        <QueryError onRetry={() => entries.refetch()} />
       ) : entries.data.length === 0 ? (
-        <Empty className="border">
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <CalendarOff />
-            </EmptyMedia>
-            <EmptyTitle>{t('timeEntries.empty.noEntries')}</EmptyTitle>
-            <EmptyDescription>
-              {t('timeEntries.empty.noEntriesHint')}
-            </EmptyDescription>
-          </EmptyHeader>
-        </Empty>
+        <EmptyState
+          icon={<CalendarOff />}
+          title={t('timeEntries.empty.noEntries')}
+          description={t('timeEntries.empty.noEntriesHint')}
+        />
       ) : (
-        <div className="bg-card overflow-hidden rounded-xl border shadow-sm">
+        <div
+          className={`bg-card overflow-hidden rounded-xl border shadow-sm ${ENTER}`}
+        >
           <TimeEntriesTable
             entries={entries.data}
             locked={isLocked}

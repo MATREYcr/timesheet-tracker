@@ -34,7 +34,6 @@ interface Props {
   onOpenChange: (open: boolean) => void;
   employeeId: string;
   weekStart: string;
-  /** Presence switches the dialog to edit mode. */
   entry?: TimeEntry;
 }
 

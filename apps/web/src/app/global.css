@@ -150,3 +150,12 @@
     @apply font-sans;
   }
 }
+
+/* Respect the OS "reduce motion" setting: disable enter animations entirely.
+   With animation cleared, fill-mode no longer applies, so elements rest in their
+   natural (visible) state. */
+@media (prefers-reduced-motion: reduce) {
+  .animate-in {
+    animation: none !important;
+  }
+}

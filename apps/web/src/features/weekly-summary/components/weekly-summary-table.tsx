@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/table';
 import { useLocale } from '@/i18n/use-locale';
 import { formatCurrency, formatHours } from '@/lib/format';
+import { ITEM_ENTER, staggerDelay } from '@/lib/motion';
 import { useApproveWeek, useRejectWeek } from '../hooks';
 import { ApprovalStatusBadge } from './approval-status-badge';
 
@@ -54,6 +55,16 @@ export function WeeklySummaryTable({
       { onSuccess: () => toast.success(t('approval.toast.rejected')) },
     );
 
+  const headers: { label: string; className?: string }[] = [
+    { label: t('weeklySummary.columns.employee') },
+    { label: t('weeklySummary.columns.regularHours') },
+    { label: t('weeklySummary.columns.overtimeHours') },
+    { label: t('weeklySummary.columns.totalHours') },
+    { label: t('weeklySummary.columns.pay') },
+    { label: t('weeklySummary.columns.status') },
+    { label: t('weeklySummary.columns.actions'), className: 'text-center' },
+  ];
+
   return (
     <Table
       aria-label={t('weeklySummary.title')}
@@ -62,42 +73,30 @@ export function WeeklySummaryTable({
     >
       <TableHeader>
         <TableRow>
-          <TableHead className="text-center">
-            {t('weeklySummary.columns.employee')}
-          </TableHead>
-          <TableHead className="text-center">
-            {t('weeklySummary.columns.regularHours')}
-          </TableHead>
-          <TableHead className="text-center">
-            {t('weeklySummary.columns.overtimeHours')}
-          </TableHead>
-          <TableHead className="text-center">
-            {t('weeklySummary.columns.totalHours')}
-          </TableHead>
-          <TableHead className="text-center">
-            {t('weeklySummary.columns.pay')}
-          </TableHead>
-          <TableHead className="text-center">
-            {t('weeklySummary.columns.status')}
-          </TableHead>
-          <TableHead className="text-center">
-            {t('weeklySummary.columns.actions')}
-          </TableHead>
+          {headers.map(({ label, className }) => (
+            <TableHead key={label} className={className}>
+              {label}
+            </TableHead>
+          ))}
         </TableRow>
       </TableHeader>
       <TableBody>
-        {rows.map((row) => {
+        {rows.map((row, i) => {
           const pay = calculateWeeklyPay(row.totalHours, row.hourlyRate);
           const pending = isRowPending(row.employeeId);
           return (
-            <TableRow key={row.employeeId}>
-              <TableCell className="text-center font-medium">
+            <TableRow
+              key={row.employeeId}
+              className={ITEM_ENTER}
+              style={staggerDelay(i)}
+            >
+              <TableCell className="font-medium">
                 {row.firstName} {row.lastName}
               </TableCell>
-              <TableCell className="text-center tabular-nums">
+              <TableCell className="tabular-nums">
                 {formatHours(pay.regularHours, locale)}
               </TableCell>
-              <TableCell className="text-center tabular-nums">
+              <TableCell className="tabular-nums">
                 {pay.overtimeHours > 0 ? (
                   <span className="bg-overtime-bg text-overtime border-overtime-border inline-flex items-center gap-0.5 rounded-full border px-2 py-0.5 text-xs font-bold">
                     <ChevronUp className="size-3" />
@@ -109,10 +108,10 @@ export function WeeklySummaryTable({
                   </span>
                 )}
               </TableCell>
-              <TableCell className="text-center tabular-nums">
+              <TableCell className="tabular-nums">
                 {formatHours(pay.totalHours, locale)}
               </TableCell>
-              <TableCell className="text-center tabular-nums">
+              <TableCell className="tabular-nums">
                 <div className="font-medium">
                   {formatCurrency(pay.totalPay, locale)}
                 </div>
@@ -121,7 +120,7 @@ export function WeeklySummaryTable({
                   {formatCurrency(pay.overtimePay, locale)}
                 </div>
               </TableCell>
-              <TableCell className="text-center">
+              <TableCell>
                 <ApprovalStatusBadge status={row.status} />
               </TableCell>
               <TableCell>
@@ -166,12 +165,7 @@ export function WeeklySummaryTable({
                         destructive
                         onConfirm={() => onReject(row.employeeId)}
                       >
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          disabled={pending}
-                          className="bg-destructive/10 text-destructive hover:bg-destructive/20 hover:text-destructive"
-                        >
+                        <Button size="sm" variant="destructive" disabled={pending}>
                           {t('approval.actions.reject')}
                         </Button>
                       </ConfirmDialog>

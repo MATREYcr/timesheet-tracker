@@ -5,46 +5,33 @@ import { Plus, Users } from 'lucide-react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { EmployeeCombobox } from '@/components/employee-combobox';
-import {
-  Alert,
-  AlertAction,
-  AlertDescription,
-  AlertTitle,
-} from '@/components/ui/alert';
-import { Button } from '@/components/ui/button';
-import {
-  Empty,
-  EmptyContent,
-  EmptyDescription,
-  EmptyHeader,
-  EmptyMedia,
-  EmptyTitle,
-} from '@/components/ui/empty';
-import { Label } from '@/components/ui/label';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Switch } from '@/components/ui/switch';
+import { EmptyState } from '@/components/empty-state';
+import { PageHeader } from '@/components/page-header';
+import { QueryError } from '@/components/query-error';
 import { TablePagination } from '@/components/table-pagination';
+import { TableSkeleton } from '@/components/table-skeleton';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { ENTER } from '@/lib/motion';
+import { cn } from '@/lib/utils';
 import { useEmployees } from '../hooks';
 import { EmployeeFormDialog } from './employee-form-dialog';
 import { EmployeesTable } from './employees-table';
 
-const SKELETON_ROWS = 4;
-
 export function EmployeesScreen() {
   const { t } = useTranslation();
   const [includeInactive, setIncludeInactive] = useState(false);
-  const [employeeId, setEmployeeId] = useState<string | undefined>(undefined);
+  const [selected, setSelected] = useState<Employee | undefined>(undefined);
   const [page, setPage] = useState(1);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Employee | undefined>(undefined);
 
-  // Full roster for the filter combobox (independent of the paginated table).
-  const roster = useEmployees(true, 1, 100);
   const { data, isPending, isError, refetch } = useEmployees(
     includeInactive,
     page,
     10,
-    employeeId,
+    selected?.id,
   );
 
   const openCreate = () => {
@@ -58,21 +45,15 @@ export function EmployeesScreen() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            {t('employees.title')}
-          </h1>
-          <p className="text-muted-foreground mt-1 text-sm">
-            {t('employees.subtitle')}
-          </p>
-        </div>
+      <PageHeader
+        title={t('employees.title')}
+        description={t('employees.subtitle')}
+      >
         <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:gap-4">
           <EmployeeCombobox
-            employees={roster.data?.data ?? []}
-            value={employeeId}
-            onChange={(id) => {
-              setEmployeeId(id);
+            value={selected}
+            onChange={(employee) => {
+              setSelected(employee);
               setPage(1);
             }}
             allLabel={t('common.allEmployees')}
@@ -96,44 +77,30 @@ export function EmployeesScreen() {
             {t('employees.add')}
           </Button>
         </div>
-      </div>
+      </PageHeader>
 
       {isPending ? (
-        <div className="space-y-2">
-          {Array.from({ length: SKELETON_ROWS }).map((_, i) => (
-            <Skeleton key={i} className="h-12 w-full" />
-          ))}
-        </div>
+        <TableSkeleton />
       ) : isError ? (
-        <Alert variant="destructive">
-          <AlertTitle>{t('common.error')}</AlertTitle>
-          <AlertDescription>{t('common.errorBody')}</AlertDescription>
-          <AlertAction>
-            <Button variant="outline" size="sm" onClick={() => refetch()}>
-              {t('common.retry')}
-            </Button>
-          </AlertAction>
-        </Alert>
+        <QueryError onRetry={() => refetch()} />
       ) : data.data.length === 0 ? (
-        <Empty className="border">
-          <EmptyHeader>
-            <EmptyMedia variant="icon">
-              <Users />
-            </EmptyMedia>
-            <EmptyTitle>{t('employees.empty.title')}</EmptyTitle>
-            <EmptyDescription>
-              {t('employees.empty.description')}
-            </EmptyDescription>
-          </EmptyHeader>
-          <EmptyContent>
-            <Button onClick={openCreate}>
-              <Plus className="size-4" />
-              {t('employees.add')}
-            </Button>
-          </EmptyContent>
-        </Empty>
+        <EmptyState
+          icon={<Users />}
+          title={t('employees.empty.title')}
+          description={t('employees.empty.description')}
+        >
+          <Button onClick={openCreate}>
+            <Plus className="size-4" />
+            {t('employees.add')}
+          </Button>
+        </EmptyState>
       ) : (
-        <div className="bg-card flex flex-col overflow-hidden rounded-xl border shadow-sm">
+        <div
+          className={cn(
+            'bg-card flex flex-col overflow-hidden rounded-xl border shadow-sm',
+            ENTER,
+          )}
+        >
           <EmployeesTable
             employees={data.data}
             onEdit={openEdit}
