@@ -8,7 +8,7 @@ import {
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -41,7 +41,7 @@ const EMPTY: Partial<CreateEmployeeInput> = {
 };
 
 export function EmployeeFormDialog({ open, onOpenChange, employee }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const isEdit = Boolean(employee);
   const create = useCreateEmployee();
   const update = useUpdateEmployee();
@@ -57,7 +57,6 @@ export function EmployeeFormDialog({ open, onOpenChange, employee }: Props) {
     defaultValues: EMPTY,
   });
 
-  // RHF keeps values between opens, so re-seed the form each time it opens.
   useEffect(() => {
     if (!open) return;
     reset(

@@ -3,7 +3,7 @@
 import { calculateWeeklyPay, type WeeklySummaryRow } from '@timesheet/shared';
 import { ChevronRight, Hourglass } from 'lucide-react';
 import Link from 'next/link';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import { useLocale } from '@/i18n/use-locale';
 import { formatCurrency, formatHours } from '@/lib/format';
@@ -15,7 +15,7 @@ interface Props {
 }
 
 export function PendingApprovals({ rows, count }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const locale = useLocale();
 
   return (

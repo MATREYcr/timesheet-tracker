@@ -9,7 +9,7 @@ import {
 } from '@timesheet/shared';
 import { CalendarOff, Lock, Plus, Users } from 'lucide-react';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { EmployeeCombobox } from '@/components/employee-combobox';
 import { EmptyState } from '@/components/empty-state';
 import { PageHeader } from '@/components/page-header';
@@ -24,7 +24,7 @@ import { TimeEntriesTable } from './time-entries-table';
 import { TimeEntryFormDialog } from './time-entry-form-dialog';
 
 export function TimeEntriesScreen() {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const [selected, setSelected] = useState<Employee | undefined>(undefined);
   const [weekStart, setWeekStart] = useState(getCurrentWeekStart);
   const [dialogOpen, setDialogOpen] = useState(false);

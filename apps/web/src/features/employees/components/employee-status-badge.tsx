@@ -1,12 +1,12 @@
 'use client';
 
 import { EMPLOYEE_STATUS, type EmployeeStatus } from '@timesheet/shared';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 export function EmployeeStatusBadge({ status }: { status: EmployeeStatus }) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const active = status === EMPLOYEE_STATUS.active;
   return (
     <Badge

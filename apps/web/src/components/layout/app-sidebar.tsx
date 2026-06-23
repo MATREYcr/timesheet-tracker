@@ -10,7 +10,7 @@ import {
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Sidebar,
@@ -37,7 +37,7 @@ const NAV_BUTTON =
   'h-11 gap-3 rounded-lg px-3 text-[15px] font-medium text-muted-foreground [&_svg]:size-5! hover:bg-muted hover:text-foreground data-[active=true]:bg-primary-soft data-[active=true]:font-semibold data-[active=true]:text-primary';
 
 export function AppSidebar() {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const pathname = usePathname();
   const { isMobile, setOpenMobile } = useSidebar();
 

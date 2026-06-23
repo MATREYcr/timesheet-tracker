@@ -1,7 +1,7 @@
 'use client';
 
 import { TriangleAlert } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import {
   Empty,
@@ -13,7 +13,7 @@ import {
 } from '@/components/ui/empty';
 
 export default function Error({ reset }: { error: Error; reset: () => void }) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   return (
     <Empty className="border">
       <EmptyHeader>

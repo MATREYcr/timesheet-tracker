@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import {
   Pagination,
   PaginationContent,
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export function TablePagination({ page, totalPages, onPageChange }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   if (totalPages <= 1) return null;
 
   const atStart = page <= 1;

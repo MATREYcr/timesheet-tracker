@@ -1,7 +1,7 @@
 'use client';
 
 import type { TimeEntry } from '@timesheet/shared';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@/components/ui/button';
@@ -25,7 +25,7 @@ interface Props {
 }
 
 export function TimeEntriesTable({ entries, locked, onEdit }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const locale = useLocale();
   const remove = useDeleteTimeEntry();
 

@@ -3,7 +3,7 @@
 import type { Employee } from '@timesheet/shared';
 import { Check, ChevronsUpDown } from 'lucide-react';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import {
   Command,
@@ -37,7 +37,7 @@ export function EmployeeCombobox({
   allLabel,
   className,
 }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const debounced = useDebouncedValue(search.trim());

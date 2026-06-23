@@ -9,7 +9,7 @@ import {
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -44,7 +44,7 @@ export function TimeEntryFormDialog({
   weekStart,
   entry,
 }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const isEdit = Boolean(entry);
   const create = useCreateTimeEntry();
   const update = useUpdateTimeEntry();

@@ -3,7 +3,7 @@
 import { APPROVAL_STATUS, type ApprovalStatus } from '@timesheet/shared';
 import { Check, X } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
@@ -23,7 +23,7 @@ const STYLE: Record<ApprovalStatus, { cls: string; icon: LucideIcon | null }> = 
 };
 
 export function ApprovalStatusBadge({ status }: { status: ApprovalStatus }) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const { cls, icon: Icon } = STYLE[status];
   return (
     <Badge

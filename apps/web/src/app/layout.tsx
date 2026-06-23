@@ -1,8 +1,7 @@
 import './global.css';
-import { DEFAULT_LOCALE, LOCALES, type Locale } from '@timesheet/shared';
 import { Geist } from 'next/font/google';
-import { cookies } from 'next/headers';
-import { LOCALE_COOKIE } from '@/i18n/locale-cookie';
+import { getLocale } from 'next-intl/server';
+import { NextIntlClientProvider } from 'next-intl';
 import { cn } from '@/lib/utils';
 import { Providers } from './providers';
 
@@ -18,13 +17,9 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  // Resolve the locale on the server so the first HTML is rendered in the right
-  // language and <html lang> is correct. Reading a cookie opts this route into
-  // dynamic rendering (SSR) — the right mode for a per-user dashboard.
-  const cookieLocale = (await cookies()).get(LOCALE_COOKIE)?.value;
-  const locale: Locale = LOCALES.includes(cookieLocale as Locale)
-    ? (cookieLocale as Locale)
-    : DEFAULT_LOCALE;
+  // getLocale() reads from getRequestConfig (i18n/request.ts), which resolves
+  // the locale from the cookie — so the first HTML is already in the right language.
+  const locale = await getLocale();
 
   return (
     <html
@@ -33,7 +28,10 @@ export default async function RootLayout({
       className={cn('font-sans', geist.variable)}
     >
       <body>
-        <Providers locale={locale}>{children}</Providers>
+        {/* NextIntlClientProvider forwards messages + locale to Client Components. */}
+        <NextIntlClientProvider>
+          <Providers>{children}</Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

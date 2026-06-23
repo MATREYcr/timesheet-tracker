@@ -1,7 +1,7 @@
 'use client';
 
 import { EMPLOYEE_STATUS, type Employee } from '@timesheet/shared';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@/components/ui/button';
@@ -30,7 +30,7 @@ export function EmployeesTable({
   onEdit,
   containerClassName,
 }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const locale = useLocale();
   const deactivate = useDeactivateEmployee();
   const reactivate = useReactivateEmployee();

@@ -1,7 +1,7 @@
 'use client';
 
 import { Clock, DollarSign, Hourglass, Users } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { useLocale } from '@/i18n/use-locale';
 import { formatCurrency, formatHours } from '@/lib/format';
 import { ITEM_ENTER, staggerDelay } from '@/lib/motion';
@@ -19,7 +19,7 @@ export function DashboardStats({
   totalPay,
   pendingCount,
 }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const locale = useLocale();
 
   const stats = [

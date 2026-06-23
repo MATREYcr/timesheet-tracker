@@ -6,7 +6,7 @@ import {
   type WeeklySummaryRow,
 } from '@timesheet/shared';
 import { ChevronUp, Lock } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@/components/ui/button';
@@ -35,7 +35,7 @@ export function WeeklySummaryTable({
   weekStart,
   containerClassName,
 }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const locale = useLocale();
   const approve = useApproveWeek();
   const reject = useRejectWeek();

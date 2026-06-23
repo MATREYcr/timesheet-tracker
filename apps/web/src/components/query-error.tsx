@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import {
   Alert,
   AlertAction,
@@ -10,7 +10,7 @@ import {
 import { Button } from '@/components/ui/button';
 
 export function QueryError({ onRetry }: { onRetry: () => void }) {
-  const { t } = useTranslation();
+  const t = useTranslations();
   return (
     <Alert variant="destructive">
       <AlertTitle>{t('common.error')}</AlertTitle>

@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactNode } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -31,7 +31,7 @@ export function ConfirmDialog({
   destructive,
   onConfirm,
 }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations();
 
   return (
     <AlertDialog>

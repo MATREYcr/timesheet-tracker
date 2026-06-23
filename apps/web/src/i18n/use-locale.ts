@@ -1,10 +1,9 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
+import { useLocale as useNextIntlLocale } from 'next-intl';
 import { DEFAULT_LOCALE, LOCALES, type Locale } from '@timesheet/shared';
 
 export function useLocale(): Locale {
-  const { i18n } = useTranslation();
-  const lng = (i18n.resolvedLanguage ?? i18n.language)?.split('-')[0];
+  const lng = useNextIntlLocale();
   return LOCALES.includes(lng as Locale) ? (lng as Locale) : DEFAULT_LOCALE;
 }

@@ -3,7 +3,7 @@
 import { getCurrentWeekStart, type Employee } from '@timesheet/shared';
 import { CalendarRange } from 'lucide-react';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { EmployeeCombobox } from '@/components/employee-combobox';
 import { EmptyState } from '@/components/empty-state';
 import { PageHeader } from '@/components/page-header';
@@ -16,7 +16,7 @@ import { useWeeklySummary } from '../hooks';
 import { WeeklySummaryTable } from './weekly-summary-table';
 
 export function WeeklySummaryScreen() {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const [weekStart, setWeekStart] = useState(getCurrentWeekStart);
   const [selected, setSelected] = useState<Employee | undefined>(undefined);
   const [page, setPage] = useState(1);

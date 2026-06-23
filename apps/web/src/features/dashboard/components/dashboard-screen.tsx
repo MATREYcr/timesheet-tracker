@@ -1,7 +1,7 @@
 'use client';
 
 import { CalendarDays } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { PageHeader } from '@/components/page-header';
 import { QueryError } from '@/components/query-error';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -13,7 +13,7 @@ import { DashboardStats } from './dashboard-stats';
 import { PendingApprovals } from './pending-approvals';
 
 export function DashboardScreen() {
-  const { t } = useTranslation();
+  const t = useTranslations();
   const locale = useLocale();
   const {
     weekStart,
