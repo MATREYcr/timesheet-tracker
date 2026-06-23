@@ -1,17 +1,27 @@
+import { createRoute, z } from '@hono/zod-openapi';
 import { weekStartSchema } from '@timesheet/shared';
-import { Hono } from 'hono';
-import { z } from 'zod';
-import type { AppEnv } from '../../common/types.js';
-import { validate } from '../../middleware/validate.js';
+import {
+  createModuleApp,
+  dashboardSummarySchema,
+  jsonResponse,
+} from '../../common/openapi.js';
 import * as service from './dashboard.service.js';
 
-const dashboardQuery = z.object({ weekStart: weekStartSchema });
+const dashboardRoute = createRoute({
+  method: 'get',
+  path: '/',
+  tags: ['Dashboard'],
+  summary: '"This week" KPIs computed server-side',
+  request: { query: z.object({ weekStart: weekStartSchema }) },
+  responses: {
+    200: jsonResponse(dashboardSummarySchema, 'Dashboard summary'),
+  },
+});
 
-export const dashboardRoutes = new Hono<AppEnv>().get(
-  '/',
-  validate('query', dashboardQuery),
+export const dashboardRoutes = createModuleApp().openapi(
+  dashboardRoute,
   async (c) => {
     const { weekStart } = c.req.valid('query');
-    return c.json(await service.getDashboard(weekStart));
+    return c.json(await service.getDashboard(weekStart), 200);
   },
 );

@@ -105,7 +105,8 @@
   },
   "dependencies": {
     "@hono/node-server": "^2.0.4",
-    "@hono/zod-validator": "^0.8.0",
+    "@hono/swagger-ui": "^0.6.1",
+    "@hono/zod-openapi": "^1.4.0",
     "@timesheet/shared": "workspace:*",
     "dotenv": "^17.4.2",
     "drizzle-orm": "^0.45.2",
