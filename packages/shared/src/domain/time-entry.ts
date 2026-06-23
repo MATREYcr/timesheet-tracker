@@ -5,16 +5,23 @@ import { z } from 'zod';
 import { pastOrToday } from '../core/dates.js';
 import { employeeIdSchema } from './employee.js';
 
-export interface TimeEntry {
-  id: string;
-  employeeId: string;
+/**
+ * A persisted time entry as returned by the API. Single source of truth for the
+ * shape: the `TimeEntry` type is derived from this schema (the API decorates it
+ * for OpenAPI). Distinct from `createTimeEntrySchema`, which validates new input.
+ */
+export const timeEntrySchema = z.object({
+  id: z.uuid(),
+  employeeId: employeeIdSchema,
   /** Date-only, `YYYY-MM-DD`, no time, no timezone. */
-  date: string;
+  date: z.string(),
   /** Hours worked, 0.25–24 in 0.25 increments. */
-  hours: number;
-  createdAt: string;
-  updatedAt: string;
-}
+  hours: z.number(),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export type TimeEntry = z.infer<typeof timeEntrySchema>;
 
 /** Hours worked: 0.25–24 inclusive, in quarter-hour steps. */
 export const hoursSchema = z

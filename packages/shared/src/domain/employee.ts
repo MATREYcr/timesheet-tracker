@@ -11,19 +11,25 @@ export const EMPLOYEE_STATUS = {
 export type EmployeeStatus =
   (typeof EMPLOYEE_STATUS)[keyof typeof EMPLOYEE_STATUS];
 
-export interface Employee {
-  id: string;
-  firstName: string;
-  lastName: string;
+/**
+ * An employee as returned by the API. Single source of truth for the shape: the
+ * `Employee` type is derived from this schema, and the API decorates it for OpenAPI.
+ */
+export const employeeSchema = z.object({
+  id: z.uuid(),
+  firstName: z.string(),
+  lastName: z.string(),
   /** Hourly rate in the currency's major unit (e.g. dollars), e.g. 22.5. */
-  hourlyRate: number;
+  hourlyRate: z.number(),
   /** ISO timestamp when deactivated, or null when active. */
-  deactivatedAt: string | null;
+  deactivatedAt: z.string().nullable(),
   /** Derived convenience field (active | inactive). */
-  status: EmployeeStatus;
-  createdAt: string;
-  updatedAt: string;
-}
+  status: z.enum([EMPLOYEE_STATUS.active, EMPLOYEE_STATUS.inactive]),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+export type Employee = z.infer<typeof employeeSchema>;
 
 /** An employee identifier. Reused by every concept that references an employee. */
 export const employeeIdSchema = z.uuid();

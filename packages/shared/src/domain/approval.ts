@@ -33,13 +33,16 @@ export interface WeeklyApproval {
 /**
  * Approval status of a single (employee, week). `status` is `pending` when no
  * approval row exists. Returned by the approval lookup and the approve/reject
- * actions; the web uses it to lock entries in approved weeks.
+ * actions; the web uses it to lock entries in approved weeks. Single source of
+ * truth for the shape — the type derives from this schema; the API decorates it.
  */
-export interface WeekApprovalStatus {
-  employeeId: string;
-  weekStart: string;
-  status: ApprovalStatus;
-}
+export const weekApprovalStatusSchema = z.object({
+  employeeId: employeeIdSchema,
+  weekStart: weekStartSchema,
+  status: z.enum(APPROVAL_STATUS_VALUES),
+});
+
+export type WeekApprovalStatus = z.infer<typeof weekApprovalStatusSchema>;
 
 export const weeklyApprovalActionSchema = z.object({
   employeeId: employeeIdSchema,
