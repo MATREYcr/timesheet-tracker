@@ -1,22 +1,30 @@
-import { weekStartSchema, weeklyApprovalActionSchema } from '@timesheet/shared';
-import { Hono } from 'hono';
-import { z } from 'zod';
-import type { AppEnv } from '../../common/types.js';
-import { validate } from '../../middleware/validate.js';
-import * as service from './weekly-summary.service.js';
+import { HttpStatus } from '@/common/http-status';
+import { createModuleApp } from '@/common/openapi';
+import * as service from './weekly-summary.service';
+import {
+  approvalRoute,
+  approveRoute,
+  rejectRoute,
+  summaryRoute,
+} from './weekly-summary.openapi';
 
-const summaryQuery = z.object({ weekStart: weekStartSchema });
-
-export const weeklySummaryRoutes = new Hono<AppEnv>()
-  .get('/', validate('query', summaryQuery), async (c) => {
-    const { weekStart } = c.req.valid('query');
-    return c.json(await service.getWeeklySummary(weekStart));
+export const weeklySummaryRoutes = createModuleApp()
+  .openapi(summaryRoute, async (c) => {
+    const { weekStart, page, pageSize, employeeId } = c.req.valid('query');
+    return c.json(
+      await service.getWeeklySummary(weekStart, { page, pageSize }, employeeId),
+      HttpStatus.OK,
+    );
   })
-  .post('/approve', validate('json', weeklyApprovalActionSchema), async (c) => {
-    const { employeeId, weekStart } = c.req.valid('json');
-    return c.json(await service.approveWeek(employeeId, weekStart));
+  .openapi(approvalRoute, async (c) => {
+    const { employeeId, weekStart } = c.req.valid('query');
+    return c.json(await service.getApprovalStatus(employeeId, weekStart), HttpStatus.OK);
   })
-  .post('/reject', validate('json', weeklyApprovalActionSchema), async (c) => {
+  .openapi(approveRoute, async (c) => {
     const { employeeId, weekStart } = c.req.valid('json');
-    return c.json(await service.rejectWeek(employeeId, weekStart));
+    return c.json(await service.approveWeek(employeeId, weekStart), HttpStatus.OK);
+  })
+  .openapi(rejectRoute, async (c) => {
+    const { employeeId, weekStart } = c.req.valid('json');
+    return c.json(await service.rejectWeek(employeeId, weekStart), HttpStatus.OK);
   });

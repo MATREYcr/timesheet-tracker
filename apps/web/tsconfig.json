@@ -30,6 +30,7 @@
     "src/**/*.tsx",
     "src/**/*.js",
     "src/**/*.jsx",
+    "src/**/*.json",
     "../../apps/web/.next/types/**/*.ts",
     "../../dist/apps/web/.next/types/**/*.ts",
     "next-env.d.ts"
@@ -46,5 +47,10 @@
     "eslint.config.js",
     "eslint.config.cjs",
     "eslint.config.mjs"
+  ],
+  "references": [
+    {
+      "path": "../../packages/shared"
+    }
   ]
 }

@@ -1,12 +1,10 @@
-// Validated env, parsed once at startup so the app fails fast on bad config.
-
 import { z } from 'zod';
 
 const envSchema = z.object({
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
   PORT: z.coerce.number().int().positive().default(3333),
-  /** Allowed CORS origin for the web client. '*' is fine for local dev. */
   CORS_ORIGIN: z.string().min(1).default('*'),
+  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 });
 
 const parsed = envSchema.safeParse(process.env);

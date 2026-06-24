@@ -1,7 +1,3 @@
-// DB-dependent rules live here (active employee, week-not-locked); hours/future-date
-// come from the shared Zod schema. Mutations run in a transaction so the lock check
-// and the write are atomic.
-
 import {
   APPROVAL_STATUS,
   getWeekEnd,
@@ -11,15 +7,15 @@ import {
   type UpdateTimeEntryInput,
 } from '@timesheet/shared';
 import { and, asc, eq, gte, lte } from 'drizzle-orm';
-import { AppError } from '../../common/errors.js';
-import { db } from '../../db/client.js';
+import { AppError } from '@/common/errors';
+import { db } from '@/db/client';
 import {
   employees,
   timeEntries,
   weeklyApprovals,
   type TimeEntryRow,
-} from '../../db/schema/index.js';
-import { toTimeEntry } from './time-entries.mapper.js';
+} from '@/db/schema';
+import { toTimeEntry } from './time-entries.mapper';
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 
@@ -91,9 +87,7 @@ export function updateTimeEntry(
 ): Promise<TimeEntry> {
   return db.transaction(async (tx) => {
     const entry = await findEntryOrThrow(tx, id);
-    // The current week must be open...
     await assertWeekNotApproved(tx, entry.employeeId, entry.date);
-    // ...and if the date moves to another week, that week must be open too.
     if (input.date && input.date !== entry.date) {
       await assertWeekNotApproved(tx, entry.employeeId, input.date);
     }

@@ -76,7 +76,7 @@ so the app is usable immediately after setup.
 
 | Method | Path                                   | Notes                                  |
 | ------ | -------------------------------------- | -------------------------------------- |
-| GET    | `/employees?includeInactive=bool`      | Inactive hidden unless flag set        |
+| GET    | `/employees?includeInactive=bool&page=&pageSize=&employeeId=&search=` | Inactive hidden unless flag set; **paginated**; optional `employeeId` filter; optional `search` (name) for the combobox |
 | POST   | `/employees`                           | Validates via shared schema            |
 | PATCH  | `/employees/:id`                       | Edit name/rate                         |
 | POST   | `/employees/:id/deactivate`            | Sets `deactivatedAt` (soft delete)     |
@@ -85,17 +85,69 @@ so the app is usable immediately after setup.
 | POST   | `/time-entries`                        | Full validation (see below)            |
 | PATCH  | `/time-entries/:id`                    | Blocked if week approved               |
 | DELETE | `/time-entries/:id`                    | Blocked if week approved               |
-| GET    | `/weekly-summary?weekStart=`           | Raw aggregate per employee (see below) |
+| GET    | `/weekly-summary?weekStart=&page=&pageSize=&employeeId=` | Raw aggregate per employee (see below); **paginated**; optional `employeeId` filter |
+| GET    | `/weekly-summary/approval?employeeId=&weekStart=` | Status of one (employee, week); `pending` if no row, 404 if employee missing |
 | POST   | `/weekly-summary/approve`              | `{ employeeId, weekStart }`            |
 | POST   | `/weekly-summary/reject`               | `{ employeeId, weekStart }`            |
+| GET    | `/dashboard?weekStart=`                | "This week" KPIs computed server-side (see below) |
+
+## Pagination
+
+List endpoints that can grow are **paginated server-side** (`/employees`,
+`/weekly-summary`). Query: `page` (1-based, default 1) + `pageSize` (default 10,
+max 100), validated by `paginationQuerySchema` from `shared`. Response is the
+`Paginated<T>` envelope:
+
+```json
+{ "data": [ ... ], "page": 1, "pageSize": 10, "total": 42, "totalPages": 5 }
+```
+
+`page`/`pageSize` echo the request; `total` is the full row count (pre-pagination)
+so the client can render a pager. `/time-entries` is **not** paginated — it is
+already bounded to one (employee, week) (≤ 7 rows).
+
+Both paginated endpoints also accept an optional **`employeeId`** filter (validated
+by the shared uuid schema); `total` reflects the filtered set so the pager stays
+correct. The web combobox uses it to filter the table server-side.
+
+`/employees` also accepts an optional **`search`** param (case-insensitive `ilike`
+over `firstName || ' ' || lastName`). The filter combobox queries this as you type
+(debounced, `pageSize` capped to the top matches) instead of loading the whole
+roster, so it scales past `pageSize` employees.
 
 ## Weekly summary response (raw — client computes pay)
 
-`GET /weekly-summary?weekStart=` returns one row per employee with **≥1 time entry
-in that week** (active or inactive, so inactive employees' historical weeks stay
-visible). Each row: `{ employeeId, firstName, lastName, hourlyRate, totalHours,
-status }`. The API does **not** compute pay or the regular/overtime split — the web
-client derives those with `calculateWeeklyPay` from `shared`.
+`GET /weekly-summary?weekStart=` returns a `Paginated<WeeklySummaryRow>` — one row
+per employee with **≥1 time entry in that week** (active or inactive, so inactive
+employees' historical weeks stay visible). Each row: `{ employeeId, firstName,
+lastName, hourlyRate, totalHours, status }`. The API does **not** compute pay or the
+regular/overtime split — the web client derives those with `calculateWeeklyPay`
+from `shared`.
+
+`GET /weekly-summary/approval?employeeId=&weekStart=` returns `{ employeeId,
+weekStart, status }` (`WeekApprovalStatus`) for a single employee/week — `pending`
+when no approval row exists, `404` when the employee does not exist. The Time
+entries screen uses it to render approved weeks as read-only without over-fetching
+the full weekly summary.
+
+## Dashboard response (server-computed KPIs)
+
+`GET /dashboard?weekStart=` returns a `DashboardSummary` for the "this week"
+overview, so the client doesn't over-fetch the full roster/summary just to show a
+few numbers:
+
+```json
+{ "weekStart": "2026-06-15", "activeEmployees": 14, "totalHours": 586,
+  "totalPay": 13340.5, "pendingCount": 6, "pending": [ /* ≤5 WeeklySummaryRow */ ] }
+```
+
+- `activeEmployees` / `pendingCount` are SQL counts; `totalHours` is summed server-side.
+- `totalPay` is computed on the server by running the **shared `calculateWeeklyPay`**
+  over each employee's weekly aggregate and summing — the same headless calc the web
+  uses, proving it is platform-agnostic. (Per §5 the _weekly summary screen_ still
+  derives pay on the client; the dashboard is a separate read-only KPI view.)
+- `pending` carries only the preview rows (raw aggregate) for the list; the full
+  count is `pendingCount`.
 
 ## Validation rules (server-enforced, via shared schemas)
 
@@ -103,8 +155,9 @@ client derives those with `calculateWeeklyPay` from `shared`.
   active, week not approved.
 - **Create/edit/delete** of an entry whose week is `approved` → `WEEK_LOCKED` (409).
   `pending`/`rejected` weeks are editable.
-- Approving/rejecting upserts the `weekly_approvals` row. Re-approving after a
-  reject is allowed.
+- Approving/rejecting upserts the `weekly_approvals` row. The decision can be
+  flipped at any time with the opposite action (approve ⇄ reject); an approved week
+  is unlocked by rejecting it.
 - `Accept-Language` parsed robustly (`en`, `es`, `en-US`, `es,en;q=0.8`); match
   primary subtag; default `en`.
 

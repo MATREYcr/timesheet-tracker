@@ -86,21 +86,62 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 
 ## Phase 3 — `apps/web` (Next.js 16)
 
-- [ ] **3.1 App setup** — Next.js App Router, Tailwind, shadcn/ui init.
-- [ ] **3.2 Data layer** — typed `api` client (sets `Accept-Language`, parses
-      envelope) + TanStack Query provider/hooks.
-- [ ] **3.3 i18n** — en/es translation files + locale switch; wires header.
-- [ ] **3.4 Employees screen** — list + show-inactive toggle + create/edit dialog
-      (shared Zod via react-hook-form) + deactivate/reactivate.
-- [ ] **3.5 Time-entries screen** — employee selector + list + log/edit/delete;
-      entries in approved weeks are read-only.
-- [ ] **3.6 Weekly-summary screen (core)** — week picker, per-employee
-      regular/overtime/pay (shared calc), approve/reject, locked state.
-- [ ] **3.7 Loading/error states** — every async view has skeleton/spinner + envelope
-      error display.
-- [ ] **3.8 Optimistic updates** — approve/reject + quick mutations update cache
-      immediately, roll back on error.
-- [ ] **3.9 Frontend test** — one meaningful component/hook test.
+- [x] **3.1 App setup** — Tailwind v4 (PostCSS) + shadcn/ui init (components.json,
+      cn util, theme in global.css, Button). Removed Nx welcome scaffold + the
+      example Next API route. Home placeholder links to the 3 screens. ✓
+- [x] **3.2 Data layer** — `lib/http.ts` axios instance + interceptors (injects
+      Accept-Language via `setApiLocale`, maps envelope → `ApiError`); per-feature
+      `features/<x>/api.ts` endpoint functions; `lib/query.ts` QueryClient +
+      `Providers`. `@timesheet/shared` linked. Per-feature TanStack Query hooks land
+      with each screen (3.4–3.6). ✓
+- [x] **3.3 i18n** — `react-i18next` (cross-platform: same JSON works in a future
+      Expo app) with `locales/en.json`/`es.json`, typed keys via i18next module
+      augmentation, `LanguageDetector` (localStorage), `LocaleSwitch`. Provider syncs
+      `setApiLocale` so API errors match the UI locale. ✓
+- [x] **3.4 Employees screen** — list + show-inactive toggle + create/edit dialog
+      (shared Zod via react-hook-form + standardSchemaResolver) + deactivate/reactivate.
+      Per-row pending, global mutation error toasts, shadcn Field forms. ✓
+- [x] **3.5 Time-entries screen** — employee selector + week picker + log/edit/delete;
+      approved weeks render read-only (lock via new `GET /weekly-summary/approval`),
+      inactive employees viewable but not editable; delete behind a confirm. ✓
+- [x] **3.6 Weekly-summary screen (core)** — week picker, per-employee
+      regular/overtime/pay derived client-side via `calculateWeeklyPay`, approve/reject
+      with optimistic updates + reopen, locked state. ✓
+- [x] **3.7 Loading/error states** — every async view has skeleton + envelope error
+      (Alert + retry) + empty state (shadcn Empty). ✓
+- [x] **3.8 Optimistic updates** — approve/reject flip the cached row immediately and
+      roll back on error; invalidate the time-entry lock state. ✓
+- [x] **3.9 Frontend test** — Vitest + Testing Library component test asserting the
+      weekly summary row renders the shared regular/overtime/pay split. ✓
+
+### UI redesign (hi-fi pass — driven by `docs/design/` handoff)
+
+- [x] **3.10 Design tokens + theme** — mapped the handoff tokens onto shadcn semantic
+      vars in `global.css` (light + dark): purple accent, zinc neutrals, plus
+      `overtime`/`success`/`destructive-bg`/`subtle`/`primary-soft`. ✓
+- [x] **3.11 Dark mode + global shell** — `next-themes` + theme toggle; sticky header
+      with segmented nav (active pill), EN/ES + theme toggles; card-wrapped tables. ✓
+- [x] **3.12 Screen polish** — status badges (dot/soft pill), amber overtime pill,
+      table header style, card tables, link-style row actions, week picker group. ✓
+- [ ] **3.13 Visual QA** — verify each screen in en/es × light/dark against
+      `docs/design/screenshots/`; typecheck + lint + build + test green.
+
+### Server-side pagination (Employees + Weekly summary)
+
+- [x] **3.14 Contract** — `shared`: `Paginated<T>`, `paginationQuerySchema`
+      (`page`/`pageSize`), `buildPaginated` helper; spec the envelope (02-api, 03-web). ✓
+- [x] **3.15 API** — `/employees` and `/weekly-summary` accept `page`/`pageSize`,
+      return `Paginated<T>` (limit/offset + count); integration test updated. ✓
+- [x] **3.16 Web** — feature `api.ts` consumes the envelope; hooks use
+      `keepPreviousData`; shadcn `Pagination` in the card footer. Time entries unchanged. ✓
+
+### Employee filter (searchable combobox)
+
+- [x] **3.17 API filter** — optional `employeeId` on `/employees` and
+      `/weekly-summary` (server-side `where`); `total` reflects the filtered set. ✓
+- [x] **3.18 Web combobox** — reusable searchable `EmployeeCombobox`
+      (shadcn Popover + Command). Time entries uses it to pick the employee;
+      Employees + Weekly summary use it to filter the table (resets to page 1). ✓
 
 ---
 

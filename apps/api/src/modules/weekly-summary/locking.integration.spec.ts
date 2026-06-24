@@ -1,18 +1,28 @@
 // Approving a week locks its entries. Runs the real app against real Postgres via
 // app.request() (CI provides the DB).
 
-import type { TimeEntry, WeeklySummaryRow } from '@timesheet/shared';
+import type {
+  Paginated,
+  TimeEntry,
+  WeekApprovalStatus,
+  WeeklySummaryRow,
+} from '@timesheet/shared';
+import { and, eq, gte, lte } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createApp } from '../../app.js';
-import { closeDb, db } from '../../db/client.js';
+import { createApp } from '@/app';
+import { closeDb, db } from '@/db/client';
 import {
   employees,
   timeEntries,
   weeklyApprovals,
-} from '../../db/schema/index.js';
+} from '@/db/schema';
 
 const app = createApp();
-const WEEK_START = '2026-06-08';
+// A dedicated far-past week the seed never uses, so the test stays fully isolated
+// and never wipes real data. Dates are in the past, so they pass the no-future rule.
+const WEEK_START = '2020-01-06'; // Monday
+const WEEK_END = '2020-01-12'; // Sunday
+const TEST_FIRST_NAME = 'IntegrationTest';
 
 async function body<T>(res: Response): Promise<T> {
   return (await res.json()) as T;
@@ -34,10 +44,18 @@ function patchJson(path: string, payload: unknown) {
   });
 }
 
-async function clean() {
-  await db.delete(weeklyApprovals);
-  await db.delete(timeEntries);
-  await db.delete(employees);
+// Scoped cleanup: only the test week + the test employee. Never touches the dev seed
+// (which lives in other weeks), so running the tests no longer wipes real data.
+async function reset() {
+  await db
+    .delete(weeklyApprovals)
+    .where(eq(weeklyApprovals.weekStart, WEEK_START));
+  await db
+    .delete(timeEntries)
+    .where(
+      and(gte(timeEntries.date, WEEK_START), lte(timeEntries.date, WEEK_END)),
+    );
+  await db.delete(employees).where(eq(employees.firstName, TEST_FIRST_NAME));
 }
 
 describe('approval locking flow (integration)', () => {
@@ -45,9 +63,9 @@ describe('approval locking flow (integration)', () => {
   let entryId: string;
 
   beforeAll(async () => {
-    await clean();
+    await reset();
     const res = await postJson('/employees', {
-      firstName: 'Test',
+      firstName: TEST_FIRST_NAME,
       lastName: 'User',
       hourlyRate: 20,
     });
@@ -55,14 +73,14 @@ describe('approval locking flow (integration)', () => {
   });
 
   afterAll(async () => {
-    await clean();
+    await reset();
     await closeDb();
   });
 
   it('allows creating an entry while the week is pending', async () => {
     const res = await postJson('/time-entries', {
       employeeId,
-      date: '2026-06-08',
+      date: WEEK_START,
       hours: 8,
     });
     expect(res.status).toBe(201);
@@ -78,7 +96,7 @@ describe('approval locking flow (integration)', () => {
 
     const create = await postJson('/time-entries', {
       employeeId,
-      date: '2026-06-09',
+      date: '2020-01-07',
       hours: 4,
     });
     expect(create.status).toBe(409);
@@ -113,14 +131,45 @@ describe('approval locking flow (integration)', () => {
   it('returns the raw weekly aggregate (no pay computed by the API)', async () => {
     const res = await app.request(`/weekly-summary?weekStart=${WEEK_START}`);
     expect(res.status).toBe(200);
-    const rows = await body<WeeklySummaryRow[]>(res);
-    expect(rows).toHaveLength(1);
-    expect(rows[0]).toMatchObject({
+    const summary = await body<Paginated<WeeklySummaryRow>>(res);
+    expect(summary.total).toBe(1);
+    expect(summary.data).toHaveLength(1);
+    expect(summary.data[0]).toMatchObject({
       employeeId,
       hourlyRate: 20,
       totalHours: 6,
       status: 'rejected',
     });
-    expect(rows[0]).not.toHaveProperty('totalPay');
+    expect(summary.data[0]).not.toHaveProperty('totalPay');
+  });
+
+  it('exposes the approval status for an (employee, week)', async () => {
+    const approve = await postJson('/weekly-summary/approve', {
+      employeeId,
+      weekStart: WEEK_START,
+    });
+    expect(approve.status).toBe(200);
+
+    const res = await app.request(
+      `/weekly-summary/approval?employeeId=${employeeId}&weekStart=${WEEK_START}`,
+    );
+    expect(res.status).toBe(200);
+    expect(await body<WeekApprovalStatus>(res)).toMatchObject({
+      employeeId,
+      weekStart: WEEK_START,
+      status: 'approved',
+    });
+
+    // A week with no approval row is implicitly pending.
+    const pending = await app.request(
+      `/weekly-summary/approval?employeeId=${employeeId}&weekStart=2020-01-13`,
+    );
+    expect((await body<WeekApprovalStatus>(pending)).status).toBe('pending');
+
+    // Unknown employee → 404.
+    const missing = await app.request(
+      `/weekly-summary/approval?employeeId=00000000-0000-0000-0000-000000000000&weekStart=${WEEK_START}`,
+    );
+    expect(missing.status).toBe(404);
   });
 });
