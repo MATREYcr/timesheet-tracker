@@ -1,6 +1,6 @@
 import { z } from 'zod';
-import { pastOrToday } from '../core/dates.js';
-import { employeeIdSchema } from './employee.js';
+import { pastOrToday } from '../utils/dates.js';
+import { employeeIdSchema } from '../employee/employee.js';
 
 export const timeEntrySchema = z.object({
   id: z.uuid(),

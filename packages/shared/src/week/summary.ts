@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { APPROVAL_STATUS_VALUES } from './approval.js';
+import { APPROVAL_STATUS_VALUES } from '../approval/approval.js';
 
 // The API does NOT compute pay — the web client derives it via `calculateWeeklyPay`.
 export const weeklySummaryRowSchema = z.object({

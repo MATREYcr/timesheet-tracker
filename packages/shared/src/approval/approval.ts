@@ -1,8 +1,7 @@
 import { z } from 'zod';
-import { weekStartSchema } from '../core/dates.js';
-import { employeeIdSchema } from './employee.js';
+import { weekStartSchema } from '../utils/dates.js';
+import { employeeIdSchema } from '../employee/employee.js';
 
-// Absence of a stored row means `pending`. Only `approved` locks the week.
 export const APPROVAL_STATUS = {
   pending: 'pending',
   approved: 'approved',
