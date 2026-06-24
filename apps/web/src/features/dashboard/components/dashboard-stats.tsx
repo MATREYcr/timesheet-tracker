@@ -1,8 +1,7 @@
 'use client';
 
 import { Clock, DollarSign, Hourglass, Users } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
-import { useLocale } from '@/i18n/use-locale';
+import { useLocale, useTranslations } from 'next-intl';
 import { formatCurrency, formatHours } from '@/lib/format';
 import { ITEM_ENTER, staggerDelay } from '@/lib/motion';
 
@@ -19,7 +18,7 @@ export function DashboardStats({
   totalPay,
   pendingCount,
 }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations('home');
   const locale = useLocale();
 
   const stats = [
@@ -43,7 +42,7 @@ export function DashboardStats({
         >
           <div className="flex items-center justify-between">
             <span className="text-muted-foreground text-sm">
-              {t(`home.kpi.${stat.key}`)}
+              {t(`kpi.${stat.key}`)}
             </span>
             <span className="bg-primary-soft text-primary flex size-9 items-center justify-center rounded-lg">
               <stat.icon className="size-4" />

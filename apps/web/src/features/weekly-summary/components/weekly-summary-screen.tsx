@@ -3,7 +3,7 @@
 import { getCurrentWeekStart, type Employee } from '@timesheet/shared';
 import { CalendarRange } from 'lucide-react';
 import { useState } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { EmployeeCombobox } from '@/components/employee-combobox';
 import { EmptyState } from '@/components/empty-state';
 import { PageHeader } from '@/components/page-header';
@@ -16,7 +16,8 @@ import { useWeeklySummary } from '../hooks';
 import { WeeklySummaryTable } from './weekly-summary-table';
 
 export function WeeklySummaryScreen() {
-  const { t } = useTranslation();
+  const t = useTranslations('weeklySummary');
+  const tCommon = useTranslations('common');
   const [weekStart, setWeekStart] = useState(getCurrentWeekStart);
   const [selected, setSelected] = useState<Employee | undefined>(undefined);
   const [page, setPage] = useState(1);
@@ -35,10 +36,7 @@ export function WeeklySummaryScreen() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={t('weeklySummary.title')}
-        description={t('weeklySummary.subtitle')}
-      >
+      <PageHeader title={t('title')} description={t('subtitle')}>
         <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:gap-4">
           <EmployeeCombobox
             value={selected}
@@ -46,7 +44,7 @@ export function WeeklySummaryScreen() {
               setSelected(employee);
               setPage(1);
             }}
-            allLabel={t('common.allEmployees')}
+            allLabel={tCommon('allEmployees')}
             className="w-full sm:w-64"
           />
           <WeekPicker weekStart={weekStart} onChange={changeWeek} />
@@ -60,8 +58,8 @@ export function WeeklySummaryScreen() {
       ) : data.data.length === 0 ? (
         <EmptyState
           icon={<CalendarRange />}
-          title={t('weeklySummary.empty.title')}
-          description={t('weeklySummary.empty.description')}
+          title={t('empty.title')}
+          description={t('empty.description')}
         />
       ) : (
         <div

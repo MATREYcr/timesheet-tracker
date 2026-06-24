@@ -1,11 +1,10 @@
 'use client';
 
 import { CalendarDays } from 'lucide-react';
-import { useTranslation } from 'react-i18next';
+import { useLocale, useTranslations } from 'next-intl';
 import { PageHeader } from '@/components/page-header';
 import { QueryError } from '@/components/query-error';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useLocale } from '@/i18n/use-locale';
 import { formatWeekRange } from '@/lib/format';
 import { ENTER } from '@/lib/motion';
 import { useDashboard } from '../hooks';
@@ -13,7 +12,7 @@ import { DashboardStats } from './dashboard-stats';
 import { PendingApprovals } from './pending-approvals';
 
 export function DashboardScreen() {
-  const { t } = useTranslation();
+  const t = useTranslations('home');
   const locale = useLocale();
   const {
     weekStart,
@@ -30,10 +29,10 @@ export function DashboardScreen() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title={t('home.title')} description={t('home.description')}>
+      <PageHeader title={t('title')} description={t('description')}>
         <span className="bg-primary-soft text-primary inline-flex items-center gap-2 rounded-full px-4 py-2 text-sm font-semibold">
           <CalendarDays className="size-4" />
-          <span className="uppercase tracking-wide">{t('home.subtitle')}</span>
+          <span className="uppercase tracking-wide">{t('subtitle')}</span>
           <span className="text-primary/40">·</span>
           <span className="tabular-nums">
             {formatWeekRange(weekStart, weekEnd, locale)}

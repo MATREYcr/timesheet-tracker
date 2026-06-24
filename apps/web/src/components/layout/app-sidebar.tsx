@@ -7,10 +7,8 @@ import {
   LayoutDashboard,
   Users,
 } from 'lucide-react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
 import { useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Sidebar,
@@ -25,19 +23,22 @@ import {
   SidebarRail,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { Link, usePathname } from '@/i18n/navigation';
 
 const NAV = [
-  { href: '/', key: 'nav.dashboard', icon: LayoutDashboard },
-  { href: '/employees', key: 'nav.employees', icon: Users },
-  { href: '/time-entries', key: 'nav.timeEntries', icon: Clock },
-  { href: '/weekly-summary', key: 'nav.weeklySummary', icon: BarChart3 },
+  { href: '/', key: 'dashboard', icon: LayoutDashboard },
+  { href: '/employees', key: 'employees', icon: Users },
+  { href: '/time-entries', key: 'timeEntries', icon: Clock },
+  { href: '/weekly-summary', key: 'weeklySummary', icon: BarChart3 },
 ] as const;
 
 const NAV_BUTTON =
   'h-11 gap-3 rounded-lg px-3 text-[15px] font-medium text-muted-foreground [&_svg]:size-5! hover:bg-muted hover:text-foreground data-[active=true]:bg-primary-soft data-[active=true]:font-semibold data-[active=true]:text-primary';
 
 export function AppSidebar() {
-  const { t } = useTranslation();
+  const tNav = useTranslations('nav');
+  const tApp = useTranslations('app');
+  const tAccount = useTranslations('account');
   const pathname = usePathname();
   const { isMobile, setOpenMobile } = useSidebar();
 
@@ -54,7 +55,7 @@ export function AppSidebar() {
         >
           <ClockArrowUp className="text-primary size-6.5 shrink-0" />
           <span className="text-base whitespace-nowrap group-data-[collapsible=icon]:hidden">
-            {t('app.title')}
+            {tApp('title')}
           </span>
         </Link>
       </SidebarHeader>
@@ -72,12 +73,12 @@ export function AppSidebar() {
                         ? pathname === '/'
                         : pathname.startsWith(item.href)
                     }
-                    tooltip={t(item.key)}
+                    tooltip={tNav(item.key)}
                     className={NAV_BUTTON}
                   >
                     <Link href={item.href}>
                       <item.icon />
-                      <span>{t(item.key)}</span>
+                      <span>{tNav(item.key)}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -92,7 +93,7 @@ export function AppSidebar() {
           <SidebarMenuItem>
             <SidebarMenuButton
               size="lg"
-              tooltip={t('account.name')}
+              tooltip={tAccount('name')}
               className="h-14 cursor-default gap-3 rounded-lg px-3 hover:bg-transparent active:bg-transparent"
             >
               <Avatar className="size-10 group-data-[collapsible=icon]:size-8">
@@ -102,10 +103,10 @@ export function AppSidebar() {
               </Avatar>
               <div className="grid flex-1 gap-0.5 text-left leading-tight">
                 <span className="truncate text-[15px] font-semibold">
-                  {t('account.name')}
+                  {tAccount('name')}
                 </span>
                 <span className="text-muted-foreground truncate text-[13px]">
-                  {t('account.role')}
+                  {tAccount('role')}
                 </span>
               </div>
             </SidebarMenuButton>

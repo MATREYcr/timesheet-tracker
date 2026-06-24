@@ -37,7 +37,7 @@
   "pagination": {
     "previous": "Anterior",
     "next": "Siguiente",
-    "page": "Página {{page}} de {{total}}"
+    "page": "Página {page} de {total}"
   },
   "common": {
     "add": "Agregar",

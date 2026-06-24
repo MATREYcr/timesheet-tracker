@@ -1,22 +1,20 @@
 import type { WeeklySummaryRow } from '@timesheet/shared';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen, within } from '@testing-library/react';
+import { NextIntlClientProvider } from 'next-intl';
 import type { ReactNode } from 'react';
-import { I18nextProvider } from 'react-i18next';
 import { describe, expect, it } from 'vitest';
-import { createI18n } from '@/i18n/i18n';
+import en from '@/i18n/locales/en.json';
 import { WeeklySummaryTable } from './weekly-summary-table';
-
-const i18n = createI18n('en');
 
 function renderWithProviders(ui: ReactNode) {
   const queryClient = new QueryClient({
     defaultOptions: { queries: { retry: false } },
   });
   return render(
-    <QueryClientProvider client={queryClient}>
-      <I18nextProvider i18n={i18n}>{ui}</I18nextProvider>
-    </QueryClientProvider>,
+    <NextIntlClientProvider locale="en" messages={en}>
+      <QueryClientProvider client={queryClient}>{ui}</QueryClientProvider>
+    </NextIntlClientProvider>,
   );
 }
 

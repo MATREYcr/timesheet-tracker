@@ -1,6 +1,6 @@
 'use client';
 
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import {
   Pagination,
   PaginationContent,
@@ -17,7 +17,7 @@ interface Props {
 }
 
 export function TablePagination({ page, totalPages, onPageChange }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations('pagination');
   if (totalPages <= 1) return null;
 
   const atStart = page <= 1;
@@ -26,14 +26,14 @@ export function TablePagination({ page, totalPages, onPageChange }: Props) {
   return (
     <div className="flex items-center justify-between border-t px-4 py-3">
       <span className="text-muted-foreground text-sm">
-        {t('pagination.page', { page, total: totalPages })}
+        {t('page', { page, total: totalPages })}
       </span>
       <Pagination className="mx-0 w-auto justify-end">
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
               href="#"
-              text={t('pagination.previous')}
+              text={t('previous')}
               aria-disabled={atStart}
               className={cn(atStart && 'pointer-events-none opacity-50')}
               onClick={(e) => {
@@ -45,7 +45,7 @@ export function TablePagination({ page, totalPages, onPageChange }: Props) {
           <PaginationItem>
             <PaginationNext
               href="#"
-              text={t('pagination.next')}
+              text={t('next')}
               aria-disabled={atEnd}
               className={cn(atEnd && 'pointer-events-none opacity-50')}
               onClick={(e) => {

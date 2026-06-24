@@ -1,7 +1,7 @@
 'use client';
 
 import { EMPLOYEE_STATUS, type Employee } from '@timesheet/shared';
-import { useTranslation } from 'react-i18next';
+import { useLocale, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@/components/ui/button';
@@ -14,7 +14,6 @@ import {
   TableRow,
 } from '@/components/ui/table';
 import { formatCurrency } from '@/lib/format';
-import { useLocale } from '@/i18n/use-locale';
 import { ITEM_ENTER, staggerDelay } from '@/lib/motion';
 import { useDeactivateEmployee, useReactivateEmployee } from '../hooks';
 import { EmployeeStatusBadge } from './employee-status-badge';
@@ -30,11 +29,11 @@ export function EmployeesTable({
   onEdit,
   containerClassName,
 }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations('employees');
   const locale = useLocale();
   const deactivate = useDeactivateEmployee();
   const reactivate = useReactivateEmployee();
-  
+
   const pendingId =
     (deactivate.isPending ? deactivate.variables?.id : undefined) ??
     (reactivate.isPending ? reactivate.variables?.id : undefined);
@@ -45,27 +44,23 @@ export function EmployeesTable({
     mutation.mutate(employee, {
       onSuccess: () =>
         toast.success(
-          t(
-            isActive
-              ? 'employees.toast.deactivated'
-              : 'employees.toast.reactivated',
-          ),
+          t(isActive ? 'toast.deactivated' : 'toast.reactivated'),
         ),
     });
   };
 
   return (
     <Table
-      aria-label={t('employees.title')}
+      aria-label={t('title')}
       containerClassName={containerClassName}
       className="min-w-160 table-fixed"
     >
       <TableHeader>
         <TableRow>
-          <TableHead>{t('employees.columns.name')}</TableHead>
-          <TableHead>{t('employees.columns.rate')}</TableHead>
-          <TableHead>{t('employees.columns.status')}</TableHead>
-          <TableHead>{t('employees.columns.actions')}</TableHead>
+          <TableHead>{t('columns.name')}</TableHead>
+          <TableHead>{t('columns.rate')}</TableHead>
+          <TableHead>{t('columns.status')}</TableHead>
+          <TableHead>{t('columns.actions')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -93,23 +88,23 @@ export function EmployeesTable({
                     variant="soft"
                     onClick={() => onEdit(employee)}
                   >
-                    {t('employees.actions.edit')}
+                    {t('actions.edit')}
                   </Button>
                   <ConfirmDialog
                     title={t(
                       isActive
-                        ? 'employees.confirm.deactivate.title'
-                        : 'employees.confirm.reactivate.title',
+                        ? 'confirm.deactivate.title'
+                        : 'confirm.reactivate.title',
                     )}
                     description={t(
                       isActive
-                        ? 'employees.confirm.deactivate.description'
-                        : 'employees.confirm.reactivate.description',
+                        ? 'confirm.deactivate.description'
+                        : 'confirm.reactivate.description',
                     )}
                     confirmLabel={t(
                       isActive
-                        ? 'employees.actions.deactivate'
-                        : 'employees.actions.reactivate',
+                        ? 'actions.deactivate'
+                        : 'actions.reactivate',
                     )}
                     destructive={isActive}
                     onConfirm={() => toggleStatus(employee)}
@@ -126,8 +121,8 @@ export function EmployeesTable({
                     >
                       {t(
                         isActive
-                          ? 'employees.actions.deactivate'
-                          : 'employees.actions.reactivate',
+                          ? 'actions.deactivate'
+                          : 'actions.reactivate',
                       )}
                     </Button>
                   </ConfirmDialog>

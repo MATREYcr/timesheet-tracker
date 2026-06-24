@@ -2,10 +2,9 @@
 
 import { calculateWeeklyPay, type WeeklySummaryRow } from '@timesheet/shared';
 import { ChevronRight, Hourglass } from 'lucide-react';
-import Link from 'next/link';
-import { useTranslation } from 'react-i18next';
+import { useLocale, useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
-import { useLocale } from '@/i18n/use-locale';
+import { Link } from '@/i18n/navigation';
 import { formatCurrency, formatHours } from '@/lib/format';
 import { ITEM_ENTER, staggerDelay } from '@/lib/motion';
 
@@ -15,7 +14,7 @@ interface Props {
 }
 
 export function PendingApprovals({ rows, count }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations('home');
   const locale = useLocale();
 
   return (
@@ -25,7 +24,7 @@ export function PendingApprovals({ rows, count }: Props) {
           <span className="bg-primary-soft text-primary flex size-8 shrink-0 items-center justify-center rounded-lg">
             <Hourglass className="size-4" />
           </span>
-          <h2 className="truncate font-semibold">{t('home.pending.title')}</h2>
+          <h2 className="truncate font-semibold">{t('pending.title')}</h2>
           <span className="bg-muted text-muted-foreground shrink-0 rounded-full px-2 py-0.5 text-xs font-semibold tabular-nums">
             {count}
           </span>
@@ -37,14 +36,14 @@ export function PendingApprovals({ rows, count }: Props) {
           className="text-primary hover:text-primary shrink-0"
         >
           <Link href="/weekly-summary">
-            {t('home.pending.viewAll')}
+            {t('pending.viewAll')}
             <ChevronRight className="size-4" />
           </Link>
         </Button>
       </div>
       {rows.length === 0 ? (
         <p className="text-muted-foreground px-5 py-10 text-center text-sm">
-          {t('home.pending.empty')}
+          {t('pending.empty')}
         </p>
       ) : (
         <ul className="divide-y">
@@ -66,7 +65,7 @@ export function PendingApprovals({ rows, count }: Props) {
                   {formatCurrency(pay.totalPay, locale)}
                 </span>
                 <Button asChild size="sm" variant="soft">
-                  <Link href="/weekly-summary">{t('home.pending.review')}</Link>
+                  <Link href="/weekly-summary">{t('pending.review')}</Link>
                 </Button>
               </li>
             );

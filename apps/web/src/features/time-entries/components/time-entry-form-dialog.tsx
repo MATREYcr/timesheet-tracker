@@ -9,7 +9,7 @@ import {
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -44,7 +44,8 @@ export function TimeEntryFormDialog({
   weekStart,
   entry,
 }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations('timeEntries');
+  const tCommon = useTranslations('common');
   const isEdit = Boolean(entry);
   const create = useCreateTimeEntry();
   const update = useUpdateTimeEntry();
@@ -72,9 +73,7 @@ export function TimeEntryFormDialog({
 
   const onSubmit = handleSubmit((values) => {
     const onSuccess = () => {
-      toast.success(
-        t(entry ? 'timeEntries.toast.updated' : 'timeEntries.toast.created'),
-      );
+      toast.success(t(entry ? 'toast.updated' : 'toast.created'));
       onOpenChange(false);
     };
     if (entry) {
@@ -90,22 +89,16 @@ export function TimeEntryFormDialog({
         <form onSubmit={onSubmit} noValidate>
           <DialogHeader>
             <DialogTitle>
-              {t(isEdit ? 'timeEntries.form.editTitle' : 'timeEntries.form.createTitle')}
+              {t(isEdit ? 'form.editTitle' : 'form.createTitle')}
             </DialogTitle>
             <DialogDescription>
-              {t(
-                isEdit
-                  ? 'timeEntries.form.editDescription'
-                  : 'timeEntries.form.createDescription',
-              )}
+              {t(isEdit ? 'form.editDescription' : 'form.createDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <FieldGroup className="py-4">
             <Field data-invalid={!!errors.date}>
-              <FieldLabel htmlFor="date">
-                {t('timeEntries.form.date')}
-              </FieldLabel>
+              <FieldLabel htmlFor="date">{t('form.date')}</FieldLabel>
               <Input
                 id="date"
                 type="date"
@@ -118,9 +111,7 @@ export function TimeEntryFormDialog({
             </Field>
 
             <Field data-invalid={!!errors.hours}>
-              <FieldLabel htmlFor="hours">
-                {t('timeEntries.form.hours')}
-              </FieldLabel>
+              <FieldLabel htmlFor="hours">{t('form.hours')}</FieldLabel>
               <Input
                 id="hours"
                 type="number"
@@ -141,14 +132,10 @@ export function TimeEntryFormDialog({
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              {t('common.cancel')}
+              {tCommon('cancel')}
             </Button>
             <Button type="submit" disabled={isSaving}>
-              {t(
-                isEdit
-                  ? 'timeEntries.form.submitEdit'
-                  : 'timeEntries.form.submitCreate',
-              )}
+              {t(isEdit ? 'form.submitEdit' : 'form.submitCreate')}
             </Button>
           </DialogFooter>
         </form>

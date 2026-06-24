@@ -8,7 +8,7 @@ import {
 import { standardSchemaResolver } from '@hookform/resolvers/standard-schema';
 import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import { useTranslation } from 'react-i18next';
+import { useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -41,7 +41,8 @@ const EMPTY: Partial<CreateEmployeeInput> = {
 };
 
 export function EmployeeFormDialog({ open, onOpenChange, employee }: Props) {
-  const { t } = useTranslation();
+  const t = useTranslations('employees');
+  const tCommon = useTranslations('common');
   const isEdit = Boolean(employee);
   const create = useCreateEmployee();
   const update = useUpdateEmployee();
@@ -57,7 +58,6 @@ export function EmployeeFormDialog({ open, onOpenChange, employee }: Props) {
     defaultValues: EMPTY,
   });
 
-  // RHF keeps values between opens, so re-seed the form each time it opens.
   useEffect(() => {
     if (!open) return;
     reset(
@@ -73,9 +73,7 @@ export function EmployeeFormDialog({ open, onOpenChange, employee }: Props) {
 
   const onSubmit = handleSubmit((values) => {
     const onSuccess = () => {
-      toast.success(
-        t(employee ? 'employees.toast.updated' : 'employees.toast.created'),
-      );
+      toast.success(t(employee ? 'toast.updated' : 'toast.created'));
       onOpenChange(false);
     };
     if (employee) {
@@ -91,21 +89,17 @@ export function EmployeeFormDialog({ open, onOpenChange, employee }: Props) {
         <form onSubmit={onSubmit} noValidate>
           <DialogHeader>
             <DialogTitle>
-              {t(isEdit ? 'employees.form.editTitle' : 'employees.form.createTitle')}
+              {t(isEdit ? 'form.editTitle' : 'form.createTitle')}
             </DialogTitle>
             <DialogDescription>
-              {t(
-                isEdit
-                  ? 'employees.form.editDescription'
-                  : 'employees.form.createDescription',
-              )}
+              {t(isEdit ? 'form.editDescription' : 'form.createDescription')}
             </DialogDescription>
           </DialogHeader>
 
           <FieldGroup className="py-4">
             <Field data-invalid={!!errors.firstName}>
               <FieldLabel htmlFor="firstName">
-                {t('employees.form.firstName')}
+                {t('form.firstName')}
               </FieldLabel>
               <Input
                 id="firstName"
@@ -118,7 +112,7 @@ export function EmployeeFormDialog({ open, onOpenChange, employee }: Props) {
 
             <Field data-invalid={!!errors.lastName}>
               <FieldLabel htmlFor="lastName">
-                {t('employees.form.lastName')}
+                {t('form.lastName')}
               </FieldLabel>
               <Input
                 id="lastName"
@@ -130,7 +124,7 @@ export function EmployeeFormDialog({ open, onOpenChange, employee }: Props) {
 
             <Field data-invalid={!!errors.hourlyRate}>
               <FieldLabel htmlFor="hourlyRate">
-                {t('employees.form.hourlyRate')}
+                {t('form.hourlyRate')}
               </FieldLabel>
               <Input
                 id="hourlyRate"
@@ -151,14 +145,10 @@ export function EmployeeFormDialog({ open, onOpenChange, employee }: Props) {
               variant="outline"
               onClick={() => onOpenChange(false)}
             >
-              {t('common.cancel')}
+              {tCommon('cancel')}
             </Button>
             <Button type="submit" disabled={isSaving}>
-              {t(
-                isEdit
-                  ? 'employees.form.submitEdit'
-                  : 'employees.form.submitCreate',
-              )}
+              {t(isEdit ? 'form.submitEdit' : 'form.submitCreate')}
             </Button>
           </DialogFooter>
         </form>

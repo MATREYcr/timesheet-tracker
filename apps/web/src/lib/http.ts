@@ -3,18 +3,15 @@ import axios, { type AxiosError } from 'axios';
 import { ApiError } from './api-error';
 import { env } from './env';
 
-// Current locale for Accept-Language; the i18n provider keeps this in sync.
-let currentLocale = 'en';
-export function setApiLocale(locale: string) {
-  currentLocale = locale;
-}
-
 export const http = axios.create({
   baseURL: env.NEXT_PUBLIC_API_URL,
 });
 
 http.interceptors.request.use((config) => {
-  config.headers.set('Accept-Language', currentLocale);
+  // Read locale from the <html lang> attribute set server-side by [locale]/layout.tsx.
+  const locale =
+    typeof document !== 'undefined' ? document.documentElement.lang || 'en' : 'en';
+  config.headers.set('Accept-Language', locale);
   return config;
 });
 
