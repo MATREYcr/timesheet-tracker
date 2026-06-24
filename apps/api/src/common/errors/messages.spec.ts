@@ -1,4 +1,4 @@
-import { parseAcceptLanguage, getMessage, DEFAULT_LOCALE } from './messages.js';
+import { parseAcceptLanguage, getMessage, DEFAULT_LOCALE } from './messages';
 
 describe('parseAcceptLanguage', () => {
   it('defaults to English when missing or unsupported', () => {

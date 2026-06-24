@@ -1,11 +1,12 @@
 import 'dotenv/config';
 import { serve } from '@hono/node-server';
-import { createApp } from './app.js';
-import { env } from './config/env.js';
-import { closeDb } from './db/client.js';
+import { createApp } from '@/app';
+import { env } from '@/config/env';
+import { closeDb } from '@/db/client';
 
 const server = serve({ fetch: createApp().fetch, port: env.PORT }, (info) => {
-  console.log(`API listening on http://${info.address}:${info.port} [${env.NODE_ENV}]`);
+  const host = info.address === '::' || info.address === '0.0.0.0' ? 'localhost' : info.address;
+  console.log(`API listening on http://${host}:${info.port} [${env.NODE_ENV}]`);
 });
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {

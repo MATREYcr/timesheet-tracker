@@ -7,7 +7,7 @@ import {
   uniqueIndex,
   uuid,
 } from 'drizzle-orm/pg-core';
-import { employees } from './employees.js';
+import { employees } from './employees';
 
 export const approvalStatus = pgEnum('approval_status', APPROVAL_STATUS_VALUES);
 

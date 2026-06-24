@@ -1,12 +1,12 @@
-import { HttpStatus } from '../../common/http-status.js';
-import { createModuleApp } from '../../common/openapi.js';
-import * as service from './weekly-summary.service.js';
+import { HttpStatus } from '@/common/http-status';
+import { createModuleApp } from '@/common/openapi';
+import * as service from './weekly-summary.service';
 import {
   approvalRoute,
   approveRoute,
   rejectRoute,
   summaryRoute,
-} from './weekly-summary.openapi.js';
+} from './weekly-summary.openapi';
 
 export const weeklySummaryRoutes = createModuleApp()
   .openapi(summaryRoute, async (c) => {

@@ -1,5 +1,5 @@
 import { createRoute, z } from '@hono/zod-openapi';
-import { HttpStatus } from '../../common/http-status.js';
+import { HttpStatus } from '@/common/http-status';
 import {
   createEmployeeSchema,
   employeeIdSchema,
@@ -13,7 +13,7 @@ import {
   jsonBody,
   jsonResponse,
   paginatedSchema,
-} from '../../common/openapi.js';
+} from '@/common/openapi';
 
 const employeeSchema = employeeShape.openapi('Employee');
 

@@ -2,12 +2,12 @@ import { swaggerUI } from '@hono/swagger-ui';
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
-import { buildOpenApiDocument } from './common/openapi.js';
-import { onError } from './common/errors/index.js';
-import type { AppEnv } from './common/types.js';
-import { env } from './config/env.js';
-import { localeMiddleware } from './middleware/locale.js';
-import { apiRoutes } from './routes/index.js';
+import { buildOpenApiDocument } from '@/common/openapi';
+import { onError } from '@/common/errors';
+import type { AppEnv } from '@/common/types';
+import { env } from '@/config/env';
+import { localeMiddleware } from '@/middleware/locale';
+import { apiRoutes } from '@/routes';
 
 export function createApp() {
   const app = new OpenAPIHono<AppEnv>();

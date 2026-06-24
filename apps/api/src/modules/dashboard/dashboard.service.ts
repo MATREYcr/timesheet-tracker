@@ -5,9 +5,9 @@ import {
   type DashboardSummary,
 } from '@timesheet/shared';
 import { count, isNull } from 'drizzle-orm';
-import { db } from '../../db/client.js';
-import { employees } from '../../db/schema/index.js';
-import { selectWeeklyAggregate } from '../weekly-summary/weekly-summary.service.js';
+import { db } from '@/db/client';
+import { employees } from '@/db/schema';
+import { selectWeeklyAggregate } from '@/modules/weekly-summary/weekly-summary.service';
 
 const PENDING_PREVIEW = 5;
 

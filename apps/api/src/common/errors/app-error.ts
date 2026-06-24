@@ -1,5 +1,5 @@
 import type { ErrorCode } from '@timesheet/shared';
-import { HttpStatus } from '../http-status.js';
+import { HttpStatus } from '@/common/http-status';
 
 export const ERROR_STATUS: Record<ErrorCode, number> = {
   VALIDATION_ERROR: HttpStatus.BAD_REQUEST,

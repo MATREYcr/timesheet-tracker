@@ -1,7 +1,7 @@
 import 'dotenv/config';
 import { addDays, APPROVAL_STATUS, type ApprovalStatus } from '@timesheet/shared';
-import { db } from './client.js';
-import { employees, timeEntries, weeklyApprovals } from './schema/index.js';
+import { db } from './client';
+import { employees, timeEntries, weeklyApprovals } from '@/db/schema';
 
 const WEEK1 = '2026-06-08';
 const FILL_WEEKS = ['2026-06-15', '2026-06-22', '2026-06-29'];

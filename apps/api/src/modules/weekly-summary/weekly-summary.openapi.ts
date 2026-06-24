@@ -1,5 +1,5 @@
 import { createRoute, z } from '@hono/zod-openapi';
-import { HttpStatus } from '../../common/http-status.js';
+import { HttpStatus } from '@/common/http-status';
 import {
   employeeIdSchema,
   paginationQuerySchema,
@@ -13,7 +13,7 @@ import {
   jsonBody,
   jsonResponse,
   paginatedSchema,
-} from '../../common/openapi.js';
+} from '@/common/openapi';
 
 const weeklySummaryRowSchema = weeklySummaryRowShape.openapi('WeeklySummaryRow');
 const weekApprovalStatusSchema = weekApprovalShape.openapi('WeekApprovalStatus');

@@ -1,7 +1,7 @@
-import { HttpStatus } from '../../common/http-status.js';
-import { createModuleApp } from '../../common/openapi.js';
-import { dashboardRoute } from './dashboard.openapi.js';
-import * as service from './dashboard.service.js';
+import { HttpStatus } from '@/common/http-status';
+import { createModuleApp } from '@/common/openapi';
+import { dashboardRoute } from './dashboard.openapi';
+import * as service from './dashboard.service';
 
 export const dashboardRoutes = createModuleApp().openapi(
   dashboardRoute,

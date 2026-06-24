@@ -1,7 +1,7 @@
 import { OpenAPIHono, z } from '@hono/zod-openapi';
 import { ERROR_CODES, LOCALES, paginatedSchema as paginatedShape } from '@timesheet/shared';
-import { AppError } from './errors/index.js';
-import type { AppEnv } from './types.js';
+import { AppError } from '@/common/errors';
+import type { AppEnv } from './types';
 
 // ─── App factory ──────────────────────────────────────────────────────────────
 

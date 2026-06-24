@@ -6,7 +6,7 @@ import {
   timestamp,
   uuid,
 } from 'drizzle-orm/pg-core';
-import { employees } from './employees.js';
+import { employees } from './employees';
 
 export const timeEntries = pgTable(
   'time_entries',

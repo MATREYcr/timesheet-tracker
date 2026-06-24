@@ -7,10 +7,10 @@ import {
   type UpdateEmployeeInput,
 } from '@timesheet/shared';
 import { and, asc, count, eq, ilike, isNull, sql } from 'drizzle-orm';
-import { AppError } from '../../common/errors/index.js';
-import { db } from '../../db/client.js';
-import { employees, type EmployeeRow } from '../../db/schema/index.js';
-import { toEmployee } from './employees.mapper.js';
+import { AppError } from '@/common/errors';
+import { db } from '@/db/client';
+import { employees, type EmployeeRow } from '@/db/schema';
+import { toEmployee } from './employees.mapper';
 
 export async function listEmployees(
   includeInactive: boolean,

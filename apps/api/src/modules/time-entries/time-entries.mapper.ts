@@ -1,5 +1,5 @@
 import type { TimeEntry } from '@timesheet/shared';
-import type { TimeEntryRow } from '../../db/schema/index.js';
+import type { TimeEntryRow } from '@/db/schema';
 
 export function toTimeEntry(row: TimeEntryRow): TimeEntry {
   return {

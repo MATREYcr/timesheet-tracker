@@ -1,13 +1,13 @@
-import { HttpStatus } from '../../common/http-status.js';
-import { createModuleApp } from '../../common/openapi.js';
+import { HttpStatus } from '@/common/http-status';
+import { createModuleApp } from '@/common/openapi';
 import {
   createEmpRoute,
   deactivateRoute,
   listRoute,
   reactivateRoute,
   updateRoute,
-} from './employees.openapi.js';
-import * as service from './employees.service.js';
+} from './employees.openapi';
+import * as service from './employees.service';
 
 export const employeesRoutes = createModuleApp()
   .openapi(listRoute, async (c) => {

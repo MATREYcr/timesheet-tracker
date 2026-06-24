@@ -1,11 +1,11 @@
 import { createRoute, z } from '@hono/zod-openapi';
-import { HttpStatus } from '../../common/http-status.js';
+import { HttpStatus } from '@/common/http-status';
 import {
   dashboardSummarySchema as dashboardShape,
   weekStartSchema,
   weeklySummaryRowSchema as weeklySummaryRowShape,
 } from '@timesheet/shared';
-import { jsonResponse } from '../../common/openapi.js';
+import { jsonResponse } from '@/common/openapi';
 
 const weeklySummaryRowSchema = weeklySummaryRowShape.openapi('WeeklySummaryRow');
 const dashboardSummarySchema = z

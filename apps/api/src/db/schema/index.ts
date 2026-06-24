@@ -1,3 +1,3 @@
-export * from './employees.js';
-export * from './time-entries.js';
-export * from './weekly-approvals.js';
+export * from './employees';
+export * from './time-entries';
+export * from './weekly-approvals';

@@ -9,13 +9,13 @@ import {
   type WeeklySummaryRow,
 } from '@timesheet/shared';
 import { and, asc, countDistinct, eq, gte, lte, sql } from 'drizzle-orm';
-import { AppError } from '../../common/errors/index.js';
-import { db } from '../../db/client.js';
+import { AppError } from '@/common/errors';
+import { db } from '@/db/client';
 import {
   employees,
   timeEntries,
   weeklyApprovals,
-} from '../../db/schema/index.js';
+} from '@/db/schema';
 
 export type WeeklyApprovalResult = WeekApprovalStatus;
 

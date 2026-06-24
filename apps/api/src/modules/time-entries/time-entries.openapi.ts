@@ -1,5 +1,5 @@
 import { createRoute, z } from '@hono/zod-openapi';
-import { HttpStatus } from '../../common/http-status.js';
+import { HttpStatus } from '@/common/http-status';
 import {
   createTimeEntrySchema,
   employeeIdSchema,
@@ -12,7 +12,7 @@ import {
   idParam,
   jsonBody,
   jsonResponse,
-} from '../../common/openapi.js';
+} from '@/common/openapi';
 
 const timeEntrySchema = timeEntryShape.openapi('TimeEntry');
 

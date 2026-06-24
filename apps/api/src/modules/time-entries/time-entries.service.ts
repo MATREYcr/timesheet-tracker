@@ -7,15 +7,15 @@ import {
   type UpdateTimeEntryInput,
 } from '@timesheet/shared';
 import { and, asc, eq, gte, lte } from 'drizzle-orm';
-import { AppError } from '../../common/errors/index.js';
-import { db } from '../../db/client.js';
+import { AppError } from '@/common/errors';
+import { db } from '@/db/client';
 import {
   employees,
   timeEntries,
   weeklyApprovals,
   type TimeEntryRow,
-} from '../../db/schema/index.js';
-import { toTimeEntry } from './time-entries.mapper.js';
+} from '@/db/schema';
+import { toTimeEntry } from './time-entries.mapper';
 
 type Tx = Parameters<Parameters<typeof db.transaction>[0]>[0];
 

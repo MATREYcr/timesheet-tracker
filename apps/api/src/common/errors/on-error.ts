@@ -1,11 +1,11 @@
 import type { ErrorHandler } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
-import { HttpStatus } from '../http-status.js';
+import { HttpStatus } from '@/common/http-status';
 import type { ApiErrorBody } from '@timesheet/shared';
-import { AppError } from './app-error.js';
-import { DEFAULT_LOCALE, getMessage } from './messages.js';
-import type { AppEnv } from '../types.js';
-import { env } from '../../config/env.js';
+import { AppError } from './app-error';
+import { DEFAULT_LOCALE, getMessage } from './messages';
+import type { AppEnv } from '@/common/types';
+import { env } from '@/config/env';
 
 export const onError: ErrorHandler<AppEnv> = (err, c) => {
   const locale = c.get('locale') ?? DEFAULT_LOCALE;

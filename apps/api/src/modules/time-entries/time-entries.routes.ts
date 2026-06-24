@@ -1,12 +1,12 @@
-import { HttpStatus } from '../../common/http-status.js';
-import { createModuleApp } from '../../common/openapi.js';
+import { HttpStatus } from '@/common/http-status';
+import { createModuleApp } from '@/common/openapi';
 import {
   createEntryRoute,
   deleteRoute,
   listRoute,
   updateRoute,
-} from './time-entries.openapi.js';
-import * as service from './time-entries.service.js';
+} from './time-entries.openapi';
+import * as service from './time-entries.service';
 
 export const timeEntriesRoutes = createModuleApp()
   .openapi(listRoute, async (c) => {

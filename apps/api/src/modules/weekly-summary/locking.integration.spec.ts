@@ -9,13 +9,13 @@ import type {
 } from '@timesheet/shared';
 import { and, eq, gte, lte } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createApp } from '../../app.js';
-import { closeDb, db } from '../../db/client.js';
+import { createApp } from '@/app';
+import { closeDb, db } from '@/db/client';
 import {
   employees,
   timeEntries,
   weeklyApprovals,
-} from '../../db/schema/index.js';
+} from '@/db/schema';
 
 const app = createApp();
 // A dedicated far-past week the seed never uses, so the test stays fully isolated
