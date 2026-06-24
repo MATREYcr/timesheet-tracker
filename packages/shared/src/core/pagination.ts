@@ -1,9 +1,5 @@
-// The generic pagination contract: the envelope, its query schema, and the
-// builder. Not a domain concept — every list endpoint reuses it.
-
 import { z } from 'zod';
 
-/** Standard envelope for paginated list endpoints. `page` is 1-based. */
 export interface Paginated<T> {
   data: T[];
   page: number;
@@ -12,10 +8,6 @@ export interface Paginated<T> {
   totalPages: number;
 }
 
-/**
- * Pagination query for list endpoints. `page` is 1-based. Values arrive as query
- * strings, so they're coerced; both have sane defaults and bounds.
- */
 export const paginationQuerySchema = z.object({
   page: z.coerce.number().int().min(1).default(1),
   pageSize: z.coerce.number().int().min(1).max(100).default(10),
@@ -23,7 +15,16 @@ export const paginationQuerySchema = z.object({
 
 export type PaginationQuery = z.infer<typeof paginationQuerySchema>;
 
-/** Wrap a page of rows + the total count into the standard paginated envelope. */
+export function paginatedSchema<T extends z.ZodType>(item: T) {
+  return z.object({
+    data: z.array(item),
+    page: z.number().int(),
+    pageSize: z.number().int(),
+    total: z.number().int(),
+    totalPages: z.number().int(),
+  });
+}
+
 export function buildPaginated<T>(
   data: T[],
   total: number,

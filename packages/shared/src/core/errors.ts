@@ -1,16 +1,15 @@
-// Canonical, stable error codes shared by the API and the web client.
-// The human-readable en/es messages live in the API (per spec 02); here we only
-// define the machine-readable contract so both sides agree on the codes.
+// en/es messages live in the API; here only the machine-readable codes.
+export const ERROR_CODES = [
+  'VALIDATION_ERROR',
+  'NOT_FOUND',
+  'EMPLOYEE_INACTIVE',
+  'FUTURE_DATE',
+  'WEEK_LOCKED',
+  'INTERNAL_ERROR',
+] as const;
 
-export type ErrorCode =
-  | 'VALIDATION_ERROR'
-  | 'NOT_FOUND'
-  | 'EMPLOYEE_INACTIVE'
-  | 'FUTURE_DATE'
-  | 'WEEK_LOCKED'
-  | 'INTERNAL_ERROR';
+export type ErrorCode = (typeof ERROR_CODES)[number];
 
-/** The consistent error envelope every API error responds with. */
 export interface ApiErrorBody {
   error: {
     code: ErrorCode;

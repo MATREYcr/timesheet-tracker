@@ -1,21 +1,11 @@
-// The TimeEntry concept: its domain type and validation. DB-dependent rules
-// (employee must be active, week not approved) are enforced in the API, not here.
-
 import { z } from 'zod';
 import { pastOrToday } from '../core/dates.js';
 import { employeeIdSchema } from './employee.js';
 
-/**
- * A persisted time entry as returned by the API. Single source of truth for the
- * shape: the `TimeEntry` type is derived from this schema (the API decorates it
- * for OpenAPI). Distinct from `createTimeEntrySchema`, which validates new input.
- */
 export const timeEntrySchema = z.object({
   id: z.uuid(),
   employeeId: employeeIdSchema,
-  /** Date-only, `YYYY-MM-DD`, no time, no timezone. */
   date: z.string(),
-  /** Hours worked, 0.25–24 in 0.25 increments. */
   hours: z.number(),
   createdAt: z.string(),
   updatedAt: z.string(),
@@ -23,7 +13,6 @@ export const timeEntrySchema = z.object({
 
 export type TimeEntry = z.infer<typeof timeEntrySchema>;
 
-/** Hours worked: 0.25–24 inclusive, in quarter-hour steps. */
 export const hoursSchema = z
   .number()
   .min(0.25, 'Hours must be at least 0.25')
@@ -39,7 +28,6 @@ export const createTimeEntrySchema = z.object({
   hours: hoursSchema,
 });
 
-/** Editable fields of a time entry (the employee cannot be reassigned). */
 export const updateTimeEntrySchema = z
   .object({
     date: pastOrToday,
@@ -47,10 +35,6 @@ export const updateTimeEntrySchema = z
   })
   .partial();
 
-/**
- * Fields of the time-entry form (the employee comes from screen context, not the
- * form). Derived from `createTimeEntrySchema` so validation stays single-sourced.
- */
 export const timeEntryFormSchema = createTimeEntrySchema.omit({
   employeeId: true,
 });
