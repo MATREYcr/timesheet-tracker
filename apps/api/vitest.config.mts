@@ -1,8 +1,14 @@
+import { resolve } from 'path';
 import { defineConfig } from 'vitest/config';
 
 export default defineConfig(() => ({
   root: __dirname,
   cacheDir: '../../node_modules/.vite/apps/api',
+  resolve: {
+    alias: {
+      '@': resolve(__dirname, 'src'),
+    },
+  },
   test: {
     name: '@timesheet/api',
     watch: false,
