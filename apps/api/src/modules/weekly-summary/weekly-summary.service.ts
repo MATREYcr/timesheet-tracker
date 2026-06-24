@@ -9,7 +9,7 @@ import {
   type WeeklySummaryRow,
 } from '@timesheet/shared';
 import { and, asc, countDistinct, eq, gte, lte, sql } from 'drizzle-orm';
-import { AppError } from '../../common/errors.js';
+import { AppError } from '../../common/errors/index.js';
 import { db } from '../../db/client.js';
 import {
   employees,
@@ -26,9 +26,7 @@ export async function selectWeeklyAggregate(
     pagination,
   }: { employeeId?: string; pagination?: { limit: number; offset: number } } = {},
 ): Promise<WeeklySummaryRow[]> {
-  const where = employeeId
-    ? and(inWeek(weekStart), eq(timeEntries.employeeId, employeeId))
-    : inWeek(weekStart);
+  const where = weekFilter(weekStart, employeeId);
 
   const base = db
     .select({
@@ -63,9 +61,7 @@ export async function getWeeklySummary(
   { page, pageSize }: PaginationQuery,
   employeeId?: string,
 ): Promise<Paginated<WeeklySummaryRow>> {
-  const where = employeeId
-    ? and(inWeek(weekStart), eq(timeEntries.employeeId, employeeId))
-    : inWeek(weekStart);
+  const where = weekFilter(weekStart, employeeId);
 
   const [{ total }] = await db
     .select({ total: countDistinct(timeEntries.employeeId) })
@@ -83,11 +79,7 @@ export async function getApprovalStatus(
   employeeId: string,
   weekStart: string,
 ): Promise<WeekApprovalStatus> {
-  const [employee] = await db
-    .select({ id: employees.id })
-    .from(employees)
-    .where(eq(employees.id, employeeId));
-  if (!employee) throw new AppError('NOT_FOUND');
+  await assertEmployeeExists(employeeId);
 
   const [approval] = await db
     .select({ status: weeklyApprovals.status })
@@ -111,11 +103,7 @@ async function setStatus(
   weekStart: string,
   status: ApprovalStatus,
 ): Promise<WeeklyApprovalResult> {
-  const [employee] = await db
-    .select()
-    .from(employees)
-    .where(eq(employees.id, employeeId));
-  if (!employee) throw new AppError('NOT_FOUND');
+  await assertEmployeeExists(employeeId);
 
   await db
     .insert(weeklyApprovals)
@@ -147,4 +135,19 @@ function inWeek(weekStart: string) {
     gte(timeEntries.date, weekStart),
     lte(timeEntries.date, getWeekEnd(weekStart)),
   );
+}
+
+function weekFilter(weekStart: string, employeeId?: string) {
+  return and(
+    inWeek(weekStart),
+    employeeId ? eq(timeEntries.employeeId, employeeId) : undefined,
+  );
+}
+
+async function assertEmployeeExists(employeeId: string) {
+  const [employee] = await db
+    .select({ id: employees.id })
+    .from(employees)
+    .where(eq(employees.id, employeeId));
+  if (!employee) throw new AppError('NOT_FOUND');
 }

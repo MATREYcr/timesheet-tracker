@@ -1,9 +1,5 @@
-// Canonical en/es text per ErrorCode (the codes are the shared contract).
+import { DEFAULT_LOCALE, LOCALES, type ErrorCode, type Locale } from '@timesheet/shared';
 
-import { DEFAULT_LOCALE, type ErrorCode, type Locale } from '@timesheet/shared';
-
-// The supported-locale contract lives in shared; re-exported here so the rest of
-// the API keeps importing its locale primitives from this module.
 export { DEFAULT_LOCALE, type Locale };
 
 const MESSAGES: Record<ErrorCode, Record<Locale, string>> = {
@@ -37,11 +33,7 @@ export function getMessage(code: ErrorCode, locale: Locale): string {
   return MESSAGES[code][locale];
 }
 
-/**
- * Pick a supported locale from an Accept-Language header. Handles plain tags
- * (`es`), regional tags (`es-ES`), and weighted lists (`es,en;q=0.8`), matching on
- * the primary subtag and honouring quality values. Defaults to English.
- */
+// Parses Accept-Language header with regional tags (es-ES) and quality values (es,en;q=0.8).
 export function parseAcceptLanguage(header: string | undefined | null): Locale {
   if (!header) return DEFAULT_LOCALE;
 
@@ -59,8 +51,7 @@ export function parseAcceptLanguage(header: string | undefined | null): Locale {
     .sort((a, b) => b.q - a.q);
 
   for (const { primary } of ranked) {
-    if (primary === 'es') return 'es';
-    if (primary === 'en') return 'en';
+    if (LOCALES.includes(primary as Locale)) return primary as Locale;
   }
   return DEFAULT_LOCALE;
 }

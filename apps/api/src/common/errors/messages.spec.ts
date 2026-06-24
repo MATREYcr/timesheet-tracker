@@ -1,4 +1,4 @@
-import { parseAcceptLanguage, getMessage, DEFAULT_LOCALE } from './i18n.js';
+import { parseAcceptLanguage, getMessage, DEFAULT_LOCALE } from './messages.js';
 
 describe('parseAcceptLanguage', () => {
   it('defaults to English when missing or unsupported', () => {

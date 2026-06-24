@@ -5,7 +5,7 @@ import { OpenAPIHono } from '@hono/zod-openapi';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { buildOpenApiDocument } from './common/openapi.js';
-import { onError } from './common/on-error.js';
+import { onError } from './common/errors/index.js';
 import type { AppEnv } from './common/types.js';
 import { env } from './config/env.js';
 import { localeMiddleware } from './middleware/locale.js';
@@ -28,6 +28,7 @@ export function createApp() {
 
   app.onError(onError);
 
+  
   return app;
 }
 

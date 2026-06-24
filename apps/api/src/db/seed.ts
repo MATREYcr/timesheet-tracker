@@ -1,4 +1,4 @@
-import './load-env.js';
+import 'dotenv/config';
 import { addDays, APPROVAL_STATUS, type ApprovalStatus } from '@timesheet/shared';
 import { db } from './client.js';
 import { employees, timeEntries, weeklyApprovals } from './schema/index.js';

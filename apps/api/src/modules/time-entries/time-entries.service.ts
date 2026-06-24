@@ -7,7 +7,7 @@ import {
   type UpdateTimeEntryInput,
 } from '@timesheet/shared';
 import { and, asc, eq, gte, lte } from 'drizzle-orm';
-import { AppError } from '../../common/errors.js';
+import { AppError } from '../../common/errors/index.js';
 import { db } from '../../db/client.js';
 import {
   employees,

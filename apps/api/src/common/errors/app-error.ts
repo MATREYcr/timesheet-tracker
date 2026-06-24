@@ -1,6 +1,3 @@
-// Domain error with a stable ErrorCode -> HTTP status. Services throw it; the
-// central onError formats it into the response envelope.
-
 import type { ErrorCode } from '@timesheet/shared';
 
 export const ERROR_STATUS: Record<ErrorCode, number> = {

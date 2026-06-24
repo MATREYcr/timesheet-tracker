@@ -1,12 +1,9 @@
-// Central handler -> localized `{ error: { code, message } }`. Unexpected errors
-// collapse to INTERNAL_ERROR so internals never leak.
-
 import type { ErrorHandler } from 'hono';
 import type { ContentfulStatusCode } from 'hono/utils/http-status';
 import type { ApiErrorBody } from '@timesheet/shared';
-import { AppError } from './errors.js';
-import { DEFAULT_LOCALE, getMessage } from './i18n.js';
-import type { AppEnv } from './types.js';
+import { AppError } from './app-error.js';
+import { DEFAULT_LOCALE, getMessage } from './messages.js';
+import type { AppEnv } from '../types.js';
 
 export const onError: ErrorHandler<AppEnv> = (err, c) => {
   const locale = c.get('locale') ?? DEFAULT_LOCALE;

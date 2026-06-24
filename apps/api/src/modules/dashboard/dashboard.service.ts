@@ -9,7 +9,6 @@ import { db } from '../../db/client.js';
 import { employees } from '../../db/schema/index.js';
 import { selectWeeklyAggregate } from '../weekly-summary/weekly-summary.service.js';
 
-/** How many pending rows the dashboard list previews (the rest live behind "View all"). */
 const PENDING_PREVIEW = 5;
 
 export async function getDashboard(weekStart: string): Promise<DashboardSummary> {

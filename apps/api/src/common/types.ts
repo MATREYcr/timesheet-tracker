@@ -1,4 +1,4 @@
-import type { Locale } from './i18n.js';
+import type { Locale } from './errors/index.js';
 
 /**
  * The Hono environment for this app: typed variables that middleware sets on the

@@ -7,7 +7,7 @@ import {
   type UpdateEmployeeInput,
 } from '@timesheet/shared';
 import { and, asc, count, eq, ilike, isNull, sql } from 'drizzle-orm';
-import { AppError } from '../../common/errors.js';
+import { AppError } from '../../common/errors/index.js';
 import { db } from '../../db/client.js';
 import { employees, type EmployeeRow } from '../../db/schema/index.js';
 import { toEmployee } from './employees.mapper.js';
@@ -18,17 +18,16 @@ export async function listEmployees(
   filters: { employeeId?: string; search?: string } = {},
 ): Promise<Paginated<Employee>> {
   const { employeeId, search } = filters;
-  const conditions = [
+  const where = and(
     includeInactive ? undefined : isNull(employees.deactivatedAt),
     employeeId ? eq(employees.id, employeeId) : undefined,
     search
       ? ilike(
-          sql`${employees.firstName} || ' ' || ${employees.lastName}`,
-          `%${search}%`,
-        )
+        sql`${employees.firstName} || ' ' || ${employees.lastName}`,
+        `%${search}%`,
+      )
       : undefined,
-  ].filter((c) => c !== undefined);
-  const where = conditions.length ? and(...conditions) : undefined;
+  );
 
   const [{ total }] = await db
     .select({ total: count() })

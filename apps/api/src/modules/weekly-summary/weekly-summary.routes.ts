@@ -1,79 +1,11 @@
-import { createRoute, z } from '@hono/zod-openapi';
-import {
-  employeeIdSchema,
-  paginationQuerySchema,
-  weekStartSchema,
-  weeklyApprovalActionSchema,
-} from '@timesheet/shared';
-import {
-  createModuleApp,
-  errorResponse,
-  jsonBody,
-  jsonResponse,
-  paginatedSchema,
-  weekApprovalStatusSchema,
-  weeklySummaryRowSchema,
-} from '../../common/openapi.js';
+import { createModuleApp } from '../../common/openapi.js';
 import * as service from './weekly-summary.service.js';
-
-const tags = ['Weekly summary'];
-
-const summaryQuery = z
-  .object({
-    weekStart: weekStartSchema,
-    employeeId: employeeIdSchema.optional(),
-  })
-  .extend(paginationQuerySchema.shape);
-
-const summaryRoute = createRoute({
-  method: 'get',
-  path: '/',
-  tags,
-  summary: 'Raw weekly aggregate per employee (client computes pay)',
-  request: { query: summaryQuery },
-  responses: {
-    200: jsonResponse(
-      paginatedSchema(weeklySummaryRowSchema, 'PaginatedWeeklySummary'),
-      'Paginated weekly summary rows',
-    ),
-  },
-});
-
-const approvalRoute = createRoute({
-  method: 'get',
-  path: '/approval',
-  tags,
-  summary: 'Approval status of one (employee, week)',
-  request: { query: weeklyApprovalActionSchema },
-  responses: {
-    200: jsonResponse(weekApprovalStatusSchema, 'Approval status (pending if no row)'),
-    404: errorResponse('Employee not found'),
-  },
-});
-
-const approveRoute = createRoute({
-  method: 'post',
-  path: '/approve',
-  tags,
-  summary: 'Approve a week (locks its entries)',
-  request: jsonBody(weeklyApprovalActionSchema),
-  responses: {
-    200: jsonResponse(weekApprovalStatusSchema, 'Approved'),
-    404: errorResponse('Employee not found'),
-  },
-});
-
-const rejectRoute = createRoute({
-  method: 'post',
-  path: '/reject',
-  tags,
-  summary: 'Reject a week (keeps it editable)',
-  request: jsonBody(weeklyApprovalActionSchema),
-  responses: {
-    200: jsonResponse(weekApprovalStatusSchema, 'Rejected'),
-    404: errorResponse('Employee not found'),
-  },
-});
+import {
+  approvalRoute,
+  approveRoute,
+  rejectRoute,
+  summaryRoute,
+} from './weekly-summary.openapi.js';
 
 export const weeklySummaryRoutes = createModuleApp()
   .openapi(summaryRoute, async (c) => {

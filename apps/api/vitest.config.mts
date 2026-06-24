@@ -9,8 +9,7 @@ export default defineConfig(() => ({
     globals: true,
     passWithNoTests: true,
     environment: 'node',
-    // Loads the repo-root .env so DATABASE_URL is available to integration tests.
-    setupFiles: ['./src/db/load-env.ts'],
+    setupFiles: ['dotenv/config'],
     include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
     coverage: {

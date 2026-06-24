@@ -1,7 +1,7 @@
 // Resolves the locale once and stores it on the context for downstream handlers.
 
 import { createMiddleware } from 'hono/factory';
-import { parseAcceptLanguage } from '../common/i18n.js';
+import { parseAcceptLanguage } from '../common/errors/index.js';
 import type { AppEnv } from '../common/types.js';
 
 export const localeMiddleware = createMiddleware<AppEnv>(async (c, next) => {
