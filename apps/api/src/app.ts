@@ -1,5 +1,3 @@
-// Factory so tests can spin up a fresh instance.
-
 import { swaggerUI } from '@hono/swagger-ui';
 import { OpenAPIHono } from '@hono/zod-openapi';
 import { cors } from 'hono/cors';

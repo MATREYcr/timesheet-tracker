@@ -5,7 +5,7 @@ import { env } from './config/env.js';
 import { closeDb } from './db/client.js';
 
 const server = serve({ fetch: createApp().fetch, port: env.PORT }, (info) => {
-  console.log(`API listening on http://localhost:${info.port}`);
+  console.log(`API listening on http://${info.address}:${info.port} [${env.NODE_ENV}]`);
 });
 
 for (const signal of ['SIGINT', 'SIGTERM'] as const) {
