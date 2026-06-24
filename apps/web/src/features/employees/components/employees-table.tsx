@@ -30,7 +30,6 @@ export function EmployeesTable({
   containerClassName,
 }: Props) {
   const t = useTranslations('employees');
-  const tCommon = useTranslations('common');
   const locale = useLocale();
   const deactivate = useDeactivateEmployee();
   const reactivate = useReactivateEmployee();
