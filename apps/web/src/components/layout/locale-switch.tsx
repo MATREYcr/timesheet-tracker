@@ -1,19 +1,17 @@
 'use client';
 
 import { useLocale } from 'next-intl';
-import { useRouter } from 'next/navigation';
 import { LOCALES } from '@timesheet/shared';
-import { setLocaleCookie } from '@/i18n/locale-cookie';
+import { usePathname, useRouter } from '@/i18n/navigation';
 import { cn } from '@/lib/utils';
 
 export function LocaleSwitch() {
   const active = useLocale();
   const router = useRouter();
+  const pathname = usePathname();
 
-  const switchTo = (l: string) => {
-    setLocaleCookie(l);
-    // Triggers a server re-render with the new cookie locale.
-    router.refresh();
+  const switchTo = (locale: string) => {
+    router.replace(pathname, { locale });
   };
 
   return (

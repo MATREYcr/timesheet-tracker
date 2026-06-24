@@ -1,7 +1,8 @@
 'use client';
 
-import { TriangleAlert } from 'lucide-react';
+import { FileQuestion } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { Link } from '@/i18n/navigation';
 import { Button } from '@/components/ui/button';
 import {
   Empty,
@@ -12,19 +13,21 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 
-export default function Error({ reset }: { error: Error; reset: () => void }) {
-  const t = useTranslations();
+export default function NotFound() {
+  const t = useTranslations('notFound');
   return (
     <Empty className="border">
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <TriangleAlert />
+          <FileQuestion />
         </EmptyMedia>
-        <EmptyTitle>{t('common.error')}</EmptyTitle>
-        <EmptyDescription>{t('errorPage.description')}</EmptyDescription>
+        <EmptyTitle>{t('title')}</EmptyTitle>
+        <EmptyDescription>{t('description')}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button onClick={reset}>{t('common.retry')}</Button>
+        <Button asChild>
+          <Link href="/">{t('back')}</Link>
+        </Button>
       </EmptyContent>
     </Empty>
   );

@@ -23,7 +23,7 @@ const STYLE: Record<ApprovalStatus, { cls: string; icon: LucideIcon | null }> = 
 };
 
 export function ApprovalStatusBadge({ status }: { status: ApprovalStatus }) {
-  const t = useTranslations();
+  const t = useTranslations('approval');
   const { cls, icon: Icon } = STYLE[status];
   return (
     <Badge
@@ -31,7 +31,7 @@ export function ApprovalStatusBadge({ status }: { status: ApprovalStatus }) {
       className={cn('gap-1 rounded-full border font-medium', cls)}
     >
       {Icon && <Icon className="size-3" />}
-      {t(`approval.status.${status}`)}
+      {t(`status.${status}`)}
     </Badge>
   );
 }

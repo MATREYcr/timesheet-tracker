@@ -20,7 +20,8 @@ import { EmployeeFormDialog } from './employee-form-dialog';
 import { EmployeesTable } from './employees-table';
 
 export function EmployeesScreen() {
-  const t = useTranslations();
+  const t = useTranslations('employees');
+  const tCommon = useTranslations('common');
   const [includeInactive, setIncludeInactive] = useState(false);
   const [selected, setSelected] = useState<Employee | undefined>(undefined);
   const [page, setPage] = useState(1);
@@ -45,10 +46,7 @@ export function EmployeesScreen() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={t('employees.title')}
-        description={t('employees.subtitle')}
-      >
+      <PageHeader title={t('title')} description={t('subtitle')}>
         <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:gap-4">
           <EmployeeCombobox
             value={selected}
@@ -56,7 +54,7 @@ export function EmployeesScreen() {
               setSelected(employee);
               setPage(1);
             }}
-            allLabel={t('common.allEmployees')}
+            allLabel={tCommon('allEmployees')}
             className="w-full sm:w-64"
           />
           <div className="border-border bg-background dark:border-input dark:bg-input/30 flex h-10 items-center gap-2 rounded-lg border px-3">
@@ -69,12 +67,12 @@ export function EmployeesScreen() {
               }}
             />
             <Label htmlFor="show-inactive" className="cursor-pointer">
-              {t('employees.showInactive')}
+              {t('showInactive')}
             </Label>
           </div>
           <Button onClick={openCreate} className="h-10 w-full px-5 sm:w-auto">
             <Plus className="size-4" />
-            {t('employees.add')}
+            {t('add')}
           </Button>
         </div>
       </PageHeader>
@@ -86,12 +84,12 @@ export function EmployeesScreen() {
       ) : data.data.length === 0 ? (
         <EmptyState
           icon={<Users />}
-          title={t('employees.empty.title')}
-          description={t('employees.empty.description')}
+          title={t('empty.title')}
+          description={t('empty.description')}
         >
           <Button onClick={openCreate}>
             <Plus className="size-4" />
-            {t('employees.add')}
+            {t('add')}
           </Button>
         </EmptyState>
       ) : (

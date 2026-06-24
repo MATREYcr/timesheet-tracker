@@ -6,7 +6,7 @@ import {
   type WeeklySummaryRow,
 } from '@timesheet/shared';
 import { ChevronUp, Lock } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@/components/ui/button';
@@ -18,7 +18,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useLocale } from '@/i18n/use-locale';
 import { formatCurrency, formatHours } from '@/lib/format';
 import { ITEM_ENTER, staggerDelay } from '@/lib/motion';
 import { useApproveWeek, useRejectWeek } from '../hooks';
@@ -35,7 +34,8 @@ export function WeeklySummaryTable({
   weekStart,
   containerClassName,
 }: Props) {
-  const t = useTranslations();
+  const t = useTranslations('weeklySummary');
+  const tApproval = useTranslations('approval');
   const locale = useLocale();
   const approve = useApproveWeek();
   const reject = useRejectWeek();
@@ -47,27 +47,27 @@ export function WeeklySummaryTable({
   const onApprove = (employeeId: string) =>
     approve.mutate(
       { employeeId, weekStart },
-      { onSuccess: () => toast.success(t('approval.toast.approved')) },
+      { onSuccess: () => toast.success(tApproval('toast.approved')) },
     );
   const onReject = (employeeId: string) =>
     reject.mutate(
       { employeeId, weekStart },
-      { onSuccess: () => toast.success(t('approval.toast.rejected')) },
+      { onSuccess: () => toast.success(tApproval('toast.rejected')) },
     );
 
   const headers: { label: string; className?: string }[] = [
-    { label: t('weeklySummary.columns.employee') },
-    { label: t('weeklySummary.columns.regularHours') },
-    { label: t('weeklySummary.columns.overtimeHours') },
-    { label: t('weeklySummary.columns.totalHours') },
-    { label: t('weeklySummary.columns.pay') },
-    { label: t('weeklySummary.columns.status') },
-    { label: t('weeklySummary.columns.actions'), className: 'text-center' },
+    { label: t('columns.employee') },
+    { label: t('columns.regularHours') },
+    { label: t('columns.overtimeHours') },
+    { label: t('columns.totalHours') },
+    { label: t('columns.pay') },
+    { label: t('columns.status') },
+    { label: t('columns.actions'), className: 'text-center' },
   ];
 
   return (
     <Table
-      aria-label={t('weeklySummary.title')}
+      aria-label={t('title')}
       containerClassName={containerClassName}
       className="min-w-210 table-fixed"
     >
@@ -130,9 +130,9 @@ export function WeeklySummaryTable({
                   )}
                   {row.status !== APPROVAL_STATUS.approved && (
                     <ConfirmDialog
-                      title={t('approval.confirm.approve.title')}
-                      description={t('approval.confirm.approve.description')}
-                      confirmLabel={t('approval.actions.approve')}
+                      title={tApproval('confirm.approve.title')}
+                      description={tApproval('confirm.approve.description')}
+                      confirmLabel={tApproval('actions.approve')}
                       onConfirm={() => onApprove(row.employeeId)}
                     >
                       <Button
@@ -141,20 +141,20 @@ export function WeeklySummaryTable({
                         disabled={pending}
                         className="bg-success-bg text-success border-success-border hover:bg-success-bg hover:text-success"
                       >
-                        {t('approval.actions.approve')}
+                        {tApproval('actions.approve')}
                       </Button>
                     </ConfirmDialog>
                   )}
                   {row.status !== APPROVAL_STATUS.rejected && (
                     <ConfirmDialog
-                      title={t('approval.confirm.reject.title')}
-                      description={t('approval.confirm.reject.description')}
-                      confirmLabel={t('approval.actions.reject')}
+                      title={tApproval('confirm.reject.title')}
+                      description={tApproval('confirm.reject.description')}
+                      confirmLabel={tApproval('actions.reject')}
                       destructive
                       onConfirm={() => onReject(row.employeeId)}
                     >
                       <Button size="sm" variant="destructive" disabled={pending}>
-                        {t('approval.actions.reject')}
+                        {tApproval('actions.reject')}
                       </Button>
                     </ConfirmDialog>
                   )}

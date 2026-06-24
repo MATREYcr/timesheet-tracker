@@ -37,7 +37,7 @@ export function EmployeeCombobox({
   allLabel,
   className,
 }: Props) {
-  const t = useTranslations();
+  const t = useTranslations('common');
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
   const debounced = useDebouncedValue(search.trim());
@@ -47,7 +47,7 @@ export function EmployeeCombobox({
 
   const label = value
     ? `${value.firstName} ${value.lastName}`
-    : (allLabel ?? placeholder ?? t('timeEntries.selectEmployee'));
+    : (allLabel ?? placeholder ?? '');
 
   const select = (employee: Employee | undefined) => {
     onChange(employee);
@@ -82,10 +82,10 @@ export function EmployeeCombobox({
           <CommandInput
             value={search}
             onValueChange={setSearch}
-            placeholder={t('common.searchEmployee')}
+            placeholder={t('searchEmployee')}
           />
           <CommandList>
-            {!isFetching && <CommandEmpty>{t('common.noEmployees')}</CommandEmpty>}
+            {!isFetching && <CommandEmpty>{t('noEmployees')}</CommandEmpty>}
             <CommandGroup>
               {allLabel && (
                 <CommandItem value="__all__" onSelect={() => select(undefined)}>

@@ -1,7 +1,7 @@
 'use client';
 
 import type { TimeEntry } from '@timesheet/shared';
-import { useTranslations } from 'next-intl';
+import { useLocale, useTranslations } from 'next-intl';
 import { toast } from 'sonner';
 import { ConfirmDialog } from '@/components/confirm-dialog';
 import { Button } from '@/components/ui/button';
@@ -13,7 +13,6 @@ import {
   TableHeader,
   TableRow,
 } from '@/components/ui/table';
-import { useLocale } from '@/i18n/use-locale';
 import { formatDate, formatHours } from '@/lib/format';
 import { ITEM_ENTER, staggerDelay } from '@/lib/motion';
 import { useDeleteTimeEntry } from '../hooks';
@@ -25,23 +24,24 @@ interface Props {
 }
 
 export function TimeEntriesTable({ entries, locked, onEdit }: Props) {
-  const t = useTranslations();
+  const t = useTranslations('timeEntries');
+  const tCommon = useTranslations('common');
   const locale = useLocale();
   const remove = useDeleteTimeEntry();
 
   const handleDelete = (entry: TimeEntry) => {
     remove.mutate(entry.id, {
-      onSuccess: () => toast.success(t('timeEntries.toast.deleted')),
+      onSuccess: () => toast.success(t('toast.deleted')),
     });
   };
 
   return (
-    <Table aria-label={t('timeEntries.title')} className="min-w-120 table-fixed">
+    <Table aria-label={t('title')} className="min-w-120 table-fixed">
       <TableHeader>
         <TableRow>
-          <TableHead>{t('timeEntries.columns.date')}</TableHead>
-          <TableHead>{t('timeEntries.columns.hours')}</TableHead>
-          <TableHead>{t('timeEntries.columns.actions')}</TableHead>
+          <TableHead>{t('columns.date')}</TableHead>
+          <TableHead>{t('columns.hours')}</TableHead>
+          <TableHead>{t('columns.actions')}</TableHead>
         </TableRow>
       </TableHeader>
       <TableBody>
@@ -67,12 +67,12 @@ export function TimeEntriesTable({ entries, locked, onEdit }: Props) {
                     disabled={locked || deleting}
                     onClick={() => onEdit(entry)}
                   >
-                    {t('common.edit')}
+                    {tCommon('edit')}
                   </Button>
                   <ConfirmDialog
-                    title={t('timeEntries.delete.title')}
-                    description={t('timeEntries.delete.description')}
-                    confirmLabel={t('common.delete')}
+                    title={t('delete.title')}
+                    description={t('delete.description')}
+                    confirmLabel={tCommon('delete')}
                     destructive
                     onConfirm={() => handleDelete(entry)}
                   >
@@ -81,7 +81,7 @@ export function TimeEntriesTable({ entries, locked, onEdit }: Props) {
                       variant="destructive"
                       disabled={locked || deleting}
                     >
-                      {t('common.delete')}
+                      {tCommon('delete')}
                     </Button>
                   </ConfirmDialog>
                 </div>

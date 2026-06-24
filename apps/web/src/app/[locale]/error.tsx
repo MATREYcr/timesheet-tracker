@@ -1,7 +1,6 @@
 'use client';
 
-import { FileQuestion } from 'lucide-react';
-import Link from 'next/link';
+import { TriangleAlert } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,21 +12,20 @@ import {
   EmptyTitle,
 } from '@/components/ui/empty';
 
-export default function NotFound() {
-  const t = useTranslations();
+export default function Error({ reset }: { error: Error; reset: () => void }) {
+  const tCommon = useTranslations('common');
+  const t = useTranslations('errorPage');
   return (
     <Empty className="border">
       <EmptyHeader>
         <EmptyMedia variant="icon">
-          <FileQuestion />
+          <TriangleAlert />
         </EmptyMedia>
-        <EmptyTitle>{t('notFound.title')}</EmptyTitle>
-        <EmptyDescription>{t('notFound.description')}</EmptyDescription>
+        <EmptyTitle>{tCommon('error')}</EmptyTitle>
+        <EmptyDescription>{t('description')}</EmptyDescription>
       </EmptyHeader>
       <EmptyContent>
-        <Button asChild>
-          <Link href="/">{t('notFound.back')}</Link>
-        </Button>
+        <Button onClick={reset}>{tCommon('retry')}</Button>
       </EmptyContent>
     </Empty>
   );

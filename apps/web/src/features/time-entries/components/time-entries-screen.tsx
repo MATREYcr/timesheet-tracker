@@ -24,7 +24,7 @@ import { TimeEntriesTable } from './time-entries-table';
 import { TimeEntryFormDialog } from './time-entry-form-dialog';
 
 export function TimeEntriesScreen() {
-  const t = useTranslations();
+  const t = useTranslations('timeEntries');
   const [selected, setSelected] = useState<Employee | undefined>(undefined);
   const [weekStart, setWeekStart] = useState(getCurrentWeekStart);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -49,15 +49,12 @@ export function TimeEntriesScreen() {
 
   return (
     <div className="space-y-6">
-      <PageHeader
-        title={t('timeEntries.title')}
-        description={t('timeEntries.subtitle')}
-      >
+      <PageHeader title={t('title')} description={t('subtitle')}>
         <div className="flex w-full flex-wrap items-center gap-3 sm:w-auto sm:gap-4">
           <EmployeeCombobox
             value={selected}
             onChange={setSelected}
-            placeholder={t('timeEntries.selectEmployee')}
+            placeholder={t('selectEmployee')}
             className="w-full sm:w-64"
           />
           <WeekPicker weekStart={weekStart} onChange={setWeekStart} />
@@ -67,7 +64,7 @@ export function TimeEntriesScreen() {
             className="h-10 w-full px-5 sm:w-auto"
           >
             <Plus className="size-4" />
-            {t('timeEntries.add')}
+            {t('add')}
           </Button>
         </div>
       </PageHeader>
@@ -75,27 +72,23 @@ export function TimeEntriesScreen() {
       {isInactive && (
         <Alert variant="info">
           <CalendarOff className="size-4" />
-          <AlertTitle>{t('timeEntries.inactive.title')}</AlertTitle>
-          <AlertDescription>
-            {t('timeEntries.inactive.description')}
-          </AlertDescription>
+          <AlertTitle>{t('inactive.title')}</AlertTitle>
+          <AlertDescription>{t('inactive.description')}</AlertDescription>
         </Alert>
       )}
       {isLocked && (
         <Alert variant="info">
           <Lock className="size-4" />
-          <AlertTitle>{t('timeEntries.locked.title')}</AlertTitle>
-          <AlertDescription>
-            {t('timeEntries.locked.description')}
-          </AlertDescription>
+          <AlertTitle>{t('locked.title')}</AlertTitle>
+          <AlertDescription>{t('locked.description')}</AlertDescription>
         </Alert>
       )}
 
       {!employeeId ? (
         <EmptyState
           icon={<Users />}
-          title={t('timeEntries.empty.noEmployee')}
-          description={t('timeEntries.empty.noEmployeeHint')}
+          title={t('empty.noEmployee')}
+          description={t('empty.noEmployeeHint')}
         />
       ) : entries.isPending ? (
         <TableSkeleton />
@@ -104,8 +97,8 @@ export function TimeEntriesScreen() {
       ) : entries.data.length === 0 ? (
         <EmptyState
           icon={<CalendarOff />}
-          title={t('timeEntries.empty.noEntries')}
-          description={t('timeEntries.empty.noEntriesHint')}
+          title={t('empty.noEntries')}
+          description={t('empty.noEntriesHint')}
         />
       ) : (
         <div

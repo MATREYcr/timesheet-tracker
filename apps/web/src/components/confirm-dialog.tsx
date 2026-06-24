@@ -31,7 +31,7 @@ export function ConfirmDialog({
   destructive,
   onConfirm,
 }: Props) {
-  const t = useTranslations();
+  const t = useTranslations('common');
 
   return (
     <AlertDialog>
@@ -42,7 +42,7 @@ export function ConfirmDialog({
           <AlertDialogDescription>{description}</AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>{t('common.cancel')}</AlertDialogCancel>
+          <AlertDialogCancel>{t('cancel')}</AlertDialogCancel>
           <AlertDialogAction
             onClick={onConfirm}
             variant={destructive ? 'destructive' : 'default'}

@@ -6,7 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 
 export function EmployeeStatusBadge({ status }: { status: EmployeeStatus }) {
-  const t = useTranslations();
+  const t = useTranslations('employees');
   const active = status === EMPLOYEE_STATUS.active;
   return (
     <Badge
@@ -24,7 +24,7 @@ export function EmployeeStatusBadge({ status }: { status: EmployeeStatus }) {
           active ? 'bg-primary' : 'bg-subtle',
         )}
       />
-      {t(`employees.status.${status}`)}
+      {t(`status.${status}`)}
     </Badge>
   );
 }
