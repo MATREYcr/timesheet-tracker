@@ -32,9 +32,6 @@ const NAV = [
   { href: '/weekly-summary', key: 'weeklySummary', icon: BarChart3 },
 ] as const;
 
-const NAV_BUTTON =
-  'h-11 gap-3 rounded-lg px-3 text-[15px] font-medium text-muted-foreground [&_svg]:size-5! hover:bg-muted hover:text-foreground data-[active=true]:bg-primary-soft data-[active=true]:font-semibold data-[active=true]:text-primary';
-
 export function AppSidebar() {
   const tNav = useTranslations('nav');
   const tApp = useTranslations('app');
@@ -54,7 +51,7 @@ export function AppSidebar() {
           className="flex items-center gap-2.5 overflow-hidden font-bold tracking-tight"
         >
           <ClockArrowUp className="text-primary size-6.5 shrink-0" />
-          <span className="text-base whitespace-nowrap group-data-[collapsible=icon]:hidden">
+          <span className="text-base whitespace-nowrap group-data-[collapsible=icon]:hidden group-data-[mobile=true]:hidden">
             {tApp('title')}
           </span>
         </Link>
@@ -74,7 +71,7 @@ export function AppSidebar() {
                         : pathname.startsWith(item.href)
                     }
                     tooltip={tNav(item.key)}
-                    className={NAV_BUTTON}
+                    className="h-11 gap-3 rounded-lg px-3 text-[15px] font-medium text-muted-foreground [&_svg]:size-5! hover:bg-muted hover:text-foreground data-[active=true]:bg-primary-soft data-[active=true]:font-semibold data-[active=true]:text-primary"
                   >
                     <Link href={item.href}>
                       <item.icon />
