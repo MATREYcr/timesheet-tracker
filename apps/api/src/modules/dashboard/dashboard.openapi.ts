@@ -1,4 +1,5 @@
 import { createRoute, z } from '@hono/zod-openapi';
+import { HttpStatus } from '../../common/http-status.js';
 import {
   dashboardSummarySchema as dashboardShape,
   weekStartSchema,
@@ -18,6 +19,6 @@ export const dashboardRoute = createRoute({
   summary: '"This week" KPIs computed server-side',
   request: { query: z.object({ weekStart: weekStartSchema }) },
   responses: {
-    200: jsonResponse(dashboardSummarySchema, 'Dashboard summary'),
+    [HttpStatus.OK]: jsonResponse(dashboardSummarySchema, 'Dashboard summary'),
   },
 });

@@ -1,4 +1,5 @@
 import { createRoute, z } from '@hono/zod-openapi';
+import { HttpStatus } from '../../common/http-status.js';
 import {
   createTimeEntrySchema,
   employeeIdSchema,
@@ -29,7 +30,7 @@ export const listRoute = createRoute({
     }),
   },
   responses: {
-    200: jsonResponse(z.array(timeEntrySchema), 'Time entries'),
+    [HttpStatus.OK]: jsonResponse(z.array(timeEntrySchema), 'Time entries'),
   },
 });
 
@@ -40,9 +41,9 @@ export const createEntryRoute = createRoute({
   summary: 'Log a time entry',
   request: jsonBody(createTimeEntrySchema),
   responses: {
-    201: jsonResponse(timeEntrySchema, 'Created time entry'),
-    400: errorResponse('Validation error or future date'),
-    409: errorResponse('Inactive employee or approved (locked) week'),
+    [HttpStatus.CREATED]: jsonResponse(timeEntrySchema, 'Created time entry'),
+    [HttpStatus.BAD_REQUEST]: errorResponse('Validation error or future date'),
+    [HttpStatus.CONFLICT]: errorResponse('Inactive employee or approved (locked) week'),
   },
 });
 
@@ -53,10 +54,10 @@ export const updateRoute = createRoute({
   summary: 'Edit a time entry (blocked if its week is approved)',
   request: { params: idParam, ...jsonBody(updateTimeEntrySchema) },
   responses: {
-    200: jsonResponse(timeEntrySchema, 'Updated time entry'),
-    400: errorResponse('Validation error or future date'),
-    404: errorResponse('Time entry not found'),
-    409: errorResponse('Approved (locked) week'),
+    [HttpStatus.OK]: jsonResponse(timeEntrySchema, 'Updated time entry'),
+    [HttpStatus.BAD_REQUEST]: errorResponse('Validation error or future date'),
+    [HttpStatus.NOT_FOUND]: errorResponse('Time entry not found'),
+    [HttpStatus.CONFLICT]: errorResponse('Approved (locked) week'),
   },
 });
 
@@ -67,8 +68,8 @@ export const deleteRoute = createRoute({
   summary: 'Delete a time entry (blocked if its week is approved)',
   request: { params: idParam },
   responses: {
-    204: { description: 'Deleted' },
-    404: errorResponse('Time entry not found'),
-    409: errorResponse('Approved (locked) week'),
+    [HttpStatus.NO_CONTENT]: { description: 'Deleted' },
+    [HttpStatus.NOT_FOUND]: errorResponse('Time entry not found'),
+    [HttpStatus.CONFLICT]: errorResponse('Approved (locked) week'),
   },
 });

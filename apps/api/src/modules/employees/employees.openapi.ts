@@ -1,4 +1,5 @@
 import { createRoute, z } from '@hono/zod-openapi';
+import { HttpStatus } from '../../common/http-status.js';
 import {
   createEmployeeSchema,
   employeeIdSchema,
@@ -33,7 +34,7 @@ export const listRoute = createRoute({
       .extend(paginationQuerySchema.shape),
   },
   responses: {
-    200: jsonResponse(
+    [HttpStatus.OK]: jsonResponse(
       paginatedSchema(employeeSchema, 'PaginatedEmployees'),
       'Paginated employees',
     ),
@@ -47,8 +48,8 @@ export const createEmpRoute = createRoute({
   summary: 'Create an employee',
   request: jsonBody(createEmployeeSchema),
   responses: {
-    201: jsonResponse(employeeSchema, 'Created employee'),
-    400: errorResponse('Validation error'),
+    [HttpStatus.CREATED]: jsonResponse(employeeSchema, 'Created employee'),
+    [HttpStatus.BAD_REQUEST]: errorResponse('Validation error'),
   },
 });
 
@@ -59,9 +60,9 @@ export const updateRoute = createRoute({
   summary: 'Update an employee (name / hourly rate)',
   request: { params: idParam, ...jsonBody(updateEmployeeSchema) },
   responses: {
-    200: jsonResponse(employeeSchema, 'Updated employee'),
-    400: errorResponse('Validation error'),
-    404: errorResponse('Employee not found'),
+    [HttpStatus.OK]: jsonResponse(employeeSchema, 'Updated employee'),
+    [HttpStatus.BAD_REQUEST]: errorResponse('Validation error'),
+    [HttpStatus.NOT_FOUND]: errorResponse('Employee not found'),
   },
 });
 
@@ -72,8 +73,8 @@ export const deactivateRoute = createRoute({
   summary: 'Soft-delete an employee (sets deactivatedAt)',
   request: { params: idParam },
   responses: {
-    200: jsonResponse(employeeSchema, 'Deactivated employee'),
-    404: errorResponse('Employee not found'),
+    [HttpStatus.OK]: jsonResponse(employeeSchema, 'Deactivated employee'),
+    [HttpStatus.NOT_FOUND]: errorResponse('Employee not found'),
   },
 });
 
@@ -84,7 +85,7 @@ export const reactivateRoute = createRoute({
   summary: 'Reactivate an employee (clears deactivatedAt)',
   request: { params: idParam },
   responses: {
-    200: jsonResponse(employeeSchema, 'Reactivated employee'),
-    404: errorResponse('Employee not found'),
+    [HttpStatus.OK]: jsonResponse(employeeSchema, 'Reactivated employee'),
+    [HttpStatus.NOT_FOUND]: errorResponse('Employee not found'),
   },
 });

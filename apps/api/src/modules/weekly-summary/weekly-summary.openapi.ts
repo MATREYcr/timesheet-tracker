@@ -1,4 +1,5 @@
 import { createRoute, z } from '@hono/zod-openapi';
+import { HttpStatus } from '../../common/http-status.js';
 import {
   employeeIdSchema,
   paginationQuerySchema,
@@ -33,7 +34,7 @@ export const summaryRoute = createRoute({
       .extend(paginationQuerySchema.shape),
   },
   responses: {
-    200: jsonResponse(
+    [HttpStatus.OK]: jsonResponse(
       paginatedSchema(weeklySummaryRowSchema, 'PaginatedWeeklySummary'),
       'Paginated weekly summary rows',
     ),
@@ -47,11 +48,11 @@ export const approvalRoute = createRoute({
   summary: 'Approval status of one (employee, week)',
   request: { query: weeklyApprovalActionSchema },
   responses: {
-    200: jsonResponse(
+    [HttpStatus.OK]: jsonResponse(
       weekApprovalStatusSchema,
       'Approval status (pending if no row)',
     ),
-    404: errorResponse('Employee not found'),
+    [HttpStatus.NOT_FOUND]: errorResponse('Employee not found'),
   },
 });
 
@@ -62,8 +63,8 @@ export const approveRoute = createRoute({
   summary: 'Approve a week (locks its entries)',
   request: jsonBody(weeklyApprovalActionSchema),
   responses: {
-    200: jsonResponse(weekApprovalStatusSchema, 'Approved'),
-    404: errorResponse('Employee not found'),
+    [HttpStatus.OK]: jsonResponse(weekApprovalStatusSchema, 'Approved'),
+    [HttpStatus.NOT_FOUND]: errorResponse('Employee not found'),
   },
 });
 
@@ -74,7 +75,7 @@ export const rejectRoute = createRoute({
   summary: 'Reject a week (keeps it editable)',
   request: jsonBody(weeklyApprovalActionSchema),
   responses: {
-    200: jsonResponse(weekApprovalStatusSchema, 'Rejected'),
-    404: errorResponse('Employee not found'),
+    [HttpStatus.OK]: jsonResponse(weekApprovalStatusSchema, 'Rejected'),
+    [HttpStatus.NOT_FOUND]: errorResponse('Employee not found'),
   },
 });
