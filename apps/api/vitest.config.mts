@@ -18,6 +18,9 @@ export default defineConfig(() => ({
     setupFiles: ['dotenv/config'],
     // Provision + migrate the isolated test DB (timesheet_test) once per run.
     globalSetup: ['./test/global-setup.ts'],
+    // Integration tests share the one test DB, so run files serially (each truncates
+    // in beforeAll); parallel files would race on TRUNCATE vs. inserts.
+    fileParallelism: false,
     include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
     coverage: {
