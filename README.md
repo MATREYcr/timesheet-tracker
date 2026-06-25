@@ -120,9 +120,9 @@ cd timesheet-tracker
 pnpm install
 ```
 
-### 2 — Create the environment file
+### 2 — Create the environment files
 
-Create a `.env` file at the **repo root** (next to `docker-compose.yml`):
+**API / database** — create a `.env` at the **repo root** (next to `docker-compose.yml`):
 
 ```dotenv
 # .env
@@ -134,6 +134,14 @@ DATABASE_URL=postgresql://timesheet:timesheet@localhost:5433/timesheet
 ```
 
 > The API also accepts `PORT` (default `3333`) and `CORS_ORIGIN` (default `*`).
+
+**Web client** — copy the example file:
+
+```bash
+cp apps/web/.env.example apps/web/.env.local
+```
+
+This sets `NEXT_PUBLIC_API_URL=http://localhost:3333`. Only change it if the API runs on a different port.
 
 ### 3 — Start PostgreSQL
 
