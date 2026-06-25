@@ -167,6 +167,14 @@ timesheet-tracker/
   decisions, trade-offs, gotchas), never restate the **what** the code already says.
   No redundant file-header summaries; prefer self-documenting code and names.
 - **Commits:** small, conventional (`feat:`, `fix:`, `chore:`, `test:`, `docs:`).
+- **Diagrams:** Mermaid only, in `docs/diagrams/` (diagrams-as-code — they render natively on
+  GitHub and stay diffable). No exported PNG/SVG images. Keep them in sync with the code.
+- **Visual / UI verification:** use the `agent-browser` skill to drive the running app — verify
+  the real UI, i18n (en/es) and dark mode instead of assuming. Read pages as text (`snapshot`)
+  first; only `screenshot` when you actually need to *see* pixels (images cost tokens). The CLI is
+  installed globally (`npm i -g agent-browser`), not a product dependency. **When the visual check
+  is done and the browser is no longer needed, close it** (`agent-browser close --all`) — the
+  daemon and headless browser keep running in the background otherwise.
 
 ---
 

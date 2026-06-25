@@ -3,7 +3,9 @@
 Granular execution roadmap. Phases run roughly in order; each subphase has a
 concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 
-> Area specs (the _what_) live in `00`–`03`. This file is the _how & order_.
+> The _what_ lives in `overview.md` (decisions index), `foundations/` (cross-cutting), and
+> `features/` (one self-contained spec per capability). This file is the _how & order_ — the real
+> chronological build log; it is kept phase-by-phase on purpose (not regrouped by feature).
 
 ---
 
@@ -129,7 +131,7 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 ### Server-side pagination (Employees + Weekly summary)
 
 - [x] **3.14 Contract** — `shared`: `Paginated<T>`, `paginationQuerySchema`
-      (`page`/`pageSize`), `buildPaginated` helper; spec the envelope (02-api, 03-web). ✓
+      (`page`/`pageSize`), `buildPaginated` helper; spec the envelope (api-platform, web-platform). ✓
 - [x] **3.15 API** — `/employees` and `/weekly-summary` accept `page`/`pageSize`,
       return `Paginated<T>` (limit/offset + count); integration test updated. ✓
 - [x] **3.16 Web** — feature `api.ts` consumes the envelope; hooks use
@@ -142,6 +144,13 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 - [x] **3.18 Web combobox** — reusable searchable `EmployeeCombobox`
       (shadcn Popover + Command). Time entries uses it to pick the employee;
       Employees + Weekly summary use it to filter the table (resets to page 1). ✓
+
+### i18n migration (i18next → next-intl)
+
+- [x] **3.19 Migrate to next-intl** — replaced `react-i18next` (3.3) with native `next-intl` +
+      `[locale]` URL routing; the app went SSG → SSR (locale cookie) so translations render
+      server-side and avoid a hydration mismatch. **Supersedes 3.3:** the request interceptor now
+      reads the `<html lang>` attribute instead of syncing a `setApiLocale` helper. ✓
 
 ---
 
@@ -163,10 +172,10 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 
 Do these only if time remains; none are required. Order = priority.
 
-- [ ] **Swagger / OpenAPI** for the API — generate the spec from the Zod schemas
-      (`hono-openapi`) + Swagger UI (`@hono/swagger-ui`) at `/docs`. On-theme with
-      OCMI's OpenAPI stack. Verify Zod v4 compatibility first. Additive (annotate
-      existing routes; no rewrite). **After the web.**
+- [x] **Swagger / OpenAPI** for the API — OpenAPI 3.1 generated from the Zod schemas via
+      `@hono/zod-openapi` (`createModuleApp()` per module + `*.openapi.ts` route contracts) +
+      Swagger UI at `/docs` (`/openapi` for the JSON); localized via `Accept-Language`. On-theme
+      with OCMI's OpenAPI stack. Additive — annotated existing routes, no rewrite. ✓
 - [ ] **`nx affected` in CI** — switch CI from `run-many` to `affected` to run only
       what changed. Leverages the Nx task graph we already have.
 - [ ] **Extra API tests** — soft-delete visibility, future-date/inactive validation,
