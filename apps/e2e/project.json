@@ -4,7 +4,14 @@
     "e2e": {
       "executor": "nx:run-commands",
       "options": {
-        "command": "pnpm exec playwright test",
+        "command": "pnpm exec playwright test --headed",
+        "cwd": "apps/e2e"
+      }
+    },
+    "e2e:headed": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec playwright test --headed",
         "cwd": "apps/e2e"
       }
     },
@@ -12,6 +19,13 @@
       "executor": "nx:run-commands",
       "options": {
         "command": "pnpm exec playwright test --ui",
+        "cwd": "apps/e2e"
+      }
+    },
+    "e2e:install": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "pnpm exec playwright install --with-deps",
         "cwd": "apps/e2e"
       }
     },
