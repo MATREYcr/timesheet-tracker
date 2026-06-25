@@ -38,7 +38,6 @@ Maintained in the API, keyed by the shared `ErrorCode`. Examples:
 | ------------------- | ------ | ----------------------------------------- | ------------------------------------------------------- |
 | `VALIDATION_ERROR`  | 400    | Invalid request data.                     | Datos de solicitud inválidos.                           |
 | `EMPLOYEE_INACTIVE` | 409    | Cannot log time for an inactive employee. | No se puede registrar tiempo para un empleado inactivo. |
-| `FUTURE_DATE`       | 400    | Date cannot be in the future.             | La fecha no puede ser futura.                           |
 | `WEEK_LOCKED`       | 409    | This week is approved and locked.         | Esta semana está aprobada y bloqueada.                  |
 | `NOT_FOUND`         | 404    | Resource not found.                       | Recurso no encontrado.                                  |
 

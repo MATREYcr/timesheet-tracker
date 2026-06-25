@@ -15,10 +15,6 @@ const MESSAGES: Record<ErrorCode, Record<Locale, string>> = {
     en: 'Cannot log time for an inactive employee.',
     es: 'No se puede registrar tiempo para un empleado inactivo.',
   },
-  FUTURE_DATE: {
-    en: 'Date cannot be in the future.',
-    es: 'La fecha no puede ser futura.',
-  },
   WEEK_LOCKED: {
     en: 'This week is approved and locked.',
     es: 'Esta semana está aprobada y bloqueada.',

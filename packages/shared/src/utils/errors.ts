@@ -3,7 +3,6 @@ export const ERROR_CODES = [
   'VALIDATION_ERROR',
   'NOT_FOUND',
   'EMPLOYEE_INACTIVE',
-  'FUTURE_DATE',
   'WEEK_LOCKED',
   'INTERNAL_ERROR',
 ] as const;
