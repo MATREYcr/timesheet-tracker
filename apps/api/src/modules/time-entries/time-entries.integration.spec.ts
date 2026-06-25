@@ -1,6 +1,3 @@
-// Validation rules for the time-entries module. Runs the real app against the
-// isolated test DB (timesheet_test) via app.request().
-
 import type { Employee } from '@timesheet/shared';
 import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -8,9 +5,7 @@ import { createApp } from '@/app';
 import { closeDb, db } from '@/db/client';
 
 const app = createApp();
-// Past Monday — satisfies the no-future-date rule. Different from other specs
-// to avoid cross-spec ordering issues (though each spec truncates in beforeAll).
-const PAST_DATE = '2020-03-09'; // A Monday
+const PAST_DATE = '2020-03-09'; // a past Monday
 
 async function body<T>(res: Response): Promise<T> {
   return (await res.json()) as T;

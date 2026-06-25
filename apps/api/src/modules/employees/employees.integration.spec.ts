@@ -1,6 +1,3 @@
-// Soft-delete invariants for the employees module. Runs the real app against the
-// isolated test DB (timesheet_test) via app.request().
-
 import type { Employee, Paginated, WeeklySummaryRow } from '@timesheet/shared';
 import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
@@ -8,8 +5,7 @@ import { createApp } from '@/app';
 import { closeDb, db } from '@/db/client';
 
 const app = createApp();
-// Past Monday — satisfies the no-future-date rule.
-const WEEK_START = '2020-02-03'; // Monday
+const WEEK_START = '2020-02-03'; // a past Monday
 
 async function body<T>(res: Response): Promise<T> {
   return (await res.json()) as T;
@@ -34,7 +30,6 @@ describe('employees soft-delete (integration)', () => {
 
   beforeAll(async () => {
     await reset();
-    // Create an employee and a time entry so we can check historical visibility.
     const res = await postJson('/employees', {
       firstName: 'SoftDelete',
       lastName: 'Test',
@@ -43,7 +38,6 @@ describe('employees soft-delete (integration)', () => {
     expect(res.status).toBe(201);
     employeeId = (await body<Employee>(res)).id;
 
-    // Add an entry in WEEK_START so the employee appears in weekly-summary later.
     const entry = await postJson('/time-entries', {
       employeeId,
       date: WEEK_START,
@@ -105,7 +99,6 @@ describe('employees soft-delete (integration)', () => {
     expect(emp.status).toBe('active');
     expect(emp.deactivatedAt).toBeNull();
 
-    // Must now appear in the default list again.
     const list = await app.request('/employees');
     const page = await body<Paginated<Employee>>(list);
     const ids = page.data.map((e) => e.id);

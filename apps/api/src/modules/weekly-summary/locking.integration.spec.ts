@@ -1,6 +1,3 @@
-// Approving a week locks its entries. Runs the real app against an isolated test
-// Postgres (timesheet_test, provisioned by the Vitest globalSetup) via app.request().
-
 import type {
   Paginated,
   TimeEntry,
@@ -13,9 +10,7 @@ import { createApp } from '@/app';
 import { closeDb, db } from '@/db/client';
 
 const app = createApp();
-// Any past Monday works — the test DB is isolated and truncated per run, so dates
-// only need to satisfy the no-future-date rule.
-const WEEK_START = '2020-01-06'; // Monday
+const WEEK_START = '2020-01-06'; // a past Monday
 const TEST_FIRST_NAME = 'IntegrationTest';
 
 async function body<T>(res: Response): Promise<T> {
@@ -38,7 +33,6 @@ function patchJson(path: string, payload: unknown) {
   });
 }
 
-// Isolated test DB → a full truncate is safe and gives every run a clean slate.
 async function reset() {
   await db.execute(
     sql`TRUNCATE TABLE weekly_approvals, time_entries, employees RESTART IDENTITY CASCADE`,
@@ -153,7 +147,6 @@ describe('approval locking flow (integration)', () => {
     );
     expect((await body<WeekApprovalStatus>(pending)).status).toBe('pending');
 
-    // Unknown employee → 404.
     const missing = await app.request(
       `/weekly-summary/approval?employeeId=00000000-0000-0000-0000-000000000000&weekStart=${WEEK_START}`,
     );
