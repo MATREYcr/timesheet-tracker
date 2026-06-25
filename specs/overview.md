@@ -3,6 +3,9 @@
 The master index. Domain model, locked decisions, and build order. Cross-cutting concerns live
 in `foundations/`; each capability has a self-contained spec in `features/`.
 
+> Visual companions in [`docs/diagrams/`](../docs/diagrams/): architecture, data model (ER), and
+> the approval flow.
+
 ---
 
 ## 1. Goal

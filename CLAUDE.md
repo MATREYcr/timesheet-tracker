@@ -167,6 +167,8 @@ timesheet-tracker/
   decisions, trade-offs, gotchas), never restate the **what** the code already says.
   No redundant file-header summaries; prefer self-documenting code and names.
 - **Commits:** small, conventional (`feat:`, `fix:`, `chore:`, `test:`, `docs:`).
+- **Diagrams:** Mermaid only, in `docs/diagrams/` (diagrams-as-code — they render natively on
+  GitHub and stay diffable). No exported PNG/SVG images. Keep them in sync with the code.
 
 ---
 
