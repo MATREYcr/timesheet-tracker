@@ -7,7 +7,6 @@ import {
 } from './dates.js';
 
 describe('getWeekStart', () => {
-  // Week of 2026-06-08 (Mon) .. 2026-06-14 (Sun) — matches the assessment sketch.
   it('returns the same Monday for a Monday', () => {
     expect(getWeekStart('2026-06-08')).toBe('2026-06-08');
   });

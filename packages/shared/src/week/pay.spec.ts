@@ -65,7 +65,6 @@ describe('calculateWeeklyPay', () => {
   });
 
   it('rounds money half-up at the boundary', () => {
-    // 13.35 * 1 hour regular -> 13.35; overtime case producing .xx5
     expect(round2(185.625)).toBe(185.63);
     expect(round2(1.005)).toBe(1.01);
     expect(round2(2.345)).toBe(2.35);

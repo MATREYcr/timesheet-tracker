@@ -41,14 +41,15 @@ and nothing inside a week that's already been signed off.
   - `POST /time-entries` — full validation (hours, future date, active employee, week not locked)
   - `PATCH /time-entries/:id` — blocked if the week is approved
   - `DELETE /time-entries/:id` — blocked if the week is approved
-- **Error codes:** `VALIDATION_ERROR` (400), `FUTURE_DATE` (400), `EMPLOYEE_INACTIVE` (409),
-  `WEEK_LOCKED` (409), `NOT_FOUND` (404).
+- **Error codes:** `VALIDATION_ERROR` (400 — includes future dates, see below), `EMPLOYEE_INACTIVE`
+  (409), `WEEK_LOCKED` (409), `NOT_FOUND` (404).
 - **Transactions:** mutations run in a transaction so the week-locked check and the write are
   atomic.
 
 ## Edge cases
 - `7.3` hours → rejected (not a 0.25 multiple); `7.5` → accepted.
-- A date in the future → `FUTURE_DATE`.
+- A date in the future → `VALIDATION_ERROR` (enforced by the shared `pastOrToday` schema; future
+  dates are input validation, not a separate domain error).
 - Entry for an inactive employee → `EMPLOYEE_INACTIVE`.
 - Create/edit/delete inside an `approved` week → `WEEK_LOCKED` (409).
 - Same employee viewable but read-only when inactive: the screen shows entries but hides the form.
