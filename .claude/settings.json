@@ -22,6 +22,7 @@
       "Bash(npx nx:*)",
       "Bash(npx drizzle-kit:*)",
       "Bash(docker compose:*)",
+      "Bash(agent-browser:*)",
       "Bash(git status)",
       "Bash(git diff:*)",
       "Bash(git log:*)",
