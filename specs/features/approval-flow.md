@@ -54,10 +54,11 @@ this there's no guarantee the hours that get paid were actually reviewed.
 - Approve then approve again (idempotent) → stays `approved`, no error.
 
 ## Verification / Done when
-- Integration test (PLAN 2.8) against real Postgres: create entries (pending) → approve →
-  create/edit/delete blocked with `WEEK_LOCKED` (409) → reject re-opens and edits pass. CI runs a
-  Postgres service.
-- `pnpm nx test api` green; the test is isolated from dev/seed data.
+- Integration test (PLAN 2.8) against the isolated test DB: create entries (pending) → approve →
+  create/edit/delete blocked with `WEEK_LOCKED` (409) → reject re-opens and edits pass.
+- Runs against `timesheet_test` (provisioned + migrated by the Vitest `globalSetup`, truncated per
+  run) — never the dev/prod DB. See the Testing note in
+  [`foundations/api-platform`](../foundations/api-platform.md).
 
 ## Notes / deviations
 - `GET /weekly-summary/approval` was added after the core endpoints: the Time entries screen

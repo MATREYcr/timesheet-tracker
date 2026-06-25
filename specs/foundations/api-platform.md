@@ -83,6 +83,17 @@ Query: `page` (1-based, default 1) + `pageSize` (default 10, max 100), validated
 can render a pager. `/time-entries` is **not** paginated — it's already bounded to one (employee,
 week) (≤ 7 rows).
 
+## Testing
+
+- **Integration tests run against an isolated `timesheet_test` database**, never the dev/prod DB.
+  A Vitest `globalSetup` (`apps/api/test/global-setup.ts`) creates it if missing and migrates it
+  once per run; `db/client.ts` swaps to it automatically under Vitest (`activeDbUrl`), deriving the
+  URL from `DATABASE_URL` (db name → `timesheet_test`) unless `TEST_DATABASE_URL` is set.
+- Tests `TRUNCATE … RESTART IDENTITY CASCADE` for a clean slate, so they're isolated and
+  repeatable. This replaced the earlier "scoped far-past week" workaround that risked dev data.
+- Service logic that's purely computational should be extracted and unit-tested directly; DB
+  orchestration is covered by integration tests through `app.request()`.
+
 ## Notes / deviations
 
 - An **OpenAPI 3.1 spec + Swagger UI** (localized via `Accept-Language`) was added over the

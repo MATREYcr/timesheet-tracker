@@ -1,5 +1,5 @@
-// Approving a week locks its entries. Runs the real app against real Postgres via
-// app.request() (CI provides the DB).
+// Approving a week locks its entries. Runs the real app against an isolated test
+// Postgres (timesheet_test, provisioned by the Vitest globalSetup) via app.request().
 
 import type {
   Paginated,
@@ -7,21 +7,15 @@ import type {
   WeekApprovalStatus,
   WeeklySummaryRow,
 } from '@timesheet/shared';
-import { and, eq, gte, lte } from 'drizzle-orm';
+import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import { createApp } from '@/app';
 import { closeDb, db } from '@/db/client';
-import {
-  employees,
-  timeEntries,
-  weeklyApprovals,
-} from '@/db/schema';
 
 const app = createApp();
-// A dedicated far-past week the seed never uses, so the test stays fully isolated
-// and never wipes real data. Dates are in the past, so they pass the no-future rule.
+// Any past Monday works — the test DB is isolated and truncated per run, so dates
+// only need to satisfy the no-future-date rule.
 const WEEK_START = '2020-01-06'; // Monday
-const WEEK_END = '2020-01-12'; // Sunday
 const TEST_FIRST_NAME = 'IntegrationTest';
 
 async function body<T>(res: Response): Promise<T> {
@@ -44,18 +38,11 @@ function patchJson(path: string, payload: unknown) {
   });
 }
 
-// Scoped cleanup: only the test week + the test employee. Never touches the dev seed
-// (which lives in other weeks), so running the tests no longer wipes real data.
+// Isolated test DB → a full truncate is safe and gives every run a clean slate.
 async function reset() {
-  await db
-    .delete(weeklyApprovals)
-    .where(eq(weeklyApprovals.weekStart, WEEK_START));
-  await db
-    .delete(timeEntries)
-    .where(
-      and(gte(timeEntries.date, WEEK_START), lte(timeEntries.date, WEEK_END)),
-    );
-  await db.delete(employees).where(eq(employees.firstName, TEST_FIRST_NAME));
+  await db.execute(
+    sql`TRUNCATE TABLE weekly_approvals, time_entries, employees RESTART IDENTITY CASCADE`,
+  );
 }
 
 describe('approval locking flow (integration)', () => {

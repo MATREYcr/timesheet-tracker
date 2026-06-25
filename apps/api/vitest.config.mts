@@ -16,6 +16,8 @@ export default defineConfig(() => ({
     passWithNoTests: true,
     environment: 'node',
     setupFiles: ['dotenv/config'],
+    // Provision + migrate the isolated test DB (timesheet_test) once per run.
+    globalSetup: ['./test/global-setup.ts'],
     include: ['{src,tests}/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     reporters: ['default'],
     coverage: {
