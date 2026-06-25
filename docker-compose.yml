@@ -1,0 +1,23 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: timesheet-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: timesheet
+      POSTGRES_PASSWORD: timesheet
+      POSTGRES_DB: timesheet
+    # Host port defaults to 5433 (avoids clashing with a local PostgreSQL on 5432).
+    # Override via DB_HOST_PORT in .env if 5433 is also taken.
+    ports:
+      - '${DB_HOST_PORT:-5433}:5432'
+    volumes:
+      - timesheet_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U timesheet -d timesheet']
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  timesheet_pgdata:

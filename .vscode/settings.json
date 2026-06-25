@@ -1,0 +1,6 @@
+{
+  "files.associations": {
+    "*.dc.html": "plaintext"
+  },
+  "css.lint.unknownAtRules": "ignore"
+}

@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Geist',system-ui,sans-serif;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
+button{font-family:inherit;cursor:pointer;}
+input,select{font-family:inherit;}
+::placeholder{color:var(--fg-subtle);}
+@keyframes mt-fade{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:none;}}
+@keyframes mt-toast{from{opacity:0;transform:translateY(10px) scale(.98);}to{opacity:1;transform:none;}}
+@keyframes mt-shimmer{0%{background-position:-260px 0;}100%{background-position:260px 0;}}
+@keyframes mt-pop{from{opacity:0;transform:scale(.97) translateY(4px);}to{opacity:1;transform:none;}}
+</style>
+</helmet>
+<div style="{{ rootStyle }}">
+
+  <aside style="{{ sidebarStyle }}">
+    <div style="display:flex;align-items:center;gap:10px;height:60px;padding:0 16px;border-bottom:1px solid var(--border);overflow:hidden;">
+      <svg width="24" height="24" viewBox="0 0 24 24" style="flex-shrink:0;"><path d="M13 2 4.5 13.5H11L9 22 18 9.5H11.5L13 2Z" fill="var(--primary)"></path></svg>
+      <span style="{{ brandTextStyle }}">{{ t.appTitle }}</span>
+    </div>
+    <nav style="display:flex;flex-direction:column;gap:3px;padding:12px 10px;flex:1;">
+      <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="3">
+        <button onClick="{{ item.onClick }}" title="{{ item.label }}" style="{{ item.btnStyle }}" style-hover="{{ item.hoverStyle }}">
+          <span style="display:inline-flex;flex-shrink:0;width:18px;height:18px;align-items:center;justify-content:center;">
+            <sc-if value="{{ item.isEmp }}" hint-placeholder-val="{{ true }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg></sc-if>
+            <sc-if value="{{ item.isEnt }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></sc-if>
+            <sc-if value="{{ item.isSum }}"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"></path><rect x="7" y="12" width="3" height="6"></rect><rect x="13" y="8" width="3" height="10"></rect></svg></sc-if>
+          </span>
+          <span style="{{ navLabelStyle }}">{{ item.label }}</span>
+        </button>
+      </sc-for>
+    </nav>
+    <div style="padding:10px;border-top:1px solid var(--border);">
+      <button onClick="{{ onToggleCollapse }}" title="{{ collapseTitle }}" style="{{ collapseBtnStyle }}" style-hover="filter:brightness(1.05)">
+        <span style="display:inline-flex;flex-shrink:0;width:18px;height:18px;align-items:center;justify-content:center;"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="{{ collapseIconStyle }}"><polyline points="15 18 9 12 15 6"></polyline></svg></span>
+        <span style="{{ navLabelStyle }}">{{ t.collapse }}</span>
+      </button>
+    </div>
+  </aside>
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column;">
+
+  <header style="position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:16px;padding:0 24px;height:60px;background:var(--card);border-bottom:1px solid var(--border);">
+    <div style="flex:1;font-size:15px;font-weight:600;color:var(--fg);letter-spacing:-0.01em;">{{ screenTitle }}</div>
+    <div style="display:flex;align-items:center;gap:8px;">
+      <div style="display:flex;background:var(--muted-bg);border:1px solid var(--border);border-radius:8px;padding:3px;">
+        <button onClick="{{ onEn }}" style="{{ enBtnStyle }}">EN</button>
+        <button onClick="{{ onEs }}" style="{{ esBtnStyle }}">ES</button>
+      </div>
+      <button onClick="{{ onToggleTheme }}" title="Theme" style="display:inline-flex;width:34px;height:34px;align-items:center;justify-content:center;border:1px solid var(--border);background:var(--card);border-radius:8px;color:var(--fg-muted);" style-hover="color:var(--fg);background:var(--muted-bg)">
+        <sc-if value="{{ themeIsLight }}" hint-placeholder-val="{{ true }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path></svg></sc-if>
+        <sc-if value="{{ themeIsDark }}"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg></sc-if>
+      </button>
+      <button onClick="{{ onCycleForce }}" title="Preview states" style="display:inline-flex;width:34px;height:34px;align-items:center;justify-content:center;border:1px solid var(--border);background:var(--card);border-radius:8px;color:var(--fg-muted);" style-hover="color:var(--fg);background:var(--muted-bg)">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 3h6M10 3v6.5L5.2 18a2 2 0 0 0 1.8 3h10a2 2 0 0 0 1.8-3L14 9.5V3"></path><path d="M7.5 14h9"></path></svg>
+      </button>
+    </div>
+  </header>
+
+  <main style="max-width:1024px;width:100%;margin:0 auto;padding:32px 24px 96px;">
+
+    <!-- ════ EMPLOYEES ════ -->
+    <sc-if value="{{ isEmployees }}" hint-placeholder-val="{{ true }}">
+    <section data-screen-label="Employees" style="">
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap;">
+        <div>
+          <h1 style="font-size:24px;font-weight:700;color:var(--fg);letter-spacing:-0.02em;">{{ t.emp_title }}</h1>
+          <p style="font-size:14px;color:var(--fg-muted);margin-top:5px;">{{ t.emp_sub }}</p>
+        </div>
+        <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap;">
+          <div onClick="{{ onToggleInactive }}" style="display:flex;align-items:center;gap:9px;font-size:13px;font-weight:500;color:var(--fg-muted);cursor:pointer;user-select:none;">
+            <span style="{{ switchTrackStyle }}"><span style="{{ switchKnobStyle }}"></span></span>{{ t.showInactive }}
+          </div>
+          <button onClick="{{ onAddEmp }}" style="display:inline-flex;align-items:center;gap:6px;background:var(--primary);color:var(--primary-fg);border:none;border-radius:8px;padding:9px 15px;font-size:14px;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12);" style-hover="filter:brightness(1.08)" style-active="transform:translateY(1px)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>{{ t.addEmployee }}
+          </button>
+        </div>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);">
+        <sc-if value="{{ emp_loading }}"><div style="padding:6px 0;"><sc-for list="{{ skel }}" as="k" hint-placeholder-count="4"><div style="display:flex;align-items:center;gap:18px;padding:var(--cell-pad);border-top:1px solid var(--border);"><div style="flex:2;height:13px;border-radius:6px;background:linear-gradient(90deg,var(--muted-bg),var(--border),var(--muted-bg));background-size:520px 100%;animation:mt-shimmer 1.2s infinite linear;"></div><div style="flex:1;height:13px;border-radius:6px;background:linear-gradient(90deg,var(--muted-bg),var(--border),var(--muted-bg));background-size:520px 100%;animation:mt-shimmer 1.2s infinite linear;"></div><div style="width:70px;height:13px;border-radius:6px;background:linear-gradient(90deg,var(--muted-bg),var(--border),var(--muted-bg));background-size:520px 100%;animation:mt-shimmer 1.2s infinite linear;"></div><div style="width:96px;height:13px;border-radius:6px;background:linear-gradient(90deg,var(--muted-bg),var(--border),var(--muted-bg));background-size:520px 100%;animation:mt-shimmer 1.2s infinite linear;"></div></div></sc-for></div></sc-if>
+
+        <sc-if value="{{ emp_error }}"><div style="display:flex;align-items:center;gap:14px;margin:18px;padding:16px 18px;background:var(--danger-bg);border:1px solid var(--danger-border);border-radius:10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--fg);">{{ t.error_title }}</div><div style="font-size:13px;color:var(--fg-muted);margin-top:2px;">{{ t.error_desc }}</div></div><button onClick="{{ onRetry }}" style="background:var(--card);color:var(--fg);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;" style-hover="background:var(--muted-bg)">{{ t.retry }}</button></div></sc-if>
+
+        <sc-if value="{{ emp_empty }}"><div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:56px 24px;"><div style="width:52px;height:52px;border-radius:14px;background:var(--muted-bg);display:flex;align-items:center;justify-content:center;color:var(--fg-subtle);margin-bottom:16px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"></path></svg></div><div style="font-size:16px;font-weight:600;color:var(--fg);">{{ t.empty_emp_title }}</div><div style="font-size:14px;color:var(--fg-muted);margin-top:5px;max-width:280px;">{{ t.empty_emp_desc }}</div><button onClick="{{ onAddEmp }}" style="margin-top:18px;display:inline-flex;align-items:center;gap:6px;background:var(--primary);color:var(--primary-fg);border:none;border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;" style-hover="filter:brightness(1.08)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>{{ t.addEmployee }}</button></div></sc-if>
+
+        <sc-if value="{{ emp_showData }}" hint-placeholder-val="{{ true }}">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;padding:11px 16px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-subtle);white-space:nowrap;">{{ t.col_name }}</th>
+            <th style="text-align:right;padding:11px 16px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-subtle);white-space:nowrap;">{{ t.col_rate }}</th>
+            <th style="text-align:left;padding:11px 16px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-subtle);white-space:nowrap;">{{ t.col_status }}</th>
+            <th style="text-align:right;padding:11px 16px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-subtle);white-space:nowrap;">{{ t.col_actions }}</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ empRows }}" as="row" hint-placeholder-count="3">
+            <tr style="border-top:1px solid var(--border);" style-hover="background:var(--muted-bg)">
+              <td style="padding:var(--cell-pad);font-size:14px;font-weight:600;color:var(--fg);">{{ row.name }}</td>
+              <td style="padding:var(--cell-pad);font-size:14px;text-align:right;font-variant-numeric:tabular-nums;color:var(--fg);">{{ row.rateStr }}</td>
+              <td style="padding:var(--cell-pad);">
+                <sc-if value="{{ row.active }}" hint-placeholder-val="{{ true }}"><span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:9999px;font-size:12px;font-weight:600;background:var(--primary-soft);color:var(--primary);"><span style="width:6px;height:6px;border-radius:9999px;background:var(--primary);"></span>{{ row.statusLabel }}</span></sc-if>
+                <sc-if value="{{ row.inactive }}"><span style="display:inline-flex;align-items:center;gap:6px;padding:3px 10px 3px 8px;border-radius:9999px;font-size:12px;font-weight:600;background:var(--muted-bg);color:var(--fg-muted);border:1px solid var(--border);"><span style="width:6px;height:6px;border-radius:9999px;background:var(--fg-subtle);"></span>{{ row.statusLabel }}</span></sc-if>
+              </td>
+              <td style="padding:var(--cell-pad);text-align:right;white-space:nowrap;">
+                <button onClick="{{ row.onEdit }}" style="background:none;border:none;color:var(--primary);font-size:13px;font-weight:600;padding:3px 4px;" style-hover="text-decoration:underline">{{ t.edit }}</button>
+                <span style="color:var(--border);margin:0 4px;">·</span>
+                <button onClick="{{ row.onToggle }}" style="background:none;border:none;color:var(--fg-muted);font-size:13px;font-weight:600;padding:3px 4px;" style-hover="color:var(--fg)">{{ row.toggleLabel }}</button>
+              </td>
+            </tr>
+            </sc-for>
+          </tbody>
+        </table>
+        </sc-if>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ════ TIME ENTRIES ════ -->
+    <sc-if value="{{ isEntries }}">
+    <section data-screen-label="Time entries" style="">
+      <div style="margin-bottom:18px;">
+        <h1 style="font-size:24px;font-weight:700;color:var(--fg);letter-spacing:-0.02em;">{{ t.entries_title }}</h1>
+        <p style="font-size:14px;color:var(--fg-muted);margin-top:5px;">{{ t.entries_sub }}</p>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+          <select value="{{ ent_selValue }}" onChange="{{ onSelectEmp }}" style="padding:9px 12px;min-width:200px;border:1px solid var(--input);border-radius:8px;font-size:14px;font-weight:500;background:var(--card);color:var(--fg);cursor:pointer;" style-focus="border-color:var(--primary);box-shadow:0 0 0 3px var(--ring)">
+            <option value="">{{ t.selectEmployee }}</option>
+            <sc-for list="{{ empOptions }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+          </select>
+          <div style="display:inline-flex;align-items:center;gap:2px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:3px;">
+            <button onClick="{{ onPrevWeek }}" style="display:inline-flex;width:28px;height:28px;align-items:center;justify-content:center;border:none;background:none;border-radius:6px;color:var(--fg-muted);" style-hover="background:var(--muted-bg);color:var(--fg)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+            <span style="font-size:13px;font-weight:600;color:var(--fg);min-width:150px;text-align:center;font-variant-numeric:tabular-nums;">{{ weekLabel }}</span>
+            <button onClick="{{ onNextWeek }}" style="display:inline-flex;width:28px;height:28px;align-items:center;justify-content:center;border:none;background:none;border-radius:6px;color:var(--fg-muted);" style-hover="background:var(--muted-bg);color:var(--fg)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+          </div>
+        </div>
+        <sc-if value="{{ ent_canLog }}" hint-placeholder-val="{{ true }}"><button onClick="{{ onLogTime }}" style="display:inline-flex;align-items:center;gap:6px;background:var(--primary);color:var(--primary-fg);border:none;border-radius:8px;padding:9px 15px;font-size:14px;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12);" style-hover="filter:brightness(1.08)" style-active="transform:translateY(1px)"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>{{ t.logTime }}</button></sc-if>
+        <sc-if value="{{ ent_cantLog }}"><span style="display:inline-flex;align-items:center;gap:6px;background:var(--muted-bg);color:var(--fg-subtle);border:1px solid var(--border);border-radius:8px;padding:9px 15px;font-size:14px;font-weight:600;cursor:not-allowed;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>{{ t.logTime }}</span></sc-if>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);">
+        <sc-if value="{{ ent_loading }}"><div style="padding:6px 0;"><sc-for list="{{ skel }}" as="k" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:18px;padding:var(--cell-pad);border-top:1px solid var(--border);"><div style="flex:2;height:13px;border-radius:6px;background:linear-gradient(90deg,var(--muted-bg),var(--border),var(--muted-bg));background-size:520px 100%;animation:mt-shimmer 1.2s infinite linear;"></div><div style="width:80px;height:13px;border-radius:6px;background:linear-gradient(90deg,var(--muted-bg),var(--border),var(--muted-bg));background-size:520px 100%;animation:mt-shimmer 1.2s infinite linear;"></div><div style="width:96px;height:13px;border-radius:6px;background:linear-gradient(90deg,var(--muted-bg),var(--border),var(--muted-bg));background-size:520px 100%;animation:mt-shimmer 1.2s infinite linear;"></div></div></sc-for></div></sc-if>
+
+        <sc-if value="{{ ent_error }}"><div style="display:flex;align-items:center;gap:14px;margin:18px;padding:16px 18px;background:var(--danger-bg);border:1px solid var(--danger-border);border-radius:10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--fg);">{{ t.error_title }}</div><div style="font-size:13px;color:var(--fg-muted);margin-top:2px;">{{ t.error_desc }}</div></div><button onClick="{{ onRetry }}" style="background:var(--card);color:var(--fg);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;" style-hover="background:var(--muted-bg)">{{ t.retry }}</button></div></sc-if>
+
+        <sc-if value="{{ ent_prompt }}"><div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:56px 24px;"><div style="width:52px;height:52px;border-radius:14px;background:var(--muted-bg);display:flex;align-items:center;justify-content:center;color:var(--fg-subtle);margin-bottom:16px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><line x1="19" y1="8" x2="19" y2="14"></line><line x1="22" y1="11" x2="16" y2="11"></line></svg></div><div style="font-size:16px;font-weight:600;color:var(--fg);">{{ t.pickEmployee_title }}</div><div style="font-size:14px;color:var(--fg-muted);margin-top:5px;max-width:280px;">{{ t.pickEmployee_desc }}</div></div></sc-if>
+
+        <sc-if value="{{ ent_empty }}"><div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:56px 24px;"><div style="width:52px;height:52px;border-radius:14px;background:var(--muted-bg);display:flex;align-items:center;justify-content:center;color:var(--fg-subtle);margin-bottom:16px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div><div style="font-size:16px;font-weight:600;color:var(--fg);">{{ t.empty_entries_title }}</div><div style="font-size:14px;color:var(--fg-muted);margin-top:5px;max-width:280px;">{{ t.empty_entries_desc }}</div></div></sc-if>
+
+        <sc-if value="{{ ent_showData }}">
+          <sc-if value="{{ ent_locked }}"><div style="display:flex;align-items:center;gap:12px;margin:16px 16px 0;padding:13px 16px;background:var(--amber-bg);border:1px solid var(--amber-border);border-radius:10px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--amber)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><div><div style="font-size:13.5px;font-weight:600;color:var(--amber);">{{ t.locked_title }}</div><div style="font-size:13px;color:var(--fg-muted);margin-top:1px;">{{ t.locked_desc }}</div></div></div></sc-if>
+          <sc-if value="{{ ent_inactiveNotice }}"><div style="display:flex;align-items:center;gap:12px;margin:16px 16px 0;padding:13px 16px;background:var(--muted-bg);border:1px solid var(--border);border-radius:10px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--fg-muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg><div><div style="font-size:13.5px;font-weight:600;color:var(--fg);">{{ t.inactive_title }}</div><div style="font-size:13px;color:var(--fg-muted);margin-top:1px;">{{ t.inactive_desc }}</div></div></div></sc-if>
+          <table style="width:100%;border-collapse:collapse;">
+            <thead><tr>
+              <th style="text-align:left;padding:11px 16px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-subtle);">{{ t.col_date }}</th>
+              <th style="text-align:right;padding:11px 16px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-subtle);">{{ t.col_hours }}</th>
+              <th style="text-align:right;padding:11px 16px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-subtle);">{{ t.col_actions }}</th>
+            </tr></thead>
+            <tbody>
+              <sc-for list="{{ entryRows }}" as="row" hint-placeholder-count="4">
+              <tr style="border-top:1px solid var(--border);" style-hover="background:var(--muted-bg)">
+                <td style="padding:var(--cell-pad);font-size:14px;font-weight:500;color:var(--fg);">{{ row.dateLabel }}</td>
+                <td style="padding:var(--cell-pad);font-size:14px;text-align:right;font-variant-numeric:tabular-nums;color:var(--fg);">{{ row.hoursStr }}</td>
+                <td style="padding:var(--cell-pad);text-align:right;white-space:nowrap;">
+                  <sc-if value="{{ row.editable }}" hint-placeholder-val="{{ true }}">
+                    <button onClick="{{ row.onEdit }}" style="background:none;border:none;color:var(--primary);font-size:13px;font-weight:600;padding:3px 4px;" style-hover="text-decoration:underline">{{ t.edit }}</button>
+                    <span style="color:var(--border);margin:0 4px;">·</span>
+                    <button onClick="{{ row.onDelete }}" style="background:none;border:none;color:var(--danger);font-size:13px;font-weight:600;padding:3px 4px;" style-hover="text-decoration:underline">{{ t.delete }}</button>
+                  </sc-if>
+                  <sc-if value="{{ row.locked }}">
+                    <span style="color:var(--fg-subtle);font-size:13px;font-weight:600;opacity:.55;">{{ t.edit }}</span>
+                    <span style="color:var(--border);margin:0 4px;">·</span>
+                    <span style="color:var(--fg-subtle);font-size:13px;font-weight:600;opacity:.55;">{{ t.delete }}</span>
+                  </sc-if>
+                </td>
+              </tr>
+              </sc-for>
+            </tbody>
+          </table>
+        </sc-if>
+      </div>
+    </section>
+    </sc-if>
+
+    <!-- ════ WEEKLY SUMMARY ════ -->
+    <sc-if value="{{ isSummary }}">
+    <section data-screen-label="Weekly summary" style="">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap;">
+        <div>
+          <h1 style="font-size:24px;font-weight:700;color:var(--fg);letter-spacing:-0.02em;">{{ t.summary_title }}</h1>
+          <p style="font-size:14px;color:var(--fg-muted);margin-top:5px;">{{ t.summary_sub }}</p>
+        </div>
+        <div style="display:inline-flex;align-items:center;gap:2px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:3px;">
+          <button onClick="{{ onPrevWeek }}" style="display:inline-flex;width:28px;height:28px;align-items:center;justify-content:center;border:none;background:none;border-radius:6px;color:var(--fg-muted);" style-hover="background:var(--muted-bg);color:var(--fg)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+          <span style="font-size:13px;font-weight:600;color:var(--fg);min-width:150px;text-align:center;font-variant-numeric:tabular-nums;">{{ weekLabel }}</span>
+          <button onClick="{{ onNextWeek }}" style="display:inline-flex;width:28px;height:28px;align-items:center;justify-content:center;border:none;background:none;border-radius:6px;color:var(--fg-muted);" style-hover="background:var(--muted-bg);color:var(--fg)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+        </div>
+      </div>
+
+      <div style="background:var(--card);border:1px solid var(--border);border-radius:12px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.04);">
+        <sc-if value="{{ sum_loading }}"><div style="padding:6px 0;"><sc-for list="{{ skel }}" as="k" hint-placeholder-count="3"><div style="display:flex;align-items:center;gap:18px;padding:var(--cell-pad);border-top:1px solid var(--border);"><div style="flex:2;height:13px;border-radius:6px;background:linear-gradient(90deg,var(--muted-bg),var(--border),var(--muted-bg));background-size:520px 100%;animation:mt-shimmer 1.2s infinite linear;"></div><div style="width:50px;height:13px;border-radius:6px;background:linear-gradient(90deg,var(--muted-bg),var(--border),var(--muted-bg));background-size:520px 100%;animation:mt-shimmer 1.2s infinite linear;"></div><div style="width:50px;height:13px;border-radius:6px;background:linear-gradient(90deg,var(--muted-bg),var(--border),var(--muted-bg));background-size:520px 100%;animation:mt-shimmer 1.2s infinite linear;"></div><div style="width:90px;height:13px;border-radius:6px;background:linear-gradient(90deg,var(--muted-bg),var(--border),var(--muted-bg));background-size:520px 100%;animation:mt-shimmer 1.2s infinite linear;"></div><div style="width:96px;height:13px;border-radius:6px;background:linear-gradient(90deg,var(--muted-bg),var(--border),var(--muted-bg));background-size:520px 100%;animation:mt-shimmer 1.2s infinite linear;"></div></div></sc-for></div></sc-if>
+
+        <sc-if value="{{ sum_error }}"><div style="display:flex;align-items:center;gap:14px;margin:18px;padding:16px 18px;background:var(--danger-bg);border:1px solid var(--danger-border);border-radius:10px;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--fg);">{{ t.error_title }}</div><div style="font-size:13px;color:var(--fg-muted);margin-top:2px;">{{ t.error_desc }}</div></div><button onClick="{{ onRetry }}" style="background:var(--card);color:var(--fg);border:1px solid var(--border);border-radius:8px;padding:8px 14px;font-size:13px;font-weight:600;" style-hover="background:var(--muted-bg)">{{ t.retry }}</button></div></sc-if>
+
+        <sc-if value="{{ sum_empty }}"><div style="display:flex;flex-direction:column;align-items:center;text-align:center;padding:56px 24px;"><div style="width:52px;height:52px;border-radius:14px;background:var(--muted-bg);display:flex;align-items:center;justify-content:center;color:var(--fg-subtle);margin-bottom:16px;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg></div><div style="font-size:16px;font-weight:600;color:var(--fg);">{{ t.empty_summary_title }}</div><div style="font-size:14px;color:var(--fg-muted);margin-top:5px;max-width:280px;">{{ t.empty_summary_desc }}</div></div></sc-if>
+
+        <sc-if value="{{ sum_showData }}" hint-placeholder-val="{{ true }}">
+        <table style="width:100%;border-collapse:collapse;">
+          <thead><tr>
+            <th style="text-align:left;padding:11px 16px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-subtle);white-space:nowrap;">{{ t.col_employee }}</th>
+            <th style="text-align:right;padding:11px 12px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-subtle);white-space:nowrap;">{{ t.col_regular }}</th>
+            <th style="text-align:right;padding:11px 12px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-subtle);white-space:nowrap;">{{ t.col_overtime }}</th>
+            <th style="text-align:right;padding:11px 12px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-subtle);white-space:nowrap;">{{ t.col_total }}</th>
+            <th style="text-align:right;padding:11px 16px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-subtle);white-space:nowrap;">{{ t.col_pay }}</th>
+            <th style="text-align:left;padding:11px 16px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-subtle);white-space:nowrap;">{{ t.col_status }}</th>
+            <th style="text-align:right;padding:11px 16px;font-size:11px;font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--fg-subtle);white-space:nowrap;">{{ t.col_actions }}</th>
+          </tr></thead>
+          <tbody>
+            <sc-for list="{{ summaryRows }}" as="row" hint-placeholder-count="2">
+            <tr style="border-top:1px solid var(--border);">
+              <td style="padding:var(--cell-pad);font-size:14px;font-weight:600;color:var(--fg);">{{ row.name }}</td>
+              <td style="padding:8px 12px;font-size:14px;text-align:right;font-variant-numeric:tabular-nums;color:var(--fg);">{{ row.regStr }}</td>
+              <td style="padding:8px 12px;text-align:right;">
+                <sc-if value="{{ row.otPositive }}"><span style="display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:6px;background:var(--amber-bg);border:1px solid var(--amber-border);color:var(--amber);font-size:14px;font-weight:700;font-variant-numeric:tabular-nums;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"></polyline></svg>{{ row.otStr }}</span></sc-if>
+                <sc-if value="{{ row.otZero }}"><span style="font-size:14px;color:var(--fg-subtle);font-variant-numeric:tabular-nums;">{{ row.otStr }}</span></sc-if>
+              </td>
+              <td style="padding:8px 12px;font-size:14px;text-align:right;font-weight:600;font-variant-numeric:tabular-nums;color:var(--fg);">{{ row.totalStr }}</td>
+              <td style="padding:var(--cell-pad);text-align:right;">
+                <div style="font-size:15px;font-weight:700;color:var(--fg);font-variant-numeric:tabular-nums;letter-spacing:-0.01em;">{{ row.payStr }}</div>
+                <div style="font-size:11.5px;color:var(--fg-muted);font-variant-numeric:tabular-nums;margin-top:1px;">{{ row.breakdown }}</div>
+              </td>
+              <td style="padding:var(--cell-pad);">
+                <sc-if value="{{ row.isPending }}"><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:9999px;font-size:12px;font-weight:600;background:var(--muted-bg);color:var(--fg-muted);border:1px solid var(--border);">{{ t.pending }}</span></sc-if>
+                <sc-if value="{{ row.isApproved }}"><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 8px;border-radius:9999px;font-size:12px;font-weight:600;background:var(--success-bg);color:var(--success);border:1px solid var(--success-border);"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>{{ t.approved }}</span></sc-if>
+                <sc-if value="{{ row.isRejected }}"><span style="display:inline-flex;align-items:center;gap:5px;padding:3px 10px 3px 8px;border-radius:9999px;font-size:12px;font-weight:600;background:var(--danger-bg);color:var(--danger);border:1px solid var(--danger-border);"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>{{ t.rejected }}</span></sc-if>
+              </td>
+              <td style="padding:var(--cell-pad);text-align:right;white-space:nowrap;">
+                <sc-if value="{{ row.canApprove }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ row.onApprove }}" style="background:var(--success-bg);color:var(--success);border:1px solid var(--success-border);border-radius:7px;padding:5px 11px;font-size:13px;font-weight:600;" style-hover="filter:brightness(1.04)">{{ t.approve }}</button>
+                  <button onClick="{{ row.onReject }}" style="background:none;color:var(--fg-muted);border:none;border-radius:7px;padding:5px 9px;font-size:13px;font-weight:600;margin-left:2px;" style-hover="color:var(--danger)">{{ t.reject }}</button>
+                </sc-if>
+                <sc-if value="{{ row.isApproved }}">
+                  <span style="display:inline-flex;align-items:center;gap:8px;justify-content:flex-end;">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--fg-subtle)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                    <button onClick="{{ row.onReopen }}" style="background:none;border:1px solid var(--border);color:var(--fg-muted);border-radius:7px;padding:5px 11px;font-size:13px;font-weight:600;" style-hover="color:var(--fg);background:var(--muted-bg)">{{ t.reopen }}</button>
+                  </span>
+                </sc-if>
+              </td>
+            </tr>
+            </sc-for>
+          </tbody>
+        </table>
+        </sc-if>
+      </div>
+    </section>
+    </sc-if>
+
+  </main>
+  </div>
+
+  <!-- ════ EMPLOYEE DIALOG ════ -->
+  <sc-if value="{{ ed_open }}">
+  <div onClick="{{ onEmpBackdrop }}" style="position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px;">
+    <div onClick="{{ stop }}" style="background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.30);width:100%;max-width:440px;padding:24px;animation:mt-pop .18s ease;">
+      <div style="font-size:18px;font-weight:700;color:var(--fg);">{{ ed_title }}</div>
+      <div style="display:flex;flex-direction:column;gap:14px;margin-top:18px;">
+        <div style="display:flex;gap:12px;">
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+            <label style="font-size:13px;font-weight:600;color:var(--fg);">{{ t.firstName }}</label>
+            <input value="{{ ed_first }}" onChange="{{ onEdFirst }}" placeholder="Jane" style="padding:9px 12px;border:1px solid var(--input);border-radius:8px;font-size:14px;background:var(--card);color:var(--fg);width:100%;" style-focus="border-color:var(--primary);box-shadow:0 0 0 3px var(--ring)" />
+            <sc-if value="{{ ed_err_first }}"><span style="font-size:12px;color:var(--danger);font-weight:500;">{{ ed_err_first_msg }}</span></sc-if>
+          </div>
+          <div style="flex:1;display:flex;flex-direction:column;gap:6px;">
+            <label style="font-size:13px;font-weight:600;color:var(--fg);">{{ t.lastName }}</label>
+            <input value="{{ ed_last }}" onChange="{{ onEdLast }}" placeholder="Doe" style="padding:9px 12px;border:1px solid var(--input);border-radius:8px;font-size:14px;background:var(--card);color:var(--fg);width:100%;" style-focus="border-color:var(--primary);box-shadow:0 0 0 3px var(--ring)" />
+            <sc-if value="{{ ed_err_last }}"><span style="font-size:12px;color:var(--danger);font-weight:500;">{{ ed_err_last_msg }}</span></sc-if>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <label style="font-size:13px;font-weight:600;color:var(--fg);">{{ t.hourlyRate }}</label>
+          <div style="position:relative;">
+            <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);font-size:14px;color:var(--fg-muted);">$</span>
+            <input value="{{ ed_rate }}" onChange="{{ onEdRate }}" type="number" step="0.01" min="0" placeholder="22.50" style="padding:9px 12px 9px 24px;border:1px solid var(--input);border-radius:8px;font-size:14px;background:var(--card);color:var(--fg);width:100%;font-variant-numeric:tabular-nums;" style-focus="border-color:var(--primary);box-shadow:0 0 0 3px var(--ring)" />
+          </div>
+          <sc-if value="{{ ed_err_rate }}"><span style="font-size:12px;color:var(--danger);font-weight:500;">{{ ed_err_rate_msg }}</span></sc-if>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px;">
+        <button onClick="{{ onCloseEmp }}" style="background:var(--card);color:var(--fg);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;" style-hover="background:var(--muted-bg)">{{ t.cancel }}</button>
+        <button onClick="{{ onSaveEmp }}" style="background:var(--primary);color:var(--primary-fg);border:none;border-radius:8px;padding:9px 18px;font-size:14px;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12);" style-hover="filter:brightness(1.08)">{{ ed_submitLabel }}</button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ════ ENTRY DIALOG ════ -->
+  <sc-if value="{{ nd_open }}">
+  <div onClick="{{ onEntryBackdrop }}" style="position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px;">
+    <div onClick="{{ stop }}" style="background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.30);width:100%;max-width:420px;padding:24px;animation:mt-pop .18s ease;">
+      <div style="font-size:18px;font-weight:700;color:var(--fg);">{{ nd_title }}</div>
+      <div style="display:flex;flex-direction:column;gap:14px;margin-top:18px;">
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <label style="font-size:13px;font-weight:600;color:var(--fg);">{{ t.date }}</label>
+          <select value="{{ nd_day }}" onChange="{{ onNdDay }}" style="padding:9px 12px;border:1px solid var(--input);border-radius:8px;font-size:14px;background:var(--card);color:var(--fg);width:100%;cursor:pointer;" style-focus="border-color:var(--primary);box-shadow:0 0 0 3px var(--ring)">
+            <option value="">—</option>
+            <sc-for list="{{ weekDayOptions }}" as="o" hint-placeholder-count="7"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+          </select>
+          <sc-if value="{{ nd_err_day }}"><span style="font-size:12px;color:var(--danger);font-weight:500;">{{ nd_err_day_msg }}</span></sc-if>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <label style="font-size:13px;font-weight:600;color:var(--fg);">{{ t.hoursField }}</label>
+          <input value="{{ nd_hours }}" onChange="{{ onNdHours }}" type="number" step="0.25" min="0" max="24" placeholder="8.00" style="padding:9px 12px;border:1px solid var(--input);border-radius:8px;font-size:14px;background:var(--card);color:var(--fg);width:100%;font-variant-numeric:tabular-nums;" style-focus="border-color:var(--primary);box-shadow:0 0 0 3px var(--ring)" />
+          <sc-if value="{{ nd_err_hours }}"><span style="font-size:12px;color:var(--danger);font-weight:500;">{{ nd_err_hours_msg }}</span></sc-if>
+        </div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px;">
+        <button onClick="{{ onCloseEntry }}" style="background:var(--card);color:var(--fg);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;" style-hover="background:var(--muted-bg)">{{ t.cancel }}</button>
+        <button onClick="{{ onSaveEntry }}" style="background:var(--primary);color:var(--primary-fg);border:none;border-radius:8px;padding:9px 18px;font-size:14px;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12);" style-hover="filter:brightness(1.08)">{{ nd_submitLabel }}</button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ════ CONFIRM DELETE ════ -->
+  <sc-if value="{{ cf_open }}">
+  <div onClick="{{ onCfBackdrop }}" style="position:fixed;inset:0;background:rgba(0,0,0,.45);backdrop-filter:blur(2px);display:flex;align-items:center;justify-content:center;z-index:210;padding:20px;">
+    <div onClick="{{ stop }}" style="background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:0 24px 60px rgba(0,0,0,.30);width:100%;max-width:400px;padding:24px;animation:mt-pop .18s ease;">
+      <div style="display:flex;gap:14px;align-items:flex-start;">
+        <div style="width:40px;height:40px;border-radius:10px;background:var(--danger-bg);border:1px solid var(--danger-border);display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+        </div>
+        <div><div style="font-size:17px;font-weight:700;color:var(--fg);">{{ t.delete_title }}</div><div style="font-size:14px;color:var(--fg-muted);margin-top:4px;">{{ t.delete_desc }}</div></div>
+      </div>
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:22px;">
+        <button onClick="{{ onCancelConfirm }}" style="background:var(--card);color:var(--fg);border:1px solid var(--border);border-radius:8px;padding:9px 16px;font-size:14px;font-weight:600;" style-hover="background:var(--muted-bg)">{{ t.cancel }}</button>
+        <button onClick="{{ onConfirmDelete }}" style="background:var(--danger);color:#fff;border:none;border-radius:8px;padding:9px 18px;font-size:14px;font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12);" style-hover="filter:brightness(1.08)">{{ t.delete }}</button>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- ════ TOASTS ════ -->
+  <div style="position:fixed;bottom:22px;right:22px;display:flex;flex-direction:column;gap:10px;z-index:300;">
+    <sc-for list="{{ toasts }}" as="tt" hint-placeholder-count="0">
+      <div style="{{ tt.style }}"><span style="{{ tt.dotStyle }}"></span>{{ tt.msg }}</div>
+    </sc-for>
+  </div>
+
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1180,&quot;height&quot;:820},&quot;accent&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;purple&quot;,&quot;blue&quot;,&quot;slate&quot;],&quot;default&quot;:&quot;purple&quot;,&quot;tsType&quot;:&quot;string&quot;},&quot;density&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;comfortable&quot;,&quot;compact&quot;],&quot;default&quot;:&quot;comfortable&quot;,&quot;tsType&quot;:&quot;string&quot;}}">
+class Component extends DCLogic {
+  state = {
+    lang: 'en', theme: 'light', screen: 'employees', collapsed: false,
+    showInactive: false, weekOffset: 0, _busy: false,
+    force: { employees: null, entries: null, summary: null },
+    employees: [
+      { id: 'e1', first: 'Jane', last: 'Doe', rate: 22.5, active: true },
+      { id: 'e2', first: 'John', last: 'Smith', rate: 18, active: true },
+      { id: 'e3', first: 'Ana', last: 'Ruiz', rate: 20, active: false },
+    ],
+    entries: [
+      { id: 't1', empId: 'e1', day: 0, hours: 8 }, { id: 't2', empId: 'e1', day: 1, hours: 8 },
+      { id: 't3', empId: 'e1', day: 2, hours: 8 }, { id: 't4', empId: 'e1', day: 3, hours: 8 },
+      { id: 't5', empId: 'e1', day: 4, hours: 8 }, { id: 't6', empId: 'e1', day: 5, hours: 5.5 },
+      { id: 't7', empId: 'e2', day: 0, hours: 8 }, { id: 't8', empId: 'e2', day: 1, hours: 8 },
+      { id: 't9', empId: 'e2', day: 2, hours: 8 }, { id: 't10', empId: 'e2', day: 3, hours: 8 },
+      { id: 't11', empId: 'e3', day: 0, hours: 6 }, { id: 't12', empId: 'e3', day: 1, hours: 4 },
+    ],
+    approvals: { e1: 'pending', e2: 'approved' },
+    selectedEmpId: 'e1',
+    empDialog: null, entryDialog: null, confirm: null, toasts: [],
+  };
+
+  T = {
+    en: {
+      appTitle: 'Mini Timesheets', nav_employees: 'Employees', nav_entries: 'Time entries', nav_summary: 'Weekly summary',
+      emp_title: 'Employees', emp_sub: 'Manage your hourly staff and their pay rates.',
+      showInactive: 'Show inactive', addEmployee: 'Add employee',
+      col_name: 'Name', col_rate: 'Hourly rate', col_status: 'Status', col_actions: 'Actions',
+      active: 'Active', inactive: 'Inactive', edit: 'Edit', deactivate: 'Deactivate', reactivate: 'Reactivate',
+      entries_title: 'Time entries', entries_sub: 'Log and review hours for one employee and week.',
+      selectEmployee: 'Select an employee', logTime: 'Log time', col_date: 'Date', col_hours: 'Hours', delete: 'Delete',
+      locked_title: 'Week approved & locked', locked_desc: 'This week was approved — entries are read-only.',
+      inactive_title: 'Inactive employee', inactive_desc: 'Past entries are viewable, but you can\u2019t log new time.',
+      pickEmployee_title: 'Pick an employee', pickEmployee_desc: 'Choose someone to see and log their time entries.',
+      summary_title: 'Weekly summary', summary_sub: 'Regular vs overtime hours and pay for the selected week.',
+      col_employee: 'Employee', col_regular: 'Regular h', col_overtime: 'Overtime h', col_total: 'Total h', col_pay: 'Pay',
+      approve: 'Approve', reject: 'Reject', reopen: 'Reopen', pending: 'Pending', approved: 'Approved', rejected: 'Rejected',
+      empty_emp_title: 'No employees yet', empty_emp_desc: 'Add your first employee to get started.',
+      empty_entries_title: 'No hours this week', empty_entries_desc: 'No time has been logged for this week.',
+      empty_summary_title: 'No hours this week', empty_summary_desc: 'There\u2019s nothing to summarize for this week.',
+      error_title: 'Something went wrong', error_desc: 'We couldn\u2019t load this data.', retry: 'Retry',
+      addEmp_title: 'Add employee', editEmp_title: 'Edit employee', firstName: 'First name', lastName: 'Last name', hourlyRate: 'Hourly rate',
+      cancel: 'Cancel', create: 'Create', save: 'Save changes', req: 'Required', rate_invalid: 'Enter a rate greater than 0',
+      logTime_title: 'Log time', editTime_title: 'Edit entry', date: 'Date', hoursField: 'Hours',
+      hours_invalid: 'Enter hours in 0.25 steps (max 24)', hours_req: 'Enter the hours worked', day_req: 'Pick a day',
+      delete_title: 'Delete this entry?', delete_desc: 'This can\u2019t be undone.',
+      toast_emp_added: 'Employee added', toast_emp_saved: 'Changes saved', toast_emp_deact: 'Employee deactivated', toast_emp_react: 'Employee reactivated',
+      toast_time_logged: 'Time logged', toast_entry_updated: 'Entry updated', toast_entry_deleted: 'Entry deleted',
+      toast_approved: 'Week approved', toast_rejected: 'Week rejected', toast_reopened: 'Week reopened',
+      preview_live: 'Preview: live data', preview_loading: 'Preview: loading state', preview_empty: 'Preview: empty state', preview_error: 'Preview: error state',
+      collapse: 'Collapse', expand: 'Expand',
+    },
+    es: {
+      appTitle: 'Mini Timesheets', nav_employees: 'Empleados', nav_entries: 'Registros', nav_summary: 'Resumen semanal',
+      emp_title: 'Empleados', emp_sub: 'Gestiona tu personal por hora y sus tarifas.',
+      showInactive: 'Mostrar inactivos', addEmployee: 'Agregar empleado',
+      col_name: 'Nombre', col_rate: 'Tarifa por hora', col_status: 'Estado', col_actions: 'Acciones',
+      active: 'Activo', inactive: 'Inactivo', edit: 'Editar', deactivate: 'Desactivar', reactivate: 'Reactivar',
+      entries_title: 'Registros de tiempo', entries_sub: 'Registra y revisa las horas de un empleado y semana.',
+      selectEmployee: 'Selecciona un empleado', logTime: 'Registrar tiempo', col_date: 'Fecha', col_hours: 'Horas', delete: 'Eliminar',
+      locked_title: 'Semana aprobada y bloqueada', locked_desc: 'Esta semana fue aprobada \u2014 los registros son de solo lectura.',
+      inactive_title: 'Empleado inactivo', inactive_desc: 'Puedes ver registros pasados, pero no registrar nuevas horas.',
+      pickEmployee_title: 'Elige un empleado', pickEmployee_desc: 'Elige a alguien para ver y registrar sus horas.',
+      summary_title: 'Resumen semanal', summary_sub: 'Horas normales vs extra y pago de la semana seleccionada.',
+      col_employee: 'Empleado', col_regular: 'Horas norm.', col_overtime: 'Horas extra', col_total: 'Total h', col_pay: 'Pago',
+      approve: 'Aprobar', reject: 'Rechazar', reopen: 'Reabrir', pending: 'Pendiente', approved: 'Aprobado', rejected: 'Rechazado',
+      empty_emp_title: 'A\u00fan no hay empleados', empty_emp_desc: 'Agrega tu primer empleado para empezar.',
+      empty_entries_title: 'Sin horas esta semana', empty_entries_desc: 'No se han registrado horas para esta semana.',
+      empty_summary_title: 'Sin horas esta semana', empty_summary_desc: 'No hay nada que resumir para esta semana.',
+      error_title: 'Algo sali\u00f3 mal', error_desc: 'No pudimos cargar los datos.', retry: 'Reintentar',
+      addEmp_title: 'Agregar empleado', editEmp_title: 'Editar empleado', firstName: 'Nombre', lastName: 'Apellido', hourlyRate: 'Tarifa por hora',
+      cancel: 'Cancelar', create: 'Crear', save: 'Guardar cambios', req: 'Obligatorio', rate_invalid: 'Ingresa una tarifa mayor a 0',
+      logTime_title: 'Registrar tiempo', editTime_title: 'Editar registro', date: 'Fecha', hoursField: 'Horas',
+      hours_invalid: 'Ingresa horas en pasos de 0,25 (m\u00e1x. 24)', hours_req: 'Ingresa las horas trabajadas', day_req: 'Elige un d\u00eda',
+      delete_title: '\u00bfEliminar este registro?', delete_desc: 'Esto no se puede deshacer.',
+      toast_emp_added: 'Empleado agregado', toast_emp_saved: 'Cambios guardados', toast_emp_deact: 'Empleado desactivado', toast_emp_react: 'Empleado reactivado',
+      toast_time_logged: 'Horas registradas', toast_entry_updated: 'Registro actualizado', toast_entry_deleted: 'Registro eliminado',
+      toast_approved: 'Semana aprobada', toast_rejected: 'Semana rechazada', toast_reopened: 'Semana reabierta',
+      preview_live: 'Vista: datos en vivo', preview_loading: 'Vista: estado de carga', preview_empty: 'Vista: estado vac\u00edo', preview_error: 'Vista: estado de error',
+      collapse: 'Colapsar', expand: 'Expandir',
+    },
+  };
+
+  months = { en: ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'], es: ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'] };
+  weekdays = { en: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'], es: ['lun','mar','mi\u00e9','jue','vie','s\u00e1b','dom'] };
+
+  // ── formatting ──
+  money(n) {
+    const lang = this.state.lang;
+    const v = (Math.round(n * 100) / 100).toFixed(2);
+    let [i, d] = v.split('.');
+    const g = lang === 'es' ? '.' : ','; const dec = lang === 'es' ? ',' : '.';
+    i = i.replace(/\B(?=(\d{3})+(?!\d))/g, g);
+    return '$' + i + dec + d;
+  }
+  hours2(n) { const v = (Math.round(n * 4) / 4).toFixed(2); return this.state.lang === 'es' ? v.replace('.', ',') : v; }
+  hoursNum(n) { const v = String(Math.round(n * 100) / 100); return this.state.lang === 'es' ? v.replace('.', ',') : v; }
+  dateFor(day) { const d = new Date(Date.UTC(2026, 5, 16)); d.setUTCDate(d.getUTCDate() + this.state.weekOffset * 7 + day); return d; }
+  dayLabel(day) {
+    const d = this.dateFor(day), lang = this.state.lang, M = this.months[lang], W = this.weekdays[lang];
+    if (lang === 'en') return W[day] + ', ' + M[d.getUTCMonth()] + ' ' + d.getUTCDate();
+    return W[day] + ', ' + d.getUTCDate() + ' ' + M[d.getUTCMonth()];
+  }
+  weekLabel() {
+    const lang = this.state.lang, M = this.months[lang], s = this.dateFor(0), e = this.dateFor(6);
+    const sm = M[s.getUTCMonth()], em = M[e.getUTCMonth()], yr = e.getUTCFullYear();
+    if (lang === 'en') return sm === em ? (sm + ' ' + s.getUTCDate() + ' \u2013 ' + e.getUTCDate() + ', ' + yr) : (sm + ' ' + s.getUTCDate() + ' \u2013 ' + em + ' ' + e.getUTCDate() + ', ' + yr);
+    return sm === em ? (s.getUTCDate() + ' \u2013 ' + e.getUTCDate() + ' ' + em + ' ' + yr) : (s.getUTCDate() + ' ' + sm + ' \u2013 ' + e.getUTCDate() + ' ' + em + ' ' + yr);
+  }
+
+  // ── infra ──
+  toast(msg, kind) {
+    const id = Date.now() + Math.random();
+    this.setState(s => ({ toasts: [...s.toasts, { id, msg, kind: kind || 'info' }] }));
+    setTimeout(() => this.setState(s => ({ toasts: s.toasts.filter(t => t.id !== id) })), 2800);
+  }
+  setBusy() { this.setState({ _busy: true }); clearTimeout(this._bt); this._bt = setTimeout(() => this.setState({ _busy: false }), 450); }
+  go(screen) { this.setState({ screen }); this.setBusy(); }
+  setWeek(d) { this.setState(s => ({ weekOffset: s.weekOffset + d })); this.setBusy(); }
+  onRetry() { const sc = this.state.screen; this.setState(s => ({ force: { ...s.force, [sc]: null } })); this.setBusy(); }
+  cycleForce() {
+    const sc = this.state.screen, order = [null, 'loading', 'empty', 'error'];
+    const cur = this.state.force[sc], next = order[(order.indexOf(cur) + 1) % 4];
+    this.setState(s => ({ force: { ...s.force, [sc]: next } }));
+    const T = this.T[this.state.lang];
+    this.toast(next === 'loading' ? T.preview_loading : next === 'empty' ? T.preview_empty : next === 'error' ? T.preview_error : T.preview_live, 'info');
+  }
+
+  // ── employees ──
+  openAddEmp() { this.setState({ empDialog: { mode: 'create', id: null, first: '', last: '', rate: '', errors: {} } }); }
+  openEditEmp(e) { this.setState({ empDialog: { mode: 'edit', id: e.id, first: e.first, last: e.last, rate: String(e.rate), errors: {} } }); }
+  setEmpField(k, v) { this.setState(s => ({ empDialog: { ...s.empDialog, [k]: v, errors: { ...s.empDialog.errors, [k]: null } } })); }
+  saveEmp() {
+    const d = this.state.empDialog, T = this.T[this.state.lang], errors = {};
+    if (!d.first.trim()) errors.first = T.req;
+    if (!d.last.trim()) errors.last = T.req;
+    const rate = parseFloat(d.rate);
+    if (d.rate === '' || isNaN(rate) || rate <= 0) errors.rate = T.rate_invalid;
+    if (Object.keys(errors).length) { this.setState(s => ({ empDialog: { ...s.empDialog, errors } })); return; }
+    if (d.mode === 'create') {
+      this.setState(s => ({ employees: [...s.employees, { id: 'e' + Date.now(), first: d.first.trim(), last: d.last.trim(), rate, active: true }], empDialog: null }));
+      this.toast(T.toast_emp_added, 'success');
+    } else {
+      this.setState(s => ({ employees: s.employees.map(e => e.id === d.id ? { ...e, first: d.first.trim(), last: d.last.trim(), rate } : e), empDialog: null }));
+      this.toast(T.toast_emp_saved, 'success');
+    }
+  }
+  toggleActive(e) {
+    const T = this.T[this.state.lang];
+    this.setState(s => ({ employees: s.employees.map(x => x.id === e.id ? { ...x, active: !x.active } : x) }));
+    this.toast(e.active ? T.toast_emp_deact : T.toast_emp_react, 'info');
+  }
+
+  // ── entries ──
+  openLog() { this.setState({ entryDialog: { mode: 'create', id: null, day: '', hours: '', errors: {} } }); }
+  openEditEntry(t) { this.setState({ entryDialog: { mode: 'edit', id: t.id, day: String(t.day), hours: String(t.hours), errors: {} } }); }
+  setEntryField(k, v) { this.setState(s => ({ entryDialog: { ...s.entryDialog, [k]: v, errors: { ...s.entryDialog.errors, [k]: null } } })); }
+  saveEntry() {
+    const d = this.state.entryDialog, T = this.T[this.state.lang], errors = {};
+    if (d.day === '') errors.day = T.day_req;
+    const h = parseFloat(d.hours);
+    if (d.hours === '' || isNaN(h)) errors.hours = T.hours_req;
+    else if (h <= 0 || h > 24 || Math.abs(h * 4 - Math.round(h * 4)) > 1e-9) errors.hours = T.hours_invalid;
+    if (Object.keys(errors).length) { this.setState(s => ({ entryDialog: { ...s.entryDialog, errors } })); return; }
+    if (d.mode === 'create') {
+      this.setState(s => ({ entries: [...s.entries, { id: 't' + Date.now(), empId: s.selectedEmpId, day: Number(d.day), hours: h }], entryDialog: null }));
+      this.toast(T.toast_time_logged, 'success');
+    } else {
+      this.setState(s => ({ entries: s.entries.map(x => x.id === d.id ? { ...x, day: Number(d.day), hours: h } : x), entryDialog: null }));
+      this.toast(T.toast_entry_updated, 'success');
+    }
+  }
+  askDelete(t) { this.setState({ confirm: { id: t.id } }); }
+  confirmDelete() {
+    const T = this.T[this.state.lang], id = this.state.confirm.id;
+    this.setState(s => ({ entries: s.entries.filter(x => x.id !== id), confirm: null }));
+    this.toast(T.toast_entry_deleted, 'info');
+  }
+  setApproval(id, status) {
+    const T = this.T[this.state.lang];
+    this.setState(s => ({ approvals: { ...s.approvals, [id]: status } }));
+    this.toast(status === 'approved' ? T.toast_approved : status === 'rejected' ? T.toast_rejected : T.toast_reopened, status === 'rejected' ? 'error' : status === 'approved' ? 'success' : 'info');
+  }
+
+  themeVars() {
+    const dark = this.state.theme === 'dark';
+    const accents = {
+      purple: { l: '#7c3aed', d: '#9d6bff', rgb: '124,58,237', drgb: '157,107,255' },
+      blue: { l: '#2563eb', d: '#5b8cff', rgb: '37,99,235', drgb: '91,140,255' },
+      slate: { l: '#475569', d: '#94a3b8', rgb: '71,85,105', drgb: '148,163,184' },
+    };
+    const a = accents[this.props.accent || 'purple'];
+    const primary = dark ? a.d : a.l;
+    const rgb = dark ? a.drgb : a.rgb;
+    const base = dark ? {
+      '--bg': '#0a0a0b', '--card': '#161618', '--fg': '#fafafa', '--fg-muted': '#a1a1aa', '--fg-subtle': '#71717a',
+      '--border': '#27272a', '--input': '#26262a', '--muted-bg': '#1c1c1f',
+      '--success': '#4ade80', '--success-bg': 'rgba(74,222,128,.13)', '--success-border': 'rgba(74,222,128,.30)',
+      '--danger': '#f87171', '--danger-bg': 'rgba(248,113,113,.13)', '--danger-border': 'rgba(248,113,113,.30)',
+      '--amber': '#fbbf24', '--amber-bg': 'rgba(251,191,36,.12)', '--amber-border': 'rgba(251,191,36,.32)',
+    } : {
+      '--bg': '#f7f7f8', '--card': '#ffffff', '--fg': '#09090b', '--fg-muted': '#71717a', '--fg-subtle': '#a1a1aa',
+      '--border': '#e4e4e7', '--input': '#d4d4d8', '--muted-bg': '#f4f4f5',
+      '--success': '#15803d', '--success-bg': '#dcfce7', '--success-border': '#bbf7d0',
+      '--danger': '#dc2626', '--danger-bg': '#fef2f2', '--danger-border': '#fecaca',
+      '--amber': '#b45309', '--amber-bg': '#fffbeb', '--amber-border': '#fde68a',
+    };
+    return { ...base, '--primary': primary, '--primary-fg': '#ffffff', '--primary-soft': 'rgba(' + rgb + ',' + (dark ? '.20' : '.11') + ')', '--ring': 'rgba(' + rgb + ',.35)' };
+  }
+
+  renderVals() {
+    const s = this.state, lang = s.lang, T = this.T[lang], dark = s.theme === 'dark';
+    const vars = this.themeVars();
+    const cellPad = (this.props.density || 'comfortable') === 'compact' ? '8px 16px' : '13px 16px';
+    const rootStyle = { ...vars, '--cell-pad': cellPad, minHeight: '100vh', display: 'flex', background: 'var(--bg)', color: 'var(--fg)', fontFamily: "'Geist', system-ui, sans-serif" };
+
+    // ── sidebar ──
+    const collapsed = s.collapsed;
+    const sidebarStyle = { position: 'sticky', top: 0, alignSelf: 'flex-start', height: '100vh', width: collapsed ? '64px' : '232px', flexShrink: 0, background: 'var(--card)', borderRight: '1px solid var(--border)', display: 'flex', flexDirection: 'column', transition: 'width .2s ease', zIndex: 45 };
+    const brandTextStyle = { fontSize: '15px', fontWeight: 700, color: 'var(--fg)', letterSpacing: '-0.01em', whiteSpace: 'nowrap', display: collapsed ? 'none' : 'inline' };
+    const navLabelStyle = { fontSize: '13.5px', fontWeight: 'inherit', whiteSpace: 'nowrap', overflow: 'hidden', display: collapsed ? 'none' : 'inline' };
+    const navBtnBase = { display: 'flex', alignItems: 'center', gap: '11px', width: '100%', border: 'none', borderRadius: '8px', padding: collapsed ? '9px 0' : '9px 11px', justifyContent: collapsed ? 'center' : 'flex-start', fontSize: '13.5px', textAlign: 'left', cursor: 'pointer', transition: 'background .12s, color .12s' };
+    const navItems = [
+      { key: 'employees', label: T.nav_employees, isEmp: true, isEnt: false, isSum: false },
+      { key: 'entries', label: T.nav_entries, isEmp: false, isEnt: true, isSum: false },
+      { key: 'summary', label: T.nav_summary, isEmp: false, isEnt: false, isSum: true },
+    ].map(n => {
+      const active = s.screen === n.key;
+      return {
+        label: n.label, isEmp: n.isEmp, isEnt: n.isEnt, isSum: n.isSum, onClick: () => this.go(n.key),
+        btnStyle: active
+          ? { ...navBtnBase, background: 'var(--primary-soft)', color: 'var(--primary)', fontWeight: 600 }
+          : { ...navBtnBase, background: 'transparent', color: 'var(--fg-muted)', fontWeight: 500 },
+        hoverStyle: active ? 'background:var(--primary-soft)' : 'background:var(--muted-bg);color:var(--fg)',
+      };
+    });
+    const collapseBtnStyle = { display: 'flex', alignItems: 'center', gap: '11px', width: '100%', border: '1px solid var(--primary-soft)', borderRadius: '8px', padding: collapsed ? '8px 0' : '8px 11px', justifyContent: collapsed ? 'center' : 'flex-start', fontSize: '13.5px', fontWeight: 600, color: 'var(--primary)', background: 'var(--primary-soft)', cursor: 'pointer', transition: 'background .12s, color .12s, filter .12s' };
+    const collapseIconStyle = { transform: collapsed ? 'rotate(180deg)' : 'none', transition: 'transform .2s ease' };
+    const screenTitle = s.screen === 'employees' ? T.emp_title : s.screen === 'entries' ? T.entries_title : T.summary_title;
+
+    const segBase = { border: 'none', borderRadius: '6px', padding: '5px 11px', fontSize: '12px', fontWeight: 600, cursor: 'pointer' };
+    const segOn = { ...segBase, background: 'var(--card)', color: 'var(--fg)', boxShadow: '0 1px 2px rgba(0,0,0,.10)' };
+    const segOff = { ...segBase, background: 'transparent', color: 'var(--fg-muted)' };
+
+    // switch
+    const switchTrackStyle = { width: '38px', height: '22px', borderRadius: '9999px', position: 'relative', display: 'inline-block', flexShrink: 0, transition: 'background .15s', background: s.showInactive ? 'var(--primary)' : (dark ? '#3f3f46' : '#d4d4d8') };
+    const switchKnobStyle = { position: 'absolute', top: '2px', left: s.showInactive ? '18px' : '2px', width: '18px', height: '18px', borderRadius: '9999px', background: '#fff', transition: 'left .15s', boxShadow: '0 1px 3px rgba(0,0,0,.3)' };
+
+    // ── employees ──
+    const empList = s.employees.filter(e => e.active || s.showInactive);
+    const empRows = empList.map(e => ({
+      id: e.id, name: e.first + ' ' + e.last, rateStr: this.money(e.rate),
+      active: e.active, inactive: !e.active, statusLabel: e.active ? T.active : T.inactive,
+      toggleLabel: e.active ? T.deactivate : T.reactivate,
+      onEdit: () => this.openEditEmp(e), onToggle: () => this.toggleActive(e),
+    }));
+    const empF = s.force.employees, empLoad = empF === 'loading' || s._busy, empErr = empF === 'error';
+    const empEmpty = !empLoad && !empErr && (empF === 'empty' || empList.length === 0);
+    const empData = !empLoad && !empErr && !empEmpty;
+
+    // ── entries ──
+    const sel = s.employees.find(e => e.id === s.selectedEmpId);
+    const locked = sel && s.approvals[s.selectedEmpId] === 'approved';
+    const inactiveEmp = sel && !sel.active;
+    const entList = (s.weekOffset === 0 && sel) ? s.entries.filter(t => t.empId === s.selectedEmpId).sort((a, b) => a.day - b.day) : [];
+    const entryRows = entList.map(t => ({
+      id: t.id, dateLabel: this.dayLabel(t.day), hoursStr: this.hours2(t.hours),
+      locked: !!(locked || inactiveEmp), editable: !(locked || inactiveEmp),
+      onEdit: () => this.openEditEntry(t), onDelete: () => this.askDelete(t),
+    }));
+    const empOptions = s.employees.map(e => ({ value: e.id, label: e.first + ' ' + e.last + (e.active ? '' : ' (' + T.inactive + ')') }));
+    const entF = s.force.entries, entLoad = entF === 'loading' || s._busy, entErr = entF === 'error';
+    const entPrompt = !entLoad && !entErr && !sel;
+    const entEmpty = !entLoad && !entErr && sel && (entF === 'empty' || entList.length === 0);
+    const entData = !entLoad && !entErr && sel && !entEmpty;
+    const canLog = !!(sel && sel.active && !locked && s.weekOffset === 0);
+
+    // ── summary ──
+    const sumEmps = (s.weekOffset === 0) ? s.employees.filter(e => e.active && s.entries.some(t => t.empId === e.id)) : [];
+    const summaryRows = sumEmps.map(e => {
+      const total = s.entries.filter(t => t.empId === e.id).reduce((a, t) => a + t.hours, 0);
+      const reg = Math.min(total, 40), ot = Math.max(0, total - 40);
+      const regPay = e.rate * reg, otPay = e.rate * 1.5 * ot;
+      const status = s.approvals[e.id] || 'pending';
+      return {
+        id: e.id, name: e.first + ' ' + e.last,
+        regStr: this.hoursNum(reg), otStr: this.hoursNum(ot), otPositive: ot > 0, otZero: !(ot > 0),
+        totalStr: this.hoursNum(total), payStr: this.money(regPay + otPay),
+        breakdown: this.money(regPay) + '  +  ' + this.money(otPay),
+        isPending: status === 'pending', isApproved: status === 'approved', isRejected: status === 'rejected',
+        canApprove: status === 'pending' || status === 'rejected',
+        onApprove: () => this.setApproval(e.id, 'approved'), onReject: () => this.setApproval(e.id, 'rejected'), onReopen: () => this.setApproval(e.id, 'pending'),
+      };
+    });
+    const sumF = s.force.summary, sumLoad = sumF === 'loading' || s._busy, sumErr = sumF === 'error';
+    const sumEmpty = !sumLoad && !sumErr && (sumF === 'empty' || sumEmps.length === 0);
+    const sumData = !sumLoad && !sumErr && !sumEmpty;
+
+    // ── dialogs ──
+    const ed = s.empDialog || {};
+    const nd = s.entryDialog || {};
+    const weekDayOptions = [0, 1, 2, 3, 4, 5, 6].map(d => ({ value: String(d), label: this.dayLabel(d) }));
+
+    // ── toasts ──
+    const toasts = s.toasts.map(tt => {
+      const col = tt.kind === 'success' ? 'var(--success)' : tt.kind === 'error' ? 'var(--danger)' : 'var(--primary)';
+      return {
+        id: tt.id, msg: tt.msg,
+        style: { display: 'flex', alignItems: 'center', gap: '10px', background: 'var(--card)', border: '1px solid var(--border)', borderLeft: '3px solid ' + col, borderRadius: '10px', padding: '11px 16px', fontSize: '14px', fontWeight: 500, color: 'var(--fg)', boxShadow: '0 10px 30px rgba(0,0,0,.20)', minWidth: '200px', animation: 'mt-toast .2s ease' },
+        dotStyle: { width: '8px', height: '8px', borderRadius: '9999px', background: col, flexShrink: 0 },
+      };
+    });
+
+    return {
+      rootStyle, t: T,
+      themeIsLight: !dark, themeIsDark: dark, onToggleTheme: () => this.setState(st => ({ theme: st.theme === 'light' ? 'dark' : 'light' })),
+      enBtnStyle: lang === 'en' ? segOn : segOff, esBtnStyle: lang === 'es' ? segOn : segOff,
+      onEn: () => this.setState({ lang: 'en' }), onEs: () => this.setState({ lang: 'es' }),
+      onCycleForce: () => this.cycleForce(),
+      navItems, isEmployees: s.screen === 'employees', isEntries: s.screen === 'entries', isSummary: s.screen === 'summary',
+      sidebarStyle, brandTextStyle, navLabelStyle, collapseBtnStyle, collapseIconStyle, screenTitle,
+      onToggleCollapse: () => this.setState(st => ({ collapsed: !st.collapsed })), collapseTitle: collapsed ? T.expand : T.collapse,
+      stop: (e) => e.stopPropagation(),
+      // employees
+      switchTrackStyle, switchKnobStyle, onToggleInactive: () => this.setState(st => ({ showInactive: !st.showInactive })),
+      onAddEmp: () => this.openAddEmp(), empRows, onRetry: () => this.onRetry(), skel: [0, 1, 2, 3],
+      emp_loading: empLoad, emp_error: empErr, emp_empty: empEmpty, emp_showData: empData,
+      // entries
+      ent_selValue: s.selectedEmpId, empOptions, onSelectEmp: (e) => { this.setState({ selectedEmpId: e.target.value }); this.setBusy(); },
+      weekLabel: this.weekLabel(), onPrevWeek: () => this.setWeek(-1), onNextWeek: () => this.setWeek(1),
+      ent_canLog: canLog, ent_cantLog: !canLog && !!sel, onLogTime: () => this.openLog(),
+      ent_loading: entLoad, ent_error: entErr, ent_prompt: entPrompt, ent_empty: entEmpty, ent_showData: entData,
+      ent_locked: entData && !!locked, ent_inactiveNotice: entData && !!inactiveEmp && !locked, entryRows,
+      // summary
+      sum_loading: sumLoad, sum_error: sumErr, sum_empty: sumEmpty, sum_showData: sumData, summaryRows,
+      // employee dialog
+      ed_open: !!s.empDialog, ed_title: ed.mode === 'edit' ? T.editEmp_title : T.addEmp_title,
+      ed_first: ed.first || '', ed_last: ed.last || '', ed_rate: ed.rate || '', ed_submitLabel: ed.mode === 'edit' ? T.save : T.create,
+      ed_err_first: !!(ed.errors && ed.errors.first), ed_err_first_msg: (ed.errors && ed.errors.first) || '',
+      ed_err_last: !!(ed.errors && ed.errors.last), ed_err_last_msg: (ed.errors && ed.errors.last) || '',
+      ed_err_rate: !!(ed.errors && ed.errors.rate), ed_err_rate_msg: (ed.errors && ed.errors.rate) || '',
+      onEdFirst: (e) => this.setEmpField('first', e.target.value), onEdLast: (e) => this.setEmpField('last', e.target.value), onEdRate: (e) => this.setEmpField('rate', e.target.value),
+      onSaveEmp: () => this.saveEmp(), onCloseEmp: () => this.setState({ empDialog: null }), onEmpBackdrop: (e) => { if (e.target === e.currentTarget) this.setState({ empDialog: null }); },
+      // entry dialog
+      nd_open: !!s.entryDialog, nd_title: nd.mode === 'edit' ? T.editTime_title : T.logTime_title,
+      nd_day: nd.day || '', nd_hours: nd.hours || '', nd_submitLabel: nd.mode === 'edit' ? T.save : T.logTime, weekDayOptions,
+      nd_err_day: !!(nd.errors && nd.errors.day), nd_err_day_msg: (nd.errors && nd.errors.day) || '',
+      nd_err_hours: !!(nd.errors && nd.errors.hours), nd_err_hours_msg: (nd.errors && nd.errors.hours) || '',
+      onNdDay: (e) => this.setEntryField('day', e.target.value), onNdHours: (e) => this.setEntryField('hours', e.target.value),
+      onSaveEntry: () => this.saveEntry(), onCloseEntry: () => this.setState({ entryDialog: null }), onEntryBackdrop: (e) => { if (e.target === e.currentTarget) this.setState({ entryDialog: null }); },
+      // confirm
+      cf_open: !!s.confirm, onConfirmDelete: () => this.confirmDelete(), onCancelConfirm: () => this.setState({ confirm: null }), onCfBackdrop: (e) => { if (e.target === e.currentTarget) this.setState({ confirm: null }); },
+      toasts,
+    };
+  }
+}
+</script>
+</body>
+</html>

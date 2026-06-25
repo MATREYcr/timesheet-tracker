@@ -1,0 +1,207 @@
+{
+  "app": {
+    "title": "Mini Timesheets",
+    "subtitle": "Gestiona empleados por hora, registra tiempo y aprueba semanas.",
+    "assessment": "Prueba Técnica · OCMI Workers Comp"
+  },
+  "nav": {
+    "dashboard": "Panel",
+    "employees": "Empleados",
+    "timeEntries": "Registros de tiempo",
+    "weeklySummary": "Resumen semanal"
+  },
+  "home": {
+    "title": "Panel",
+    "subtitle": "Esta semana",
+    "description": "Resumen de horas, nómina y aprobaciones pendientes.",
+    "kpi": {
+      "activeEmployees": "Empleados activos",
+      "hours": "Horas registradas",
+      "payroll": "Nómina",
+      "pending": "Aprobaciones pendientes"
+    },
+    "pending": {
+      "title": "Aprobaciones pendientes",
+      "review": "Revisar",
+      "viewAll": "Ver todo",
+      "empty": "Nada pendiente — todas las semanas con horas están revisadas."
+    }
+  },
+  "theme": {
+    "toggle": "Cambiar tema"
+  },
+  "account": {
+    "name": "Admin",
+    "role": "Administrador"
+  },
+  "pagination": {
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "page": "Página {page} de {total}"
+  },
+  "common": {
+    "add": "Agregar",
+    "edit": "Editar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "loading": "Cargando…",
+    "empty": "Aún no hay nada.",
+    "retry": "Reintentar",
+    "error": "Algo salió mal.",
+    "errorBody": "No pudimos cargar estos datos.",
+    "searchEmployee": "Buscar empleado…",
+    "noEmployees": "No se encontró empleado.",
+    "allEmployees": "Todos los empleados"
+  },
+  "notFound": {
+    "title": "Página no encontrada",
+    "description": "La página que buscas no existe o fue movida.",
+    "back": "Volver al panel"
+  },
+  "errorPage": {
+    "description": "Ocurrió un error inesperado. Inténtalo de nuevo."
+  },
+  "employees": {
+    "title": "Empleados",
+    "subtitle": "Gestiona tus empleados por hora y sus tarifas de pago.",
+    "add": "Agregar empleado",
+    "showInactive": "Mostrar inactivos",
+    "columns": {
+      "name": "Nombre",
+      "rate": "Tarifa por hora",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "status": {
+      "active": "Activo",
+      "inactive": "Inactivo"
+    },
+    "actions": {
+      "edit": "Editar",
+      "deactivate": "Desactivar",
+      "reactivate": "Reactivar"
+    },
+    "confirm": {
+      "deactivate": {
+        "title": "¿Desactivar este empleado?",
+        "description": "Se ocultará de las listas activas y no podrás registrar tiempo para él. Sus registros pasados siguen visibles. Puedes reactivarlo después."
+      },
+      "reactivate": {
+        "title": "¿Reactivar este empleado?",
+        "description": "Volverá a aparecer en las listas activas y podrás registrar tiempo para él."
+      }
+    },
+    "empty": {
+      "title": "Aún no hay empleados",
+      "description": "Agrega tu primer empleado para empezar a registrar tiempo."
+    },
+    "form": {
+      "createTitle": "Agregar empleado",
+      "editTitle": "Editar empleado",
+      "createDescription": "Crea un nuevo empleado por hora.",
+      "editDescription": "Actualiza los datos de este empleado.",
+      "firstName": "Nombre",
+      "lastName": "Apellido",
+      "hourlyRate": "Tarifa por hora",
+      "submitCreate": "Crear",
+      "submitEdit": "Guardar cambios"
+    },
+    "toast": {
+      "created": "Empleado creado.",
+      "updated": "Empleado actualizado.",
+      "deactivated": "Empleado desactivado.",
+      "reactivated": "Empleado reactivado."
+    }
+  },
+  "week": {
+    "previous": "Semana anterior",
+    "next": "Semana siguiente"
+  },
+  "timeEntries": {
+    "title": "Registros de tiempo",
+    "subtitle": "Registra las horas trabajadas por empleado, por semana.",
+    "selectEmployee": "Selecciona un empleado",
+    "add": "Registrar tiempo",
+    "columns": {
+      "date": "Fecha",
+      "hours": "Horas",
+      "actions": "Acciones"
+    },
+    "form": {
+      "createTitle": "Registrar tiempo",
+      "editTitle": "Editar registro",
+      "createDescription": "Agrega horas trabajadas para esta semana.",
+      "editDescription": "Actualiza este registro de tiempo.",
+      "date": "Fecha",
+      "hours": "Horas",
+      "submitCreate": "Registrar",
+      "submitEdit": "Guardar cambios"
+    },
+    "delete": {
+      "title": "¿Eliminar este registro?",
+      "description": "Esto elimina el registro de tiempo de forma permanente. No se puede deshacer."
+    },
+    "locked": {
+      "title": "Semana aprobada",
+      "description": "Esta semana está aprobada y bloqueada — no se pueden cambiar los registros."
+    },
+    "inactive": {
+      "title": "Empleado inactivo",
+      "description": "Puedes ver registros pasados, pero no registrar tiempo para un empleado inactivo."
+    },
+    "empty": {
+      "noEmployee": "Selecciona un empleado",
+      "noEmployeeHint": "Elige un empleado para ver y registrar su tiempo.",
+      "noEntries": "Sin registros esta semana",
+      "noEntriesHint": "Registra tiempo para agregar el primer registro de la semana."
+    },
+    "toast": {
+      "created": "Tiempo registrado.",
+      "updated": "Registro actualizado.",
+      "deleted": "Registro eliminado."
+    }
+  },
+  "weeklySummary": {
+    "title": "Resumen semanal",
+    "subtitle": "Horas normales vs extra y pago por empleado, por semana.",
+    "columns": {
+      "employee": "Empleado",
+      "regularHours": "H. normales",
+      "overtimeHours": "H. extra",
+      "totalHours": "H. totales",
+      "pay": "Pago",
+      "status": "Estado",
+      "actions": "Acciones"
+    },
+    "empty": {
+      "title": "Sin horas esta semana",
+      "description": "Ningún empleado ha registrado tiempo para esta semana."
+    }
+  },
+  "approval": {
+    "status": {
+      "pending": "Pendiente",
+      "approved": "Aprobada",
+      "rejected": "Rechazada"
+    },
+    "actions": {
+      "approve": "Aprobar",
+      "reject": "Rechazar"
+    },
+    "confirm": {
+      "approve": {
+        "title": "¿Aprobar esta semana?",
+        "description": "Al aprobar se bloquea la semana — sus registros de tiempo ya no se podrán crear, editar ni eliminar."
+      },
+      "reject": {
+        "title": "¿Rechazar esta semana?",
+        "description": "La semana sigue editable para poder corregir los registros y volver a enviarla."
+      }
+    },
+    "toast": {
+      "approved": "Semana aprobada.",
+      "rejected": "Semana rechazada."
+    }
+  }
+}

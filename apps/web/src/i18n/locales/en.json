@@ -1,0 +1,207 @@
+{
+  "app": {
+    "title": "Mini Timesheets",
+    "subtitle": "Track hourly employees, log time, and approve weeks.",
+    "assessment": "Technical Assessment · OCMI Workers Comp"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "employees": "Employees",
+    "timeEntries": "Time entries",
+    "weeklySummary": "Weekly summary"
+  },
+  "home": {
+    "title": "Dashboard",
+    "subtitle": "This week",
+    "description": "Overview of hours, payroll and pending approvals.",
+    "kpi": {
+      "activeEmployees": "Active employees",
+      "hours": "Hours logged",
+      "payroll": "Payroll",
+      "pending": "Pending approvals"
+    },
+    "pending": {
+      "title": "Pending approvals",
+      "review": "Review",
+      "viewAll": "View all",
+      "empty": "Nothing pending — every week with hours is reviewed."
+    }
+  },
+  "theme": {
+    "toggle": "Toggle theme"
+  },
+  "account": {
+    "name": "Admin",
+    "role": "Administrator"
+  },
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "page": "Page {page} of {total}"
+  },
+  "common": {
+    "add": "Add",
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "loading": "Loading…",
+    "empty": "Nothing here yet.",
+    "retry": "Retry",
+    "error": "Something went wrong.",
+    "errorBody": "We couldn't load this data.",
+    "searchEmployee": "Search employee…",
+    "noEmployees": "No employee found.",
+    "allEmployees": "All employees"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "description": "The page you're looking for doesn't exist or was moved.",
+    "back": "Back to dashboard"
+  },
+  "errorPage": {
+    "description": "An unexpected error occurred. Please try again."
+  },
+  "employees": {
+    "title": "Employees",
+    "subtitle": "Manage your hourly employees and their pay rates.",
+    "add": "Add employee",
+    "showInactive": "Show inactive",
+    "columns": {
+      "name": "Name",
+      "rate": "Hourly rate",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    },
+    "actions": {
+      "edit": "Edit",
+      "deactivate": "Deactivate",
+      "reactivate": "Reactivate"
+    },
+    "confirm": {
+      "deactivate": {
+        "title": "Deactivate this employee?",
+        "description": "They'll be hidden from active lists and you won't be able to log time for them. Past entries stay visible. You can reactivate them later."
+      },
+      "reactivate": {
+        "title": "Reactivate this employee?",
+        "description": "They'll appear in active lists again and you'll be able to log time for them."
+      }
+    },
+    "empty": {
+      "title": "No employees yet",
+      "description": "Add your first employee to start tracking time."
+    },
+    "form": {
+      "createTitle": "Add employee",
+      "editTitle": "Edit employee",
+      "createDescription": "Create a new hourly employee.",
+      "editDescription": "Update this employee's details.",
+      "firstName": "First name",
+      "lastName": "Last name",
+      "hourlyRate": "Hourly rate",
+      "submitCreate": "Create",
+      "submitEdit": "Save changes"
+    },
+    "toast": {
+      "created": "Employee created.",
+      "updated": "Employee updated.",
+      "deactivated": "Employee deactivated.",
+      "reactivated": "Employee reactivated."
+    }
+  },
+  "week": {
+    "previous": "Previous week",
+    "next": "Next week"
+  },
+  "timeEntries": {
+    "title": "Time entries",
+    "subtitle": "Log hours worked per employee, by week.",
+    "selectEmployee": "Select an employee",
+    "add": "Log time",
+    "columns": {
+      "date": "Date",
+      "hours": "Hours",
+      "actions": "Actions"
+    },
+    "form": {
+      "createTitle": "Log time",
+      "editTitle": "Edit entry",
+      "createDescription": "Add hours worked for this week.",
+      "editDescription": "Update this time entry.",
+      "date": "Date",
+      "hours": "Hours",
+      "submitCreate": "Log",
+      "submitEdit": "Save changes"
+    },
+    "delete": {
+      "title": "Delete this entry?",
+      "description": "This permanently removes the time entry. This cannot be undone."
+    },
+    "locked": {
+      "title": "Week approved",
+      "description": "This week is approved and locked — entries can't be changed."
+    },
+    "inactive": {
+      "title": "Inactive employee",
+      "description": "You can view past entries, but can't log time for an inactive employee."
+    },
+    "empty": {
+      "noEmployee": "Select an employee",
+      "noEmployeeHint": "Choose an employee to view and log their time.",
+      "noEntries": "No entries this week",
+      "noEntriesHint": "Log time to add the first entry for this week."
+    },
+    "toast": {
+      "created": "Time logged.",
+      "updated": "Entry updated.",
+      "deleted": "Entry deleted."
+    }
+  },
+  "weeklySummary": {
+    "title": "Weekly summary",
+    "subtitle": "Regular vs overtime hours and pay per employee, by week.",
+    "columns": {
+      "employee": "Employee",
+      "regularHours": "Regular h",
+      "overtimeHours": "Overtime h",
+      "totalHours": "Total h",
+      "pay": "Pay",
+      "status": "Status",
+      "actions": "Actions"
+    },
+    "empty": {
+      "title": "No hours this week",
+      "description": "No employee has logged time for this week yet."
+    }
+  },
+  "approval": {
+    "status": {
+      "pending": "Pending",
+      "approved": "Approved",
+      "rejected": "Rejected"
+    },
+    "actions": {
+      "approve": "Approve",
+      "reject": "Reject"
+    },
+    "confirm": {
+      "approve": {
+        "title": "Approve this week?",
+        "description": "Approving locks the week — its time entries can no longer be created, edited, or deleted."
+      },
+      "reject": {
+        "title": "Reject this week?",
+        "description": "The week stays editable so entries can be fixed and re-submitted."
+      }
+    },
+    "toast": {
+      "approved": "Week approved.",
+      "rejected": "Week rejected."
+    }
+  }
+}
