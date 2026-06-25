@@ -7,7 +7,7 @@ import postgres from 'postgres';
 import { maintenanceUrl, resolveTestDbUrl } from '../src/db/test-database';
 
 const here = dirname(fileURLToPath(import.meta.url));
-config({ path: resolve(here, '../../../.env') }); // repo-root .env
+config({ path: resolve(here, '../../.env') }); // apps/api/.env
 
 export default async function setup() {
   const testUrl = resolveTestDbUrl();

@@ -5,8 +5,8 @@ const envSchema = z.object({
   // Optional: isolated DB for tests. If unset, it's derived from DATABASE_URL
   // (the same Postgres, database name swapped to `timesheet_test`).
   TEST_DATABASE_URL: z.string().min(1).optional(),
-  PORT: z.coerce.number().int().positive().default(3333),
-  CORS_ORIGIN: z.string().min(1).default('*'),
+  PORT: z.coerce.number().int().positive(),
+  CORS_ORIGIN: z.string().min(1),
   NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
 });
 
@@ -18,7 +18,7 @@ if (!parsed.success) {
     z.flattenError(parsed.error).fieldErrors,
   );
   throw new Error(
-    'Invalid environment configuration. Copy .env.example to .env.',
+    'Invalid environment configuration. Copy apps/api/.env.example to apps/api/.env.',
   );
 }
 

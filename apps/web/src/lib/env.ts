@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 const envSchema = z.object({
-  NEXT_PUBLIC_API_URL: z.url().default('http://localhost:3333'),
+  NEXT_PUBLIC_API_URL: z.url(),
 });
 
 const parsed = envSchema.safeParse({
@@ -13,7 +13,7 @@ if (!parsed.success) {
     'Invalid environment variables:',
     z.flattenError(parsed.error).fieldErrors,
   );
-  throw new Error('Invalid environment configuration. See .env.example.');
+  throw new Error('Invalid environment configuration. Copy apps/web/.env.example to apps/web/.env.local.');
 }
 
 export const env = parsed.data;
