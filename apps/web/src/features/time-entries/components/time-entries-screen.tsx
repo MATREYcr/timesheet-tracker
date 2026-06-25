@@ -70,14 +70,14 @@ export function TimeEntriesScreen() {
       </PageHeader>
 
       {isInactive && (
-        <Alert variant="info">
+        <Alert variant="info" data-testid="inactive-employee-alert">
           <CalendarOff className="size-4" />
           <AlertTitle>{t('inactive.title')}</AlertTitle>
           <AlertDescription>{t('inactive.description')}</AlertDescription>
         </Alert>
       )}
       {isLocked && (
-        <Alert variant="info">
+        <Alert variant="info" data-testid="week-locked-alert">
           <Lock className="size-4" />
           <AlertTitle>{t('locked.title')}</AlertTitle>
           <AlertDescription>{t('locked.description')}</AlertDescription>

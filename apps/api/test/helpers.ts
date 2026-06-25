@@ -1,7 +1,3 @@
-// Shared harness for API integration tests: one app instance, JSON request helpers,
-// a truncate for a clean slate, and tiny data builders. Tests run against the
-// isolated test DB (timesheet_test), so TRUNCATE is safe.
-
 import type { Employee } from '@timesheet/shared';
 import { sql } from 'drizzle-orm';
 import { expect } from 'vitest';
@@ -12,9 +8,6 @@ export { closeDb } from '@/db/client';
 
 export const app = createApp();
 
-// UTC-safe date math, kept local so the test layer never *value*-imports
-// @timesheet/shared — doing so loads its zod schemas before the app extends zod
-// for OpenAPI (`@hono/zod-openapi`), breaking `.openapi()`. Mirrors shared `addDays`.
 export function addDays(date: string, days: number): string {
   const [y, m, d] = date.split('-').map(Number);
   const dt = new Date(Date.UTC(y, m - 1, d));

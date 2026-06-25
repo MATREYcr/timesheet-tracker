@@ -1,6 +1,3 @@
-// Vitest globalSetup — runs before setupFiles, so it loads the repo-root .env
-// itself, then creates `timesheet_test` (if missing) and migrates it.
-
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { config } from 'dotenv';
@@ -16,8 +13,6 @@ export default async function setup() {
   const testUrl = resolveTestDbUrl();
   const dbName = new URL(testUrl).pathname.slice(1);
 
-  // CREATE DATABASE can't run while connected to the target, so use the maintenance
-  // DB. dbName comes from env (trusted) — Postgres can't bind an identifier here.
   const admin = postgres(maintenanceUrl(testUrl), { max: 1 });
   try {
     const rows = await admin`SELECT 1 FROM pg_database WHERE datname = ${dbName}`;
