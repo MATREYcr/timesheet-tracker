@@ -222,7 +222,7 @@ pnpm nx run web:test
 **First time only** — install the browser binaries (Chromium, Firefox, WebKit):
 
 ```bash
-pnpm nx run e2e:e2e:install
+pnpm nx run e2e:e2e-install
 ```
 
 E2E tests require the full stack running. In one terminal:
@@ -235,7 +235,7 @@ In a second terminal:
 
 ```bash
 pnpm nx run e2e:e2e            # headless (default)
-pnpm nx run e2e:e2e:headed     # headed — opens a browser window so you can watch the tests run
+pnpm nx run e2e:e2e-headed     # headed — opens a browser window so you can watch the tests run
 ```
 
 Playwright covers all three core screens:
@@ -450,9 +450,10 @@ pnpm dev                 # Start API + Web (and Docker) concurrently
 
 # Testing
 pnpm test                    # All unit + integration tests
-pnpm nx run e2e:e2e:install  # Install Playwright browsers (first time only)
-pnpm nx run e2e:e2e          # E2E with browser window visible (app must be running)
-pnpm nx run e2e:e2e:report   # Open last HTML test report
+pnpm nx run e2e:e2e-install  # Install Playwright browsers (first time only)
+pnpm nx run e2e:e2e          # E2E headless (app must be running)
+pnpm nx run e2e:e2e-headed   # E2E with browser window visible
+pnpm nx run e2e:e2e-report   # Open last HTML test report
 pnpm typecheck               # Full TypeScript strict check
 
 # Quality
