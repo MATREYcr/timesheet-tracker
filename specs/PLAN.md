@@ -13,8 +13,9 @@ concrete goal and a "Done when" acceptance check. Tick boxes as work completes.
 
 - [x] **0.1 Workspace** — Nx workspace with pnpm (official `create-nx-workspace` TS
       preset, merged into the existing repo). Nx agent config consolidated into our
-      `CLAUDE.md` + `.claude/settings.json`; other-tool configs discarded. Adapted
-      pnpm-based CI added as a bonus.
+      `CLAUDE.md` + `.claude/settings.json`; other-tool configs discarded. A pnpm-based CI
+      was added as a bonus here, then **later removed** (kept failing on `format:check`; bonus,
+      not required — see Bonus backlog).
       _Done when:_ `pnpm install` succeeds and `pnpm exec nx` runs. ✓
 - [x] **0.2 Database infra** — `docker-compose.yml` with PostgreSQL 16 + named
       volume + healthcheck; `.env.example` with `DATABASE_URL`.
@@ -176,12 +177,15 @@ Do these only if time remains; none are required. Order = priority.
       `@hono/zod-openapi` (`createModuleApp()` per module + `*.openapi.ts` route contracts) +
       Swagger UI at `/docs` (`/openapi` for the JSON); localized via `Accept-Language`. On-theme
       with OCMI's OpenAPI stack. Additive — annotated existing routes, no rewrite. ✓
-- [ ] **`nx affected` in CI** — switch CI from `run-many` to `affected` to run only
-      what changed. Leverages the Nx task graph we already have.
-- [ ] **Extra API tests** — soft-delete visibility, future-date/inactive validation,
-      weekly aggregation correctness.
-- [ ] **E2E test** (Playwright) — the core flow: create employee → log time →
-      approve → entries locked. Higher value than Storybook for 3 screens.
+- [x] **Extra API tests** — soft-delete visibility, validation (future date / inactive /
+      out-of-range hours), weekly + dashboard aggregation. Run against an isolated `timesheet_test`
+      DB (Vitest `globalSetup` provisions + migrates it; gated by `VITEST`, TRUNCATE per run). The
+      future-date test surfaced that `FUTURE_DATE` was dead code → removed. ✓
+- [x] **E2E** (Playwright, `apps/e2e`) — Page Object Model (`pages/`) + API-seeded fixtures with
+      automatic teardown; specs for the three screens (employees, time-entries, weekly-summary incl.
+      the approve → entries-locked flow). Role-based selectors, auto-waiting, serial (shared DB). ✓
+- [ ] ~~**`nx affected` in CI**~~ — **dropped**: the CI workflow was removed (kept failing on
+      `format:check`, and CI was a bonus, not required).
 - [ ] **Storybook** — component catalog. Lowest priority for this scope.
 - [ ] **Generated API client (SDK)** — only meaningful across repos/clients; the
       monorepo + shared types already give type-safety, so likely skipped.
