@@ -25,7 +25,10 @@ export function WeekPicker({ weekStart, onChange }: Props) {
       >
         <ChevronLeft className="size-4" />
       </Button>
-      <span className="flex-1 text-center text-sm font-medium tabular-nums sm:min-w-40 sm:flex-none">
+      <span
+        className="flex-1 text-center text-sm font-medium tabular-nums sm:min-w-40 sm:flex-none"
+        suppressHydrationWarning
+      >
         {formatWeekRange(weekStart, getWeekEnd(weekStart), locale)}
       </span>
       <Button

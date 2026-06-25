@@ -34,7 +34,7 @@ export function DashboardScreen() {
           <CalendarDays className="size-4" />
           <span className="uppercase tracking-wide">{t('subtitle')}</span>
           <span className="text-primary/40">·</span>
-          <span className="tabular-nums">
+          <span className="tabular-nums" suppressHydrationWarning>
             {formatWeekRange(weekStart, weekEnd, locale)}
           </span>
         </span>
