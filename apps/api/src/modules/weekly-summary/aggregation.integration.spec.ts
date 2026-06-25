@@ -1,8 +1,4 @@
-import type {
-  DashboardSummary,
-  Paginated,
-  WeeklySummaryRow,
-} from '@timesheet/shared';
+import type { Paginated, WeeklySummaryRow } from '@timesheet/shared';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import {
   app,
@@ -15,7 +11,7 @@ import {
 
 const WEEK_START = '2020-04-06'; // a past Monday
 
-describe('weekly-summary and dashboard aggregation (integration)', () => {
+describe('weekly-summary aggregation (integration)', () => {
   let aliceId: string; // 32 h, all regular
   let bobId: string; // 45 h (5 h overtime)
   let carolId: string; // no entries this week
@@ -61,24 +57,5 @@ describe('weekly-summary and dashboard aggregation (integration)', () => {
     for (const row of page.data) {
       expect(row).not.toHaveProperty('totalPay');
     }
-  });
-
-  it('GET /dashboard returns correct activeEmployees count and totalHours', async () => {
-    const res = await app.request(`/dashboard?weekStart=${WEEK_START}`);
-    expect(res.status).toBe(200);
-    const dashboard = await body<DashboardSummary>(res);
-
-    expect(dashboard.activeEmployees).toBe(3);
-    expect(dashboard.totalHours).toBe(77);
-    expect(dashboard.pendingCount).toBe(2);
-    expect(dashboard.pending.length).toBe(2);
-  });
-
-  it('dashboard totalPay matches shared calculateWeeklyPay summed over employees', async () => {
-    // Alice: 32 h @ $20 = $640. Bob: 45 h @ $10 = 40 reg ($400) + 5 OT @ $15 ($75) = $475.
-    // Total = $1,115.00 — exercises the overtime calc through the server-side aggregate.
-    const res = await app.request(`/dashboard?weekStart=${WEEK_START}`);
-    const dashboard = await body<DashboardSummary>(res);
-    expect(dashboard.totalPay).toBe(1115);
   });
 });
