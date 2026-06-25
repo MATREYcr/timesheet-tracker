@@ -12,12 +12,20 @@ import {
   closeDb,
   createEmployee,
   del,
+  logHours,
   patchJson,
   postJson,
   truncate,
 } from '../../../test/helpers';
 
 const WEEK_START = '2020-01-06'; // a past Monday
+
+// One DB client per file, so close it once after every describe has run (a
+// per-describe closeDb would shut the connection before the next describe).
+afterAll(async () => {
+  await truncate();
+  await closeDb();
+});
 
 describe('approval locking flow (integration)', () => {
   let employeeId: string;
@@ -26,11 +34,6 @@ describe('approval locking flow (integration)', () => {
   beforeAll(async () => {
     await truncate();
     employeeId = await createEmployee({ hourlyRate: 20 });
-  });
-
-  afterAll(async () => {
-    await truncate();
-    await closeDb();
   });
 
   it('allows creating an entry while the week is pending', async () => {
@@ -124,5 +127,49 @@ describe('approval locking flow (integration)', () => {
       `/weekly-summary/approval?employeeId=00000000-0000-0000-0000-000000000000&weekStart=${WEEK_START}`,
     );
     expect(missing.status).toBe(404);
+  });
+});
+
+describe('weekly-summary aggregation (integration)', () => {
+  let aliceId: string; // 32 h, all regular
+  let bobId: string; // 45 h (5 h overtime)
+  let carolId: string; // no entries this week
+
+  beforeAll(async () => {
+    await truncate();
+    aliceId = await createEmployee({ firstName: 'Alice', hourlyRate: 20 });
+    bobId = await createEmployee({ firstName: 'Bob', hourlyRate: 10 });
+    carolId = await createEmployee({ firstName: 'Carol', hourlyRate: 15 });
+    await logHours(aliceId, WEEK_START, 4, 8);
+    await logHours(bobId, WEEK_START, 5, 9);
+  });
+
+  it('only employees with ≥1 entry in the week appear in the summary', async () => {
+    const res = await app.request(`/weekly-summary?weekStart=${WEEK_START}`);
+    expect(res.status).toBe(200);
+    const page = await body<Paginated<WeeklySummaryRow>>(res);
+
+    const ids = page.data.map((r) => r.employeeId);
+    expect(ids).toContain(aliceId);
+    expect(ids).toContain(bobId);
+    expect(ids).not.toContain(carolId);
+    expect(page.total).toBe(2);
+  });
+
+  it('totalHours is the correct sum across all days for each employee', async () => {
+    const res = await app.request(`/weekly-summary?weekStart=${WEEK_START}`);
+    const page = await body<Paginated<WeeklySummaryRow>>(res);
+
+    expect(page.data.find((r) => r.employeeId === aliceId)?.totalHours).toBe(32);
+    expect(page.data.find((r) => r.employeeId === bobId)?.totalHours).toBe(45);
+  });
+
+  it('the API response does not include totalPay (client computes it)', async () => {
+    const res = await app.request(`/weekly-summary?weekStart=${WEEK_START}`);
+    const page = await body<Paginated<WeeklySummaryRow>>(res);
+
+    for (const row of page.data) {
+      expect(row).not.toHaveProperty('totalPay');
+    }
   });
 });
