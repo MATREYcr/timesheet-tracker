@@ -4,57 +4,32 @@ import type {
   WeekApprovalStatus,
   WeeklySummaryRow,
 } from '@timesheet/shared';
-import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createApp } from '@/app';
-import { closeDb, db } from '@/db/client';
+import {
+  addDays,
+  app,
+  body,
+  closeDb,
+  createEmployee,
+  del,
+  patchJson,
+  postJson,
+  truncate,
+} from '../../../test/helpers';
 
-const app = createApp();
 const WEEK_START = '2020-01-06'; // a past Monday
-const TEST_FIRST_NAME = 'IntegrationTest';
-
-async function body<T>(res: Response): Promise<T> {
-  return (await res.json()) as T;
-}
-
-function postJson(path: string, payload: unknown) {
-  return app.request(path, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-}
-
-function patchJson(path: string, payload: unknown) {
-  return app.request(path, {
-    method: 'PATCH',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-}
-
-async function reset() {
-  await db.execute(
-    sql`TRUNCATE TABLE weekly_approvals, time_entries, employees RESTART IDENTITY CASCADE`,
-  );
-}
 
 describe('approval locking flow (integration)', () => {
   let employeeId: string;
   let entryId: string;
 
   beforeAll(async () => {
-    await reset();
-    const res = await postJson('/employees', {
-      firstName: TEST_FIRST_NAME,
-      lastName: 'User',
-      hourlyRate: 20,
-    });
-    employeeId = (await body<{ id: string }>(res)).id;
+    await truncate();
+    employeeId = await createEmployee({ hourlyRate: 20 });
   });
 
   afterAll(async () => {
-    await reset();
+    await truncate();
     await closeDb();
   });
 
@@ -77,7 +52,7 @@ describe('approval locking flow (integration)', () => {
 
     const create = await postJson('/time-entries', {
       employeeId,
-      date: '2020-01-07',
+      date: addDays(WEEK_START, 1),
       hours: 4,
     });
     expect(create.status).toBe(409);
@@ -91,10 +66,8 @@ describe('approval locking flow (integration)', () => {
       'WEEK_LOCKED',
     );
 
-    const del = await app.request(`/time-entries/${entryId}`, {
-      method: 'DELETE',
-    });
-    expect(del.status).toBe(409);
+    const removed = await del(`/time-entries/${entryId}`);
+    expect(removed.status).toBe(409);
   });
 
   it('re-opens the week when rejected so it can be fixed', async () => {
@@ -143,7 +116,7 @@ describe('approval locking flow (integration)', () => {
 
     // A week with no approval row is implicitly pending.
     const pending = await app.request(
-      `/weekly-summary/approval?employeeId=${employeeId}&weekStart=2020-01-13`,
+      `/weekly-summary/approval?employeeId=${employeeId}&weekStart=${addDays(WEEK_START, 7)}`,
     );
     expect((await body<WeekApprovalStatus>(pending)).status).toBe('pending');
 

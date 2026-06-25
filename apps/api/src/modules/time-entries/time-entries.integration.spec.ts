@@ -1,53 +1,23 @@
-import type { Employee } from '@timesheet/shared';
-import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createApp } from '@/app';
-import { closeDb, db } from '@/db/client';
+import {
+  app,
+  body,
+  closeDb,
+  createEmployee,
+  postJson,
+  truncate,
+} from '../../../test/helpers';
 
-const app = createApp();
 const PAST_DATE = '2020-03-09'; // a past Monday
-
-async function body<T>(res: Response): Promise<T> {
-  return (await res.json()) as T;
-}
-
-function postJson(path: string, payload: unknown) {
-  return app.request(path, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-}
-
-async function reset() {
-  await db.execute(
-    sql`TRUNCATE TABLE weekly_approvals, time_entries, employees RESTART IDENTITY CASCADE`,
-  );
-}
 
 describe('time-entries validation (integration)', () => {
   let activeEmployeeId: string;
   let inactiveEmployeeId: string;
 
   beforeAll(async () => {
-    await reset();
-
-    const active = await postJson('/employees', {
-      firstName: 'Active',
-      lastName: 'Employee',
-      hourlyRate: 20,
-    });
-    expect(active.status).toBe(201);
-    activeEmployeeId = (await body<Employee>(active)).id;
-
-    const inactive = await postJson('/employees', {
-      firstName: 'Inactive',
-      lastName: 'Employee',
-      hourlyRate: 15,
-    });
-    expect(inactive.status).toBe(201);
-    inactiveEmployeeId = (await body<Employee>(inactive)).id;
-
+    await truncate();
+    activeEmployeeId = await createEmployee({ firstName: 'Active', hourlyRate: 20 });
+    inactiveEmployeeId = await createEmployee({ firstName: 'Inactive', hourlyRate: 15 });
     const deactivate = await app.request(
       `/employees/${inactiveEmployeeId}/deactivate`,
       { method: 'POST' },
@@ -56,7 +26,7 @@ describe('time-entries validation (integration)', () => {
   });
 
   afterAll(async () => {
-    await reset();
+    await truncate();
     await closeDb();
   });
 

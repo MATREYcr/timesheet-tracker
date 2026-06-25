@@ -1,53 +1,27 @@
 import type { Employee, Paginated, WeeklySummaryRow } from '@timesheet/shared';
-import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createApp } from '@/app';
-import { closeDb, db } from '@/db/client';
+import {
+  app,
+  body,
+  closeDb,
+  createEmployee,
+  logHours,
+  truncate,
+} from '../../../test/helpers';
 
-const app = createApp();
 const WEEK_START = '2020-02-03'; // a past Monday
-
-async function body<T>(res: Response): Promise<T> {
-  return (await res.json()) as T;
-}
-
-function postJson(path: string, payload: unknown) {
-  return app.request(path, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-}
-
-async function reset() {
-  await db.execute(
-    sql`TRUNCATE TABLE weekly_approvals, time_entries, employees RESTART IDENTITY CASCADE`,
-  );
-}
 
 describe('employees soft-delete (integration)', () => {
   let employeeId: string;
 
   beforeAll(async () => {
-    await reset();
-    const res = await postJson('/employees', {
-      firstName: 'SoftDelete',
-      lastName: 'Test',
-      hourlyRate: 25,
-    });
-    expect(res.status).toBe(201);
-    employeeId = (await body<Employee>(res)).id;
-
-    const entry = await postJson('/time-entries', {
-      employeeId,
-      date: WEEK_START,
-      hours: 8,
-    });
-    expect(entry.status).toBe(201);
+    await truncate();
+    employeeId = await createEmployee({ firstName: 'SoftDelete', hourlyRate: 25 });
+    await logHours(employeeId, WEEK_START, 1, 8);
   });
 
   afterAll(async () => {
-    await reset();
+    await truncate();
     await closeDb();
   });
 
@@ -66,8 +40,7 @@ describe('employees soft-delete (integration)', () => {
     const res = await app.request('/employees');
     expect(res.status).toBe(200);
     const page = await body<Paginated<Employee>>(res);
-    const ids = page.data.map((e) => e.id);
-    expect(ids).not.toContain(employeeId);
+    expect(page.data.map((e) => e.id)).not.toContain(employeeId);
   });
 
   it('inactive employee appears with ?includeInactive=true', async () => {
@@ -80,9 +53,7 @@ describe('employees soft-delete (integration)', () => {
   });
 
   it("inactive employee's historical week still shows in GET /weekly-summary", async () => {
-    const res = await app.request(
-      `/weekly-summary?weekStart=${WEEK_START}`,
-    );
+    const res = await app.request(`/weekly-summary?weekStart=${WEEK_START}`);
     expect(res.status).toBe(200);
     const summary = await body<Paginated<WeeklySummaryRow>>(res);
     const row = summary.data.find((r) => r.employeeId === employeeId);
@@ -101,7 +72,6 @@ describe('employees soft-delete (integration)', () => {
 
     const list = await app.request('/employees');
     const page = await body<Paginated<Employee>>(list);
-    const ids = page.data.map((e) => e.id);
-    expect(ids).toContain(employeeId);
+    expect(page.data.map((e) => e.id)).toContain(employeeId);
   });
 });

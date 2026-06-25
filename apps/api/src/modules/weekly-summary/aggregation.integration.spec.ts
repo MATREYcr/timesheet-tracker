@@ -1,57 +1,19 @@
 import type {
   DashboardSummary,
-  Employee,
   Paginated,
   WeeklySummaryRow,
 } from '@timesheet/shared';
-import { sql } from 'drizzle-orm';
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
-import { createApp } from '@/app';
-import { closeDb, db } from '@/db/client';
+import {
+  app,
+  body,
+  closeDb,
+  createEmployee,
+  logHours,
+  truncate,
+} from '../../../test/helpers';
 
-const app = createApp();
 const WEEK_START = '2020-04-06'; // a past Monday
-
-async function body<T>(res: Response): Promise<T> {
-  return (await res.json()) as T;
-}
-
-function postJson(path: string, payload: unknown) {
-  return app.request(path, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json' },
-    body: JSON.stringify(payload),
-  });
-}
-
-async function reset() {
-  await db.execute(
-    sql`TRUNCATE TABLE weekly_approvals, time_entries, employees RESTART IDENTITY CASCADE`,
-  );
-}
-
-async function createEmployee(firstName: string, hourlyRate: number) {
-  const res = await postJson('/employees', {
-    firstName,
-    lastName: 'Agg',
-    hourlyRate,
-  });
-  expect(res.status).toBe(201);
-  return (await body<Employee>(res)).id;
-}
-
-async function logHours(employeeId: string, days: number, hoursPerDay: number) {
-  for (let offset = 0; offset < days; offset++) {
-    const d = new Date(WEEK_START);
-    d.setDate(d.getDate() + offset);
-    const res = await postJson('/time-entries', {
-      employeeId,
-      date: d.toISOString().slice(0, 10),
-      hours: hoursPerDay,
-    });
-    expect(res.status).toBe(201);
-  }
-}
 
 describe('weekly-summary and dashboard aggregation (integration)', () => {
   let aliceId: string; // 32 h, all regular
@@ -59,16 +21,16 @@ describe('weekly-summary and dashboard aggregation (integration)', () => {
   let carolId: string; // no entries this week
 
   beforeAll(async () => {
-    await reset();
-    aliceId = await createEmployee('Alice', 20);
-    bobId = await createEmployee('Bob', 10);
-    carolId = await createEmployee('Carol', 15);
-    await logHours(aliceId, 4, 8);
-    await logHours(bobId, 5, 9);
+    await truncate();
+    aliceId = await createEmployee({ firstName: 'Alice', hourlyRate: 20 });
+    bobId = await createEmployee({ firstName: 'Bob', hourlyRate: 10 });
+    carolId = await createEmployee({ firstName: 'Carol', hourlyRate: 15 });
+    await logHours(aliceId, WEEK_START, 4, 8);
+    await logHours(bobId, WEEK_START, 5, 9);
   });
 
   afterAll(async () => {
-    await reset();
+    await truncate();
     await closeDb();
   });
 
