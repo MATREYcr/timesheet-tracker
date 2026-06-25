@@ -172,7 +172,9 @@ timesheet-tracker/
 - **Visual / UI verification:** use the `agent-browser` skill to drive the running app — verify
   the real UI, i18n (en/es) and dark mode instead of assuming. Read pages as text (`snapshot`)
   first; only `screenshot` when you actually need to *see* pixels (images cost tokens). The CLI is
-  installed globally (`npm i -g agent-browser`), not a product dependency.
+  installed globally (`npm i -g agent-browser`), not a product dependency. **When the visual check
+  is done and the browser is no longer needed, close it** (`agent-browser close --all`) — the
+  daemon and headless browser keep running in the background otherwise.
 
 ---
 
