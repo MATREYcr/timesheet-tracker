@@ -84,6 +84,23 @@ screenshots) plus `DESIGN_BRIEF.md`. Recreate it with shadcn primitives — neve
   uses it to pick the employee; Employees and Weekly summary use it (with an "All employees"
   option) to filter the table **server-side** via the `employeeId` param (resets to page 1).
 
+## End-to-end (E2E)
+
+Bonus: a Playwright suite in `apps/e2e` drives the real stack (web → API → DB) across the three
+screens.
+
+- **Page Object Model** (`src/pages/`) — each screen exposes intent-level methods; specs never
+  touch selectors directly.
+- **Role-based selectors** (`getByRole`/`getByLabel`) + Playwright auto-waiting — no CSS, no
+  hardcoded sleeps.
+- **API-seeded fixtures** (`src/fixtures/`) create employees/entries via the API and tear them
+  down after each test (reject week → delete entries → deactivate), so runs are isolated and
+  repeatable against the running app's DB.
+- Past weeks (`lastWeekStart()`) satisfy the no-future-date rule; serial (`workers: 1`) since the
+  suite shares one DB.
+- Specs: employees, time-entries, and the weekly-summary **approve → entries-locked** flow.
+- Runs against the app stack up; not part of `pnpm test` (separate `apps/e2e` Playwright project).
+
 ## Notes / deviations
 
 - i18n is built on **next-intl** with `[locale]` URL routing; the app renders i18n server-side
