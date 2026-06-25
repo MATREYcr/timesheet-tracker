@@ -8,7 +8,8 @@
     "node": ">=20.19"
   },
   "scripts": {
-    "dev": "docker compose up -d && nx run-many -t serve dev",
+    "db:up": "docker compose -f apps/api/docker-compose.yml --env-file apps/api/.env up -d",
+    "dev": "pnpm db:up && nx run-many -t serve dev",
     "db:migrate": "pnpm --filter @timesheet/api db:migrate",
     "db:seed": "pnpm --filter @timesheet/api db:seed",
     "build": "nx run-many -t build",

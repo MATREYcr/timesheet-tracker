@@ -120,46 +120,45 @@ cd timesheet-tracker
 pnpm install
 ```
 
-### 2 — Create the environment file
+### 2 — Create the environment files
 
-Create a `.env` file at the **repo root** (next to `docker-compose.yml`):
+**API** — copy the example and leave the defaults as-is:
 
-```dotenv
-# .env
-DATABASE_URL=postgresql://timesheet:timesheet@localhost:5433/timesheet
-
-# Optional — overrides the port Docker exposes PostgreSQL on.
-# Only needed if 5433 is already taken on your machine.
-# DB_HOST_PORT=5434
+```bash
+cp apps/api/.env.example apps/api/.env
 ```
 
-> The API also accepts `PORT` (default `3333`) and `CORS_ORIGIN` (default `*`).
+**Web client** — copy the example:
+
+```bash
+cp apps/web/.env.example apps/web/.env.local
+```
+
+> The defaults work out of the box (`API on :3333`, `web on :3000`, `Postgres on :5433`). Only edit them if those ports are already taken on your machine — see [Troubleshooting](#troubleshooting) below.
 
 ### 3 — Start PostgreSQL
 
-```bash
-docker compose up -d
-```
-
-Wait a few seconds for the health check to pass:
+Make sure **Docker Desktop is running**, then:
 
 ```bash
-docker compose ps   # Status should be "healthy"
+pnpm db:up
 ```
 
-### 4 — Run database migrations
+> Waits ~5 seconds for Postgres to be ready before proceeding.
+
+### 4 — Run migrations
 
 ```bash
 pnpm db:migrate
 ```
 
-### 5 — Seed sample data (recommended)
+### 5 — Seed sample data
 
 ```bash
 pnpm db:seed
 ```
 
-This inserts **14 employees** and **4 weeks** of time entries with varied hours (some with overtime, some pending, some approved) so every screen has realistic data immediately.
+Inserts **14 employees** and **4 weeks** of time entries with varied hours — some with overtime, some approved, some pending — so every screen has realistic data immediately.
 
 ### 6 — Start the development servers
 
@@ -167,30 +166,30 @@ This inserts **14 employees** and **4 weeks** of time entries with varied hours 
 pnpm dev
 ```
 
-This command starts Docker (if not already running), the API server, and the Next.js dev server concurrently via Nx.
+Starts the Hono API and the Next.js client concurrently via Nx. (`pnpm db:up` runs automatically inside this command — already-running containers are safely ignored.)
 
 | Service | URL |
 |---|---|
 | Web app | http://localhost:3000 |
 | API | http://localhost:3333 |
-| Swagger UI | http://localhost:3333/docs/ui |
+| Swagger UI | http://localhost:3333/docs |
 | Health check | http://localhost:3333/health |
 
-The web app redirects automatically to `/en` (or `/es` — use the language toggle in the top-right corner).
+The web app opens in English by default. Use the language toggle in the top-right corner to switch to Spanish (`/es`).
 
 ### Troubleshooting
 
 **Port 5433 already in use**
 
-Add `DB_HOST_PORT=5434` to `.env`, then run `docker compose up -d` again (compose re-reads it).
+In `apps/api/.env`, uncomment and set `DB_HOST_PORT=5434`, then update the port in `DATABASE_URL` to match. Re-run `pnpm db:up`.
 
-**`DATABASE_URL is required` error on API start**
+**`DATABASE_URL is required` on API start**
 
-The `.env` file must be at the repo root (same directory as `docker-compose.yml`). The API loads it from there regardless of working directory.
+`apps/api/.env` is missing. Run `cp apps/api/.env.example apps/api/.env`.
 
 **`Cannot connect to database` on first migrate**
 
-The Postgres container takes a few seconds to be ready. Run `docker compose ps` and wait until status is `healthy`, then retry `pnpm db:migrate`.
+The Postgres container needs a few seconds to initialize. Run `docker compose -f apps/api/docker-compose.yml ps` and wait until the state shows `healthy`, then retry `pnpm db:migrate`.
 
 **Nx cache issues after switching branches**
 
@@ -235,10 +234,9 @@ pnpm dev
 In a second terminal:
 
 ```bash
-pnpm nx run e2e:e2e
+pnpm nx run e2e:e2e            # headless (default)
+pnpm nx run e2e:e2e:headed     # headed — opens a browser window so you can watch the tests run
 ```
-
-The browser opens automatically so you can watch the tests run.
 
 Playwright covers all three core screens:
 
@@ -440,7 +438,7 @@ Every API error has a machine-readable `code` (`WEEK_LOCKED`, `EMPLOYEE_INACTIVE
 pnpm install
 
 # Start PostgreSQL
-docker compose up -d
+pnpm db:up
 
 # Database
 pnpm db:migrate          # Apply Drizzle migrations

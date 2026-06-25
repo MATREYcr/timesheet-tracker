@@ -243,7 +243,7 @@ in `CLAUDE.md` or a spec, not a skill.
 
 ```bash
 pnpm install            # install all workspace dependencies
-docker compose up -d    # start PostgreSQL (host port 5433)
+pnpm db:up              # start PostgreSQL (host port 5433)
 pnpm db:migrate         # apply Drizzle migrations
 pnpm db:seed            # seed demo data (sketch-matching, idempotent)
 pnpm dev                # docker up + serve api & web (dev)
