@@ -46,10 +46,12 @@ Next.js APIs — these change often and training data may be stale.
 timesheet-tracker/
 ├── apps/
 │   ├── api/                Hono + Drizzle REST API
-│   └── web/                Next.js 16 client
+│   ├── web/                Next.js 16 client
+│   └── e2e/                Playwright end-to-end tests
 ├── packages/
 │   └── shared/             Headless TS: types, Zod schemas, pay calculation
 ├── specs/                  Spec-driven plans (source of truth before coding)
+├── docs/                   Mermaid diagrams (docs/diagrams) + design handoff (docs/design)
 ├── docker-compose.yml      PostgreSQL
 ├── CLAUDE.md               This file
 ├── README.md               Setup instructions (must work from a fresh clone)
@@ -237,14 +239,17 @@ in `CLAUDE.md` or a spec, not a skill.
 
 ## 10. Common commands
 
-> Filled in as the project is scaffolded. Keep this section accurate.
+> Keep this section accurate.
 
 ```bash
-pnpm install              # install all workspace dependencies
-docker compose up -d      # start PostgreSQL
-# (db migrate / seed — TBD)
-# (dev api / dev web — TBD)
-# (test — TBD)
+pnpm install            # install all workspace dependencies
+docker compose up -d    # start PostgreSQL (host port 5433)
+pnpm db:migrate         # apply Drizzle migrations
+pnpm db:seed            # seed demo data (sketch-matching, idempotent)
+pnpm dev                # docker up + serve api & web (dev)
+pnpm test               # all Vitest suites (unit + integration)
+pnpm lint               # lint every project
+pnpm exec nx e2e e2e    # Playwright E2E (needs the app stack running)
 ```
 
 ---
