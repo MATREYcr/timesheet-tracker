@@ -8,224 +8,104 @@
 
 | Tool | Role |
 |---|---|
-| **Claude Code** (CLI + VS Code extension) | Primary builder — wrote all code, specs, tests, and diagrams |
-| **Claude.ai** (web, with claude-sonnet-4-6) | Design handoff review, architectural discussions |
-| **Claude Design** (Canva MCP via claude.ai) | Generated the hi-fi UI mockups committed to `docs/design/` |
-| **ctx7 CLI** (`npx ctx7@latest`)  | Fetched current docs for Nx, Hono, Drizzle, Next.js, next-intl before using their APIs |
+| **Claude Code** (CLI + VS Code extension) | Primary builder — wrote all the code, specs, tests, and diagrams |
+| **Claude Design** (claude.ai) | Generated the hi-fi UI prototype (`Mini Timesheets.dc.html`) and design tokens, committed to `docs/design/` |
+| **ctx7 CLI** (`npx ctx7@latest`) | Fetched current docs for Nx, Hono, Drizzle, Next.js, next-intl before using their APIs |
 
 Claude Code was the workhorse. Every file in this repo — types, routes, components, tests, SQL migrations, diagrams, this document — was written by Claude Code from the specs I defined.
 
----
-
-## Philosophy: Spec First, Then Code
-
-The first commit in this repo (`f106678`) was not an `npm init` or a `git init` — it was `CLAUDE.md`, `specs/`, and `.claude/skills/`. I set up the AI's operating context before writing a single line of product code.
-
-The reasoning: Claude Code is fast, but it drifts without constraints. A precise spec is cheaper to write than a bad implementation is to fix. So for every non-trivial piece of work, the flow was:
-
-1. **Write or read the spec** in `specs/` — domain rules, API contracts, edge cases, "Done when" criteria
-2. **Implement against the spec** — Claude Code reads the spec as context and builds exactly what's documented
-3. **Verify** — typecheck, tests, visual check
-4. **If something changed**, update the spec first, then the code — never let them drift
-
-The `specs/PLAN.md` file served as the build log: one checkbox per subphase, ticked as it was completed.
+**Model strategy:** inside Claude Code I switched models by the weight of the task — **Opus 4.8** for architecture and large changes (where a bad design is expensive to pay back), **Sonnet 4.6** for documentation and bounded, mechanical work.
 
 ---
 
-## Project-Specific Skills
+## The method: how I use AI day to day
 
-As patterns repeated across phases, I wrote custom skills under `.claude/skills/` to encode them once and not re-explain them each time. Claude Code loaded the relevant skill before starting each type of task.
+The way I work with Claude Code doesn't change much from project to project. It goes from "prepare the ground" to "build against that ground." Before writing code I converse, decide, and write the context the AI is going to obey; only then do I let it build.
 
-### `git-flow` — Phase-based git conventions
-One branch per phase (`feat/phase-N-<slug>`), one conventional commit per subphase, push, then a PR back to `develop`. The skill enforces this so Claude Code never commits directly to `main` or `develop`. PR template included in `.claude/skills/git-flow/references/`.
+1. **Discovery: talk the idea through.** Before anything formal, I hand the AI whatever documentation I have, explore the domain, and — in discussion — we decide the stack and general architecture. An exploratory phase: I try options, weigh trade-offs, discard. The big decisions here I make with the most capable model (Opus 4.8).
 
-### `create-module` — Vertical-slice feature builder
-Given a spec, builds the full vertical slice in the correct order: `packages/shared` types + Zod schemas → error codes → DB schema → OpenAPI contract → service + mapper → routes → integration test → API client → TanStack Query hooks → React components → i18n strings → page. Mirrors the existing module structure exactly so every feature looks like the same hand.
+2. **Visualize the macro architecture with a diagram.** Before detailing anything, I draw what I decided in discovery — a Mermaid architecture diagram. A cheap sanity-check: seeing the macro at a glance exposes design problems before committing them to specs or code. The detail diagrams (ER, state machines) come later, out of the specs.
 
-### `db-change` — Safe Drizzle schema workflow
-Encodes the project's DB conventions (numeric for money, `date` columns not `timestamp`, `pgEnum` for status columns, soft delete via `deactivatedAt`, never edit an applied migration) and walks through the generate → review → apply sequence. Idempotent seed guidance included.
+3. **Set the constitution (`CLAUDE.md`).** I crystallize discovery into rules: stack (marked _locked_), domain rules, macro architecture rules (what lives in shared, where the calculation goes, the error-envelope shape), conventions, and the "hard rules." This is where the expensive-to-change stuff gets pinned down, so the AI doesn't improvise it. It's the first thing the AI reads every session.
 
-### `spec-author` — Spec-first planner
-Interviews on business need, scope, domain rules, API contracts, edge cases, and done-when criteria, then writes a spec file under `specs/features/<slug>.md` using a 9-section template. Does not implement code — separates design from build. Used when any new feature scope emerged (dashboard, pagination, employee filter).
+4. **Install reusable skills and agents.** Since I already know the stack, I install the **pre-built** skills/agents that fit (`shadcn`, `agent-browser`, `find-docs`): I don't reinvent what's already solved. The **custom** ones don't go here; they show up in step 6, out of real repetition.
 
-### `agent-browser` — Visual verification
-Drives the running app via a headless browser to verify the real UI in both locales (en/es) and both color modes (light/dark). Reads pages as text first (cheaper) and only screenshots when pixels matter. Closes the browser when done — the daemon keeps running otherwise.
+5. **Design with specs (the _what_, not the _how_).** For each non-trivial piece I write a spec: expected behavior, contracts, edge cases, "done when." **This is where the local things get decided** — the feature's specific library and its trade-offs, recorded in the spec. Design is decided in text, where fixing is cheap. If a local decision changes later (e.g. react-i18next → next-intl), the spec is updated first and the code after.
 
-### `shadcn` — UI component rules
-Enforces shadcn-first UI: always reach for a shadcn/ui component before writing custom markup. Composition patterns, form patterns, semantic token usage (`bg-primary` not raw colors), icon conventions. Used throughout Phase 3.
+6. **Build by vertical slices.** The per-subphase loop: spec → implement → verify (typecheck, tests, visual check). One commit per subphase, one branch per phase, a PR to review — driven through skills (`/create-module`, `/db-change`, `/git-flow`). I review every diff. **This is where the _custom_ skills/agents are born**, when a pattern of mine repeats and nothing covers it — never preemptively.
 
-### `find-docs` / ctx7 — Current documentation
-Fetches live docs for any library before using its API. Critical for Nx, Hono, Drizzle, and Next.js 16 / next-intl — all of these changed significantly since the model's training cutoff. Invoked before touching any of those APIs.
+7. **Audit drift and capture corrections.** Before each PR I check the code hasn't drifted from the specs (the `spec-guardian` agent). And every time I correct the same bad pattern twice, I promote it to a rule — into `CLAUDE.md` or the agent's memory.
 
-There is also a `test-author` agent (`.claude/skills/` + agents config) that writes meaningful tests from spec's "Verification / Done when" + edge cases, mirrors existing test style, and runs the suite to report real bugs rather than massaging code to pass tests.
+8. **Don't trust assumptions.** Fetch the library's current docs before using its API (APIs change faster than the model's cutoff), and verify the result in the app actually running. What isn't verified isn't done.
+
+9. **Context hygiene.** Keep `CLAUDE.md` lean (it points to the specs instead of dumping everything) and clear the context between unrelated tasks.
+
+> **Why this order:** Claude Code is fast but drifts without constraints. A precise spec is cheaper to write than a bad implementation is to fix. If a decision changes mid-way, I update the spec first and the code after. `specs/PLAN.md` is the build log: one checkbox per subphase.
 
 ---
 
-## Chronological Build Log
+# The method applied to Mini Timesheets
 
-### Phase 0 — Scaffold & tooling
-**Branch:** `chore/phase-0-scaffold` → PR #2
+> Everything above is how I work in general. Below is that method grounded in this project — the real skills and agents in the repo, and the phase-by-phase log, from the first commit (`f106678`, which wasn't an `npm init` but `CLAUDE.md` + `specs/` + `.claude/`) to delivery.
 
-Set up the AI operating context before any product code:
-- `CLAUDE.md` — the project constitution (hard rules, domain rules, architecture rules, naming conventions)
-- `specs/` directory with `overview.md` and initial feature stubs
-- `.claude/skills/git-flow` — so every subsequent phase would follow the branch/commit/PR flow
+## Skills & agents in the repo
 
-Then scaffolded the monorepo:
-- `pnpm create-nx-workspace` with the official TypeScript preset (Nx 22 + pnpm 10)
-- `docker-compose.yml` for PostgreSQL 16 (host port 5433 to avoid local conflicts)
-- Three Nx projects: `packages/shared` (js lib + Vitest), `apps/api` (node + Hono-ready), `apps/web` (Next.js 16 App Router)
-- Vitest, ESLint flat config, Prettier wired across all three
+**Skills** (`.claude/skills/`) — the relevant one loads before each type of task. Two kinds:
 
-**Why this order:** The AI needs its instructions before it writes anything. CLAUDE.md-first means every subsequent session opens with the rules already loaded.
+- **Reused** (official/community, as-is): `shadcn` (shadcn-first UI, semantic tokens over raw colors), `agent-browser` (drives the running app headless to verify UI in en/es × light/dark), `find-docs`/ctx7 (current library docs before using an API).
+- **Custom** (written when a pattern of mine repeated): `git-flow` (one branch/phase, one commit/subphase, PR to `develop`, never commits directly to `main`/`develop`), `create-module` (builds the full vertical slice from a spec, shared → API → web, mirroring existing modules), `db-change` (safe Drizzle workflow: numeric for money, `date` columns, soft delete, never edit an applied migration), `spec-author` (interviews and writes a feature's spec — designs, doesn't implement).
 
----
+**Agents** (`.claude/agents/`) — isolated subagents with their own context:
 
-### Phase 1 — `packages/shared` — The headless core
-**Branch:** `feat/phase-1-shared-package` → PR #3
+- `spec-guardian` — read-only drift auditor; runs before each PR, reports spec/code mismatches with `file:line`, never rewrites application code.
+- `test-author` — writes meaningful tests from the spec's "done-when" + edge cases; real DB for DB code, no brittle mocks.
 
-Spec: `specs/foundations/shared-package.md`
+## Build log
 
-Built in subphases, smallest dependency first:
+### Phase 0 — Scaffold & tooling (`chore/phase-0-scaffold`, PR #2)
+First the AI's operating context (`CLAUDE.md`, `specs/`, the `git-flow` skill), then the Nx + pnpm monorepo: three projects (`shared`, `api`, `web`), PostgreSQL via docker-compose (host port 5433), Vitest/ESLint/Prettier wired. Rules before code, so every session opens with them loaded.
 
-**1.1 Domain types** — `Employee`, `TimeEntry`, `WeeklyApproval`, `WeeklySummaryRow`, `EmployeeStatus`, `ApprovalStatus` enums. No logic yet, just the shape of the domain.
+### Phase 1 — `packages/shared` (`feat/phase-1-shared-package`, PR #3)
+The headless core, smallest dependency first:
+- **Domain types** → **error codes + envelope** (`{ error: { code, message } }`, owned by shared) → **UTC-safe date helpers** (never `new Date(str)`, avoids the timezone bug) → **Zod schemas** (hours `[0.25, 24]` in 0.25 increments, no future dates) → **`calculateWeeklyPay()`** → clean **public API**.
+- The pay calculation (the graded requirement) is unit-tested on edge cases: exactly 40h, 40.25h, 0h, 60h, the sketch case (45.5h @ $22.50/h → $1,085.63), half-up rounding.
+- **Why shared first:** API and web consume the same package, so neither layer diverges from the contract; and the spec forces the client to call `calculateWeeklyPay()` itself.
 
-**1.2 Error codes** — `ErrorCode` union and `ApiErrorBody` envelope shape (`{ error: { code, message } }`). Owned by shared so both API and web could import the same type.
+### Phase 2 — `apps/api` (Hono + Drizzle) (`feat/phase-2-api`, PR #4)
+- **3 Drizzle tables**: money/hours as `numeric`, dates as `date`, soft delete via `deactivatedAt`, unique `(employee_id, week_start)`.
+- **Common layer**: `AppError`, the error envelope, robust `Accept-Language` parsing with en/es messages, `zValidator`.
+- **Modules** for employees, time-entries, and weekly-summary. The lock check + the write run in **one transaction** (atomic, race-safe). The weekly-summary returns raw aggregates; the client computes pay.
+- **Integration test** of the approval-locking flow against a real, isolated test DB. **Bonus:** OpenAPI 3.1 + Swagger UI.
 
-**1.3 UTC-safe date helpers** — `getWeekStart(date)`, `getWeekEnd(weekStart)`, `isFutureDate()`, `addDays()`, `isInWeek()`. Never `new Date(str)` — avoids the local-timezone shift bug that breaks payroll date logic. 8 unit tests covering weekday boundaries and month/year rollovers.
+### Phase 3 — `apps/web` (Next.js 16) (`feat/phase-3-web`, PR #6)
+- Tailwind v4 + shadcn/ui, axios with an envelope→`ApiError` interceptor, next-intl with `[locale]` routing (migrated from react-i18next, spec-first).
+- The weekly-summary screen **visibly calls `calculateWeeklyPay()`** from shared and formats money per locale, with optimistic approve/reject.
+- Built **functional but basic** first; then a **dedicated cleanup/redesign pass** to hi-fi from a Claude Design `.dc.html` handoff (tokens → shadcn variables, dark mode, global shell).
+- After that: server-side pagination + searchable employee filter.
 
-**1.4 Zod schemas** — One schema per concept, inferred TypeScript types. TimeEntry hours validated to `[0.25, 24]` in 0.25 increments via `Number.isInteger(h / 0.25)` refinement. No future dates. Employee name/rate. Approval upsert (weekStart must be a Monday). 10 unit tests.
-
-**1.5 `calculateWeeklyPay()`** — The graded requirement. Returns `{ regularHours, overtimeHours, regularPay, overtimePay, totalPay }`. Uses `round2()` (half-up via `Math.round((n + Number.EPSILON) * 100) / 100`) at the final boundary only — never intermediate. 7 unit tests: exactly 40h, 40.25h (one quarter-hour of OT), 0h, 60h, the assessment's sketch case (45.5h @ $22.50/h → $1,085.63), and rounding edge cases.
-
-**1.6 Public API** — Clean `index.ts` re-exports. Package marked `"sideEffects": false`. README documents the surface.
-
-**Why shared first:** Both the API (request validation) and the web client (form validation + pay calculation) consume this package. Building it first means neither layer ever diverges from the domain contract. The pay calculation especially: if the API pre-computed it, the client would have no reason to use the shared package — so the spec explicitly required the client to call `calculateWeeklyPay()` itself, and building shared first enforced that architecturally.
-
----
-
-### Phase 2 — `apps/api` — Hono + Drizzle
-**Branch:** `feat/phase-2-api` → PR #4
-
-Spec: `specs/foundations/api-platform.md` + feature specs (`employees.md`, `time-entries.md`, `approval-flow.md`, `weekly-summary.md`)
-
-**2.1–2.2 DB schema + migrations** — Three Drizzle tables:
-- `employees` (uuid PK, `hourly_rate` as `numeric`, `deactivated_at` timestamp nullable, soft-delete only)
-- `time_entries` (uuid PK, `date` as Postgres `date` column, `hours` as `numeric`, FK to employees, index on `(employee_id, date)`)
-- `weekly_approvals` (uuid PK, `(employee_id, week_start)` unique constraint, `pgEnum` for status)
-
-Money and hours always `numeric` columns — never float. Dates always `date` — never `timestamp`. These are payroll-correctness rules.
-
-**2.3 Seed script** — 3 employees matching the assessment sketch (one inactive with historical entries, one with 45.5h week matching the exact pay example, one pre-approved to demo locking). Idempotent: truncate + insert.
-
-**2.4 Common layer** — The cross-cutting infrastructure that every route uses:
-- `AppError` with HTTP status mapping
-- `onError` global handler → always emits `{ error: { code, message } }` envelope
-- `Accept-Language` parser (handles `en`, `es`, `en-US`, `es-ES`, weighted lists like `es,en;q=0.8`; primary subtag match; default `en`)
-- `locale` middleware resolves language onto Hono context
-- `zValidator` wrapper maps Zod failures to `VALIDATION_ERROR` envelope
-- En/es message map keyed by `ErrorCode`
-
-**2.5 Employees module** — `GET /employees` (list, pagination, `includeInactive` flag, `search`), `POST`, `PATCH`, `POST /:id/deactivate`, `POST /:id/reactivate`. Service enforces soft-delete semantics — `deactivatedAt` set/cleared, row never removed, status derived from null check.
-
-**2.6–2.7 Time-entries + weekly-summary modules** — Time-entry mutations run inside a transaction: the lock check (read `weekly_approvals` status) and the DML write are atomic. This prevents a race condition where two concurrent requests both see `pending`, both pass, and both write. The `GET /weekly-summary` endpoint returns raw aggregates — `totalHours` and `hourlyRate` — and deliberately does *not* compute pay. The client does that.
-
-**2.8 Integration test** — Approval-locking flow against a real isolated `timesheet_test` database. Vitest `globalSetup` provisions and migrates it once per run. Tests run via `app.request()` (in-memory, no actual server). 4 test cases: create entries → approve → write blocked (`WEEK_LOCKED 409`) → reject → write allowed again. Additional tests for soft-delete visibility, validation edge cases, and weekly aggregate correctness added later.
-
-**Bonus: OpenAPI 3.1 + Swagger UI** — `@hono/zod-openapi` added per module. Each feature has a `*.openapi.ts` contract file. Swagger UI at `/docs/ui`, OpenAPI JSON at `/openapi.json`. Added after core API without rewrites.
+### Phase 4 — Bonus, tests & delivery (PRs #7–#11)
+Playwright E2E across the three screens, README verified from a clean clone, and the Mermaid diagrams committed to `docs/diagrams/`. (Spec sync isn't a phase — `spec-guardian` audits drift before every PR, within each phase.)
 
 ---
 
-### Phase 3 — `apps/web` — Next.js 16 client
-**Branch:** `feat/phase-3-web` → PR #6
+## What the AI did vs. what I did
 
-Spec: `specs/foundations/web-platform.md` + feature specs
+**Claude Code built** all the TypeScript across the three packages, the Drizzle schemas and migrations, every test (Vitest + Playwright), the Mermaid diagrams, the en/es error and i18n messages, the OpenAPI/Swagger wiring, and this document.
 
-Built in sub-passes rather than one monolithic branch.
-
-**3.1 Foundation** — Tailwind CSS v4 + shadcn/ui init (components.json, `cn()` utility, semantic tokens in `global.css`). Removed Nx scaffold placeholders.
-
-**3.2 Data layer** — `lib/http.ts`: axios instance with request interceptor (injects `Accept-Language` from `<html lang>`) and response interceptor (maps API envelope to typed `ApiError`). Per-feature `api.ts` files. `@timesheet/shared` linked as a workspace dependency — this is where the pay calculation import lives.
-
-**3.3 i18n** — Started with `react-i18next`, later migrated to `next-intl` (3.19) with native `[locale]` URL routing and SSR. The migration was necessary to avoid hydration mismatches when Next.js renders server-side with one locale and the client rehydrates with another. Migration was a spec-update-first, code-second change.
-
-**3.4–3.6 Core screens** — Employees (CRUD + soft delete), Time Entries (week-scoped, lock-aware), Weekly Summary (the graded screen). The weekly summary is where the shared package is visibly consumed:
-
-```tsx
-// web calls calculateWeeklyPay from packages/shared — the graded requirement
-const { regularHours, overtimeHours, totalPay } = calculateWeeklyPay(row.totalHours, row.hourlyRate);
-```
-
-Money formatted with `Intl.NumberFormat` per active locale (en → `$1,085.63`, es → `$1.085,63`). Optimistic updates on approve/reject — the UI flips immediately, rolls back on error.
-
-**3.7–3.9 Loading/error/empty + test** — Every async view has a skeleton loader, error alert with retry, and empty state. Frontend component test (`weekly-summary-table.spec.tsx`) asserts the row calls `calculateWeeklyPay` and renders the correct pay breakdown.
-
-**3.10–3.12 UI redesign** — Claude Design (via claude.ai's Canva MCP) generated hi-fi mockups committed to `docs/design/`. Claude Code then mapped the design tokens to shadcn semantic variables (purple accent, zinc neutrals, amber for overtime, green for approved, red for rejected). Dark mode via `next-themes`. Sticky header with logo, segmented nav, locale switch, theme toggle.
-
-**3.14–3.18 Pagination + employee filter** — `Paginated<T>` contract added to `packages/shared`. Server-side pagination on `/employees` and `/weekly-summary` (1-based, default 10, max 100). Shadcn Pagination control in card footer, `keepPreviousData` to avoid flash. Searchable `EmployeeCombobox` (shadcn Popover + Command) for employee filtering across screens.
+**I (the human)** was the architect: the AI wrote the code, but the architecture decisions, the good practices, and the patterns came from my knowledge. I didn't let it improvise the structure — I guided it, and pinned recurring corrections down as rules in `CLAUDE.md` and the agent's memory so it would respect them every following session. I also defined the acceptance criteria and domain rules, approved or rejected each phase PR (no merge without review), redirected when it drifted, wrote `WRITEUP.md` (human voice only), and verified the README on a clean environment.
 
 ---
 
-### Phase 4 — Docs, tests, delivery
-**Branches:** various → PRs #7, #8, #9, #10, #11
-
-- **Mermaid diagrams** committed to `docs/diagrams/` — architecture (dependency + runtime view), ER diagram (3 tables), approval state machine + locking sequence
-- **Playwright E2E suite** (`apps/e2e`) — 3 specs covering all core screens with Page Object Model. Employees: create, edit, deactivate, reactivate. Time entries: log, edit, delete, locking. Weekly summary: approve → entries locked → reject → entries unlocked
-- **README rewrite** — comprehensive fresh-clone guide verified by actually cloning to a clean directory
-- **Spec sync** — specs updated to match final implementation after each phase; `spec-guardian` agent used to audit drift
-
----
-
-## How Each Session Typically Ran
-
-A typical working session looked like this:
-
-1. **Open Claude Code** in the project root (VS Code extension or CLI)
-2. **Load the relevant skill** — e.g., `/create-module` before building a feature, `/db-change` before touching the schema, `/git-flow` before committing
-3. **Point at the spec** — "Build the time-entries module per `specs/features/time-entries.md`"
-4. **Review each file before accepting** — Claude Code shows diffs; I approved or redirected
-5. **Run typecheck** — `pnpm typecheck` — before finishing any subphase (captured as a memory rule after one session where a type error was missed)
-6. **Visual verify** — `/agent-browser` to check the real UI in en/es × light/dark
-7. **Commit + PR** — `/git-flow` to create the branch commit and open the PR; I merged
-
-Claude Code never pushed directly. Every merge was a human approval.
-
----
-
-## What AI Did vs. What I Did
-
-**Claude Code built:**
-- All TypeScript code across all three packages
-- All Drizzle schemas and migrations
-- All Vitest tests (unit, integration, component)
-- All Playwright E2E specs
-- All Mermaid diagrams
-- All API error messages in en/es
-- All i18n message files (en.json, es.json)
-- The OpenAPI spec and Swagger UI wiring
-- This document
-
-**I (the human) did:**
-- Defined the acceptance criteria and domain rules (CLAUDE.md, specs)
-- Approved or rejected each phase PR — no merge without review
-- Redirected when the AI drifted from the spec or picked a wrong abstraction
-- Wrote `WRITEUP.md` — human voice only, no AI
-- Verified the README by following it on a clean environment
-- Submitted the assessment
-
----
-
-## Artifacts in This Repo (Part 3 Deliverables)
+## Artifacts in this repo (Part 3 deliverables)
 
 | Artifact | Path | Purpose |
 |---|---|---|
-| Project constitution | `CLAUDE.md` | AI's operating context: hard rules, domain rules, architecture rules |
+| Project constitution | `CLAUDE.md` | The AI's operating context: hard, domain, and architecture rules |
 | Build plan | `specs/PLAN.md` | Phase-by-phase chronology with "Done when" criteria |
-| Domain overview | `specs/overview.md` | Domain model + locked architectural decisions |
-| Foundation specs | `specs/foundations/` | Shared package, API platform, web platform, error envelope + i18n |
-| Feature specs | `specs/features/` | Employees, time entries, approval flow, weekly summary, dashboard |
-| Custom skills | `.claude/skills/` | git-flow, create-module, db-change, spec-author, agent-browser, shadcn, find-docs |
-| Design handoff | `docs/design/` | Claude Design hi-fi mockups + design brief |
-| Architecture diagrams | `docs/diagrams/` | Mermaid architecture, ER, approval state machine |
+| Specs | `specs/overview.md`, `specs/foundations/`, `specs/features/` | Domain model, locked decisions, and per-feature contracts |
+| Custom skills | `.claude/skills/` | git-flow, create-module, db-change, spec-author (+ reused: shadcn, agent-browser, find-docs) |
+| Custom agents | `.claude/agents/` | spec-guardian (drift auditor), test-author (meaningful tests) |
+| Design handoff | `docs/design/` | Claude Design hi-fi `.dc.html` prototype + brief and tokens |
+| Diagrams | `docs/diagrams/` | Mermaid architecture, ER, approval state machine |
 
 All committed as-is, not cleaned up — these are the real working artifacts.
