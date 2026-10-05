@@ -37,8 +37,8 @@ maxPasswordLength: 128 }`, `advanced.database.generateId: 'uuid'`, `secret`/`bas
 and `trustedOrigins: [CORS_ORIGIN]`. It is mounted with `app.on(['GET','POST'], '/api/auth/*',
 c => auth.handler(c.req.raw))`.
 
-- *Why:* one Postgres, one ORM, one migration flow (Drizzle Kit), and the same validated env.
-- *Rejected:* auth in Next.js route handlers (the API would then need to validate sessions it
+- _Why:_ one Postgres, one ORM, one migration flow (Drizzle Kit), and the same validated env.
+- _Rejected:_ auth in Next.js route handlers (the API would then need to validate sessions it
   doesn't own); a hosted IdP like Cognito (would hide the auth flow the practice is about — can
   be added later as a social/OIDC provider).
 
@@ -53,9 +53,9 @@ Defined by hand in `db/schema/auth.ts` from the Better Auth CLI output (`npx
 @better-auth/cli generate`), adapted to project conventions: plural table names, `uuid` ids,
 `snake_case` columns, `timestamp with time zone`. A Drizzle Kit migration adds them.
 
-- *Why:* the CLI is a starting point, but the schema must follow CLAUDE.md naming and live
+- _Why:_ the CLI is a starting point, but the schema must follow CLAUDE.md naming and live
   next to the other tables so `drizzle-kit generate` owns migrations.
-- *Rejected:* Better Auth's built-in migrator (would bypass Drizzle Kit and the test DB setup).
+- _Rejected:_ Better Auth's built-in migrator (would bypass Drizzle Kit and the test DB setup).
 
 ### 3. Session guard as Hono middleware on the business router
 
@@ -64,9 +64,9 @@ Defined by hand in `db/schema/auth.ts` from the Better Auth CLI output (`npx
 missing. It is applied to `apiRoutes` only, so `/health`, `/openapi`, `/docs` and
 `/api/auth/*` stay public.
 
-- *Why:* one place enforces auth; existing routes don't change; the error goes through the
+- _Why:_ one place enforces auth; existing routes don't change; the error goes through the
   existing `onError` → localized envelope path.
-- *Rejected:* per-route checks (easy to forget on a new route).
+- _Rejected:_ per-route checks (easy to forget on a new route).
 - On a 401 the guard forwards Better Auth's cookie-expiry `set-cookie` headers. Without this a
   revoked cookie survives, the web proxy keeps treating the visitor as signed in, and the user
   bounces between `/login` and the app.
@@ -74,15 +74,15 @@ missing. It is applied to `apiRoutes` only, so `/health`, `/openapi`, `/docs` an
 ### 4. Cookies + credentialed CORS between `:3000` and `:3333`
 
 CORS on all routes becomes `cors({ origin: CORS_ORIGIN, credentials: true })`. The browser
-sends the cookie because `localhost:3000` and `localhost:3333` are the same *site* (ports don't
+sends the cookie because `localhost:3000` and `localhost:3333` are the same _site_ (ports don't
 scope cookies). axios uses `withCredentials: true`; the Better Auth React client
 (`createAuthClient({ baseURL: NEXT_PUBLIC_API_URL })`) uses `credentials: 'include'` by default.
 
-- *For AWS:* deploy web and API on sub-domains of one parent domain (e.g. `app.example.com`
+- _For AWS:_ deploy web and API on sub-domains of one parent domain (e.g. `app.example.com`
   and `api.example.com`) so cookies stay first-party; set `BETTER_AUTH_URL`, `CORS_ORIGIN` and
   `NEXT_PUBLIC_API_URL` accordingly. If they ever end on unrelated domains, enable Better Auth
   `advanced.crossSubDomainCookies` or add a same-origin rewrite — documented, not built now.
-- *Rejected:* proxying the API through Next.js rewrites now (adds a hop and changes the
+- _Rejected:_ proxying the API through Next.js rewrites now (adds a hop and changes the
   current architecture before it is needed).
 
 ### 5. Web route protection: optimistic in `proxy.ts`, authoritative in the API
@@ -93,9 +93,9 @@ to `/{locale}/login?next=<path>`; cookie + `/login|/register` → redirect to `/
 check is presence-only (no DB call). A stale cookie is caught by the API's 401, and the axios
 interceptor then redirects to login.
 
-- *Why:* fast redirects without a network hop on every navigation; real security stays in the
+- _Why:_ fast redirects without a network hop on every navigation; real security stays in the
   API (spec: "API requires a session").
-- *Rejected:* `auth.api.getSession` inside `proxy.ts` (the web would need DB access or an extra
+- _Rejected:_ `auth.api.getSession` inside `proxy.ts` (the web would need DB access or an extra
   HTTP call per navigation).
 - The `next` param is accepted only if it starts with a single `/` (not `//` or a scheme), to
   prevent open redirects.
