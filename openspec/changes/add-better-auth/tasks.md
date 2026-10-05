@@ -39,4 +39,4 @@
 ## 6. Docs and close-out
 
 - [ ] 6.1 Update README (env vars, migrate/seed, demo credentials, auth section, `pnpm verify:auth`, AWS cookie note), CLAUDE.md (product now has auth; stack adds Better Auth; §10 commands) and `openspec/config.yaml` context (auth no longer out of scope); verify the README setup works from the `.env.example` files
-- [ ] 6.2 Run `pnpm typecheck`, `pnpm lint`, `pnpm test` and `openspec validate --all --strict`; verify all pass
+- [x] 6.2 Run `pnpm typecheck`, `pnpm lint`, `pnpm test` and `openspec validate --all --strict`; verify all pass

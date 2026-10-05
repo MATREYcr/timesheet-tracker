@@ -5,7 +5,9 @@ schema: spec-driven
 context: |
   Mini Timesheets — take-home assessment: a simplified slice of US payroll for hourly employees
   (roster, time entries, weekly summary with overtime, approve/reject per employee-week).
-  No AI features in the product. Out of scope: auth, multi-tenancy, taxes, payments.
+  No AI features in the product. Users register/sign in with Better Auth (email + password,
+  cookie sessions, served by the API); every business API route requires a session.
+  Out of scope: roles, multi-tenancy, taxes, payments.
 
   Stack is locked (ask before substituting): Nx + pnpm monorepo; apps/api = Hono + Drizzle +
   Zod on PostgreSQL (docker-compose); apps/web = Next.js 16 App Router + TanStack Query +
