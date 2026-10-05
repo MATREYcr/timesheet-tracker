@@ -11,6 +11,7 @@ Group=timesheet
 # dotenv loads .env from the working directory, so this must be apps/api.
 WorkingDirectory=/opt/timesheet-tracker/apps/api
 Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1
 ExecStart=/usr/bin/node dist/main.js
 Restart=on-failure
 RestartSec=5

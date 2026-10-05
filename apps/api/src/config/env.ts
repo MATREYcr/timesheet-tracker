@@ -6,6 +6,8 @@ const envSchema = z.object({
   // (the same Postgres, database name swapped to `timesheet_test`).
   TEST_DATABASE_URL: z.string().min(1).optional(),
   PORT: z.coerce.number().int().positive(),
+  // Unset listens on all interfaces; 127.0.0.1 behind a reverse proxy.
+  HOST: z.string().min(1).optional(),
   CORS_ORIGIN: z.string().min(1),
   BETTER_AUTH_SECRET: z
     .string()

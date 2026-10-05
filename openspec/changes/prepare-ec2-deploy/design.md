@@ -56,6 +56,20 @@ Postgres is reused — the rehearsal targets the proxy and the app layer, not th
 Production cookies are `Secure`, which browsers refuse over plain HTTP except on `localhost`;
 the check runs against `http://localhost:8080`, which Chromium treats as a secure context.
 
+### 6. nginx overwrites `X-Forwarded-For`
+
+Better Auth trusts `X-Forwarded-For` only when it holds a single IP (without `trustedProxies`
+the leftmost entry is spoofable). nginx is the edge, so it sets `X-Forwarded-For $remote_addr`
+instead of appending (`$proxy_add_x_forwarded_for`): a client-supplied header can neither
+inject a fake IP nor blank it out to dodge the per-IP rate limit. With a load balancer in front
+(later practices) this changes to Better Auth `trustedProxies`.
+
+### 7. Optional `HOST` for the API
+
+`serve({ hostname: env.HOST })`; unset keeps listening on all interfaces (local dev), the
+systemd unit sets `127.0.0.1` so only nginx can reach the API — defense in depth on top of the
+security group.
+
 ## Risks / Trade-offs
 
 - [Rate limiting sees only the proxy IP] → nginx sets `X-Forwarded-For`; verified by the IP
