@@ -19,7 +19,7 @@ envelope.
 
 - **WHEN** a service throws `AppError('WEEK_LOCKED')`
 - **THEN** the response is 409 with `{ "error": { "code": "WEEK_LOCKED", "message": "This week is
-  approved and locked." } }`
+approved and locked." } }`
 
 ### Requirement: Status mapping
 

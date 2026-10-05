@@ -47,7 +47,7 @@ A production-grade timesheet tracker for hourly employees: roster management, ti
 | Animations + reduced-motion | ✅ | Dialog, skeleton shimmer, `prefers-reduced-motion` |
 | Database seed | ✅ | 14 employees + 4 weeks of varied hour data |
 | Mermaid architecture diagrams | ✅ | `docs/diagrams/` — architecture, ER, state machine |
-| Spec-driven development artifacts | ✅ | Full `specs/` directory committed as deliverable |
+| Spec-driven development artifacts | ✅ | `openspec/` (OpenSpec, source of truth) + original `specs/` record |
 | Frontend component test | ✅ | `weekly-summary-table.spec.tsx` |
 
 ---
@@ -254,6 +254,25 @@ Runs `tsc --noEmit` across all packages in strict mode.
 
 ---
 
+## Spec-Driven Workflow (OpenSpec)
+
+Behavior is specified with [OpenSpec](https://github.com/Fission-AI/OpenSpec) before it is coded.
+`openspec/specs/<capability>/spec.md` is the source of truth (requirements + WHEN/THEN
+scenarios); new work is proposed as a change under `openspec/changes/`. Not needed to run the
+app — only to change it.
+
+```bash
+npm i -g @fission-ai/openspec          # CLI (Node ≥ 20.19)
+openspec list --specs                  # capabilities and requirement counts
+openspec show weekly-summary           # read one capability
+openspec validate --all --strict       # check every spec and change
+```
+
+In Claude Code: `/opsx:propose "<idea>"` → `/opsx:apply` → `/opsx:archive`
+(see `CLAUDE.md` §8).
+
+---
+
 ## Project Structure
 
 ```
@@ -298,7 +317,12 @@ timesheet-tracker/
 │           ├── approval/           WeeklyApproval type + Zod schemas
 │           └── utils/              dates · errors · locale · pagination
 │
-├── specs/                          Spec-driven docs (committed as deliverables)
+├── openspec/                       OpenSpec — source of truth for behavior
+│   ├── config.yaml                 Project context + per-artifact rules
+│   ├── specs/                      9 capabilities (requirements + WHEN/THEN scenarios)
+│   └── changes/                    Proposed work; archive/ holds completed changes
+│
+├── specs/                          Original spec-first record (historical, read-only)
 │   ├── overview.md                 Domain model + API surface index
 │   ├── PLAN.md                     Build log with "Done when" criteria per phase
 │   ├── foundations/                shared-package · error-envelope · api · web

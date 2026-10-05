@@ -32,5 +32,5 @@ flowchart TD
 - Validation uses the **same** shared Zod schemas on both sides; errors flow back as the envelope
   `{ error: { code, message } }`, localized en/es by `Accept-Language`.
 
-See [`specs/overview.md`](../../specs/overview.md) and
-[`specs/foundations/`](../../specs/foundations/) for the rationale.
+See [`openspec/specs/`](../../openspec/specs/) for the current requirements, and
+[`specs/overview.md`](../../specs/overview.md) for the original rationale.

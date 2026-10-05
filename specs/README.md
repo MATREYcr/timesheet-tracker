@@ -1,5 +1,10 @@
 # specs/
 
+> **Historical record.** The source of truth is now [`openspec/specs/`](../openspec/specs/) and new
+> work goes through OpenSpec changes (see `CLAUDE.md` §8). This folder is kept unchanged as the
+> original spec-first artifact of the assessment — decision tables with rejected alternatives
+> and the `PLAN.md` build log still explain the _why_.
+
 Spec-driven development plans for Mini Timesheets.
 
 A **spec** is written _before_ the code: it defines what to build, the contracts, and the edge

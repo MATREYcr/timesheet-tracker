@@ -64,8 +64,7 @@ codes are added to this union; localized messages live in the API (see `error-en
 
 ### Requirement: Pagination contract
 
-The package SHALL export `paginationQuerySchema` (`page` ≥ 1 default 1; `pageSize` 1–100 default
-10) and the `Paginated<T>` type `{ data, page, pageSize, total, totalPages }`.
+The package SHALL export `paginationQuerySchema` (`page` ≥ 1 default 1; `pageSize` 1–100 default 10) and the `Paginated<T>` type `{ data, page, pageSize, total, totalPages }`.
 
 #### Scenario: Default pagination
 

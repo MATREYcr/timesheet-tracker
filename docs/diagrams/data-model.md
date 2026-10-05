@@ -2,7 +2,7 @@
 
 The **database** schema (`apps/api/src/db/schema`). Persistence layer only — computed shapes like
 the weekly summary (and the pay breakdown) are derived in
-[`specs/features/weekly-summary.md`](../../specs/features/weekly-summary.md), not stored.
+[`openspec/specs/weekly-summary/spec.md`](../../openspec/specs/weekly-summary/spec.md), not stored.
 
 ```mermaid
 erDiagram
@@ -43,5 +43,5 @@ erDiagram
   implicitly `pending`.
 - Money/hours are `numeric` (never float). Dates are `date` (date-only, no timezone).
 
-See [`specs/foundations/api-platform.md`](../../specs/foundations/api-platform.md) and the feature
-specs for the rules behind each table.
+See [`openspec/specs/api-platform/spec.md`](../../openspec/specs/api-platform/spec.md) and the
+capability specs for the rules behind each table.
