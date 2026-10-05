@@ -14,6 +14,7 @@
     "db:seed": "pnpm --filter @timesheet/api db:seed",
     "build": "nx run-many -t build",
     "test": "nx run-many -t test",
+    "verify:auth": "bash scripts/verify/auth-flow.sh",
     "lint": "nx run-many -t lint",
     "typecheck": "nx run-many -t typecheck",
     "format": "nx format:write",

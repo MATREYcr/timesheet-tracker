@@ -32,9 +32,9 @@
 
 ## 5. Real-flow verification with agent-browser
 
-- [ ] 5.1 Add `scripts/verify/auth-flow.sh` (agent-browser CLI, `BASE_URL` default `http://localhost:3000`, unique email per run, `step` helper, fail fast, closes the browser on exit) and a root `pnpm verify:auth` script; verify it exits 0 against the local stack
-- [ ] 5.2 Make one step fail on purpose (e.g. wrong password) and verify the script reports the step and exits non-zero, then revert
-- [ ] 5.3 Run an exploratory agent-browser pass in en and es (login, register errors, dashboard, employees, time entries, weekly summary approve, sign out, dark mode) reading snapshots, and record the results in this change's `verification.md`
+- [x] 5.1 Add `scripts/verify/auth-flow.sh` (agent-browser CLI, `BASE_URL` default `http://localhost:3000`, unique email per run, `step` helper, fail fast, closes the browser on exit) and a root `pnpm verify:auth` script; verify it exits 0 against the local stack
+- [x] 5.2 Make one step fail on purpose (e.g. wrong password) and verify the script reports the step and exits non-zero, then revert
+- [x] 5.3 Run an exploratory agent-browser pass in en and es (login, register errors, dashboard, employees, time entries, weekly summary approve, sign out, dark mode) reading snapshots, and record the results in this change's `verification.md`
 
 ## 6. Docs and close-out
 
