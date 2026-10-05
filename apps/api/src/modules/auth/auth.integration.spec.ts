@@ -75,7 +75,13 @@ describe('authentication (integration)', () => {
       body: '{}',
     });
     expect(out.status).toBe(200);
-    expect((await anonymousApp.request('/employees', authed)).status).toBe(401);
+
+    const stale = await anonymousApp.request('/employees', authed);
+    expect(stale.status).toBe(401);
+    // The stale cookie is expired in the 401 so the web proxy stops treating it as a session.
+    expect(stale.headers.get('set-cookie')).toMatch(
+      /session_token=;.*Max-Age=0/i,
+    );
   });
 
   it('signs in with valid credentials and gives one generic error otherwise', async () => {
