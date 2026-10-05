@@ -96,9 +96,13 @@ con Ubuntu.
 
      | Type | Port | Source type | Para qué |
      |---|---|---|---|
-     | SSH | 22 | **My IP** | Solo tú puedes conectarte por SSH |
+     | SSH | 22 | **My IP** | Solo tú puedes conectarte por SSH desde tu terminal |
+     | SSH | 22 | **Custom** → escribe `ec2-instance-connect` y elige la lista `com.amazonaws.<tu-región>.ec2-instance-connect` | Conectarte desde el navegador (parte 4, opción A) |
      | HTTP | 80 | **Anywhere** | La web (y la validación del certificado) |
      | HTTPS | 443 | **Anywhere** | La web con HTTPS |
+
+     La segunda regla de SSH no abre el 22 a todo internet: solo a las direcciones que AWS usa
+     para la terminal del navegador. Esa lista de direcciones (*prefix list*) la mantiene AWS.
 
      **No abras el 3000, el 3333 ni el 5432.** Solo nginx habla con la web y la API, por dentro
      de la máquina, y la base de datos no debe verse desde internet.
@@ -156,11 +160,23 @@ dependen del dominio.
 
 ---
 
-## Parte 4 — Conectarte al servidor por SSH
+## Parte 4 — Conectarte al servidor
 
-**Qué es SSH:** una terminal remota y cifrada. Lo que escribas se ejecuta en el servidor.
+**Qué es:** una terminal remota y cifrada dentro del servidor. Lo que escribas se ejecuta allí, no
+en tu Mac. Tienes dos formas de abrirla; elige una.
 
-En la terminal de tu Mac:
+### Opción A — Desde el navegador (EC2 Instance Connect) — recomendada para empezar
+
+1. En la web de AWS: **EC2 → Instances** → marca la casilla de `timesheet-server`.
+2. Botón **Connect** (arriba).
+3. Pestaña **EC2 Instance Connect** → deja **Connect using a Public IP** y el usuario `ubuntu`
+   → botón **Connect**.
+4. Se abre una pestaña nueva con una terminal negra dentro del servidor.
+
+Para pegar comandos usa `Cmd + V` (o click derecho → pegar). No necesitas el archivo `.pem` para
+esto: AWS envía una clave temporal al servidor cada vez que te conectas.
+
+### Opción B — Desde la terminal de tu Mac (ssh)
 
 ```bash
 chmod 400 ~/Downloads/timesheet-key.pem
@@ -171,11 +187,13 @@ ssh -i ~/Downloads/timesheet-key.pem ubuntu@TU_IP_ELASTICA
 - `ubuntu` es el usuario que traen las instancias de Ubuntu en AWS.
 - La primera vez te pregunta `Are you sure you want to continue connecting?` → escribe `yes`.
 
-**Comprueba:** el prompt cambia a algo como `ubuntu@ip-172-31-...:~$`. **Desde aquí, todos los
-comandos hasta la parte 13 se ejecutan en el servidor**, no en tu Mac.
+**Comprueba (cualquiera de las dos):** el prompt cambia a algo como `ubuntu@ip-172-31-...:~$`.
+**Desde aquí, todos los comandos hasta la parte 13 se ejecutan en el servidor**, no en tu Mac.
 
-> Si no conecta: en el security group, la regla SSH tiene **My IP**. Si tu IP de casa cambió
-> (pasa a menudo), edita esa regla y vuelve a elegir **My IP**.
+> Si la opción A falla: revisa que existe la regla SSH con la lista `ec2-instance-connect`
+> (parte 1, paso 7) y que la instancia está en **Running** con **2/2 checks passed**.
+> Si la opción B no conecta: la regla SSH tiene **My IP**; si tu IP de casa cambió (pasa a
+> menudo), edita esa regla y vuelve a elegir **My IP**.
 
 ---
 
@@ -188,8 +206,8 @@ sudo apt update && sudo apt upgrade -y
 ```
 
 `sudo` ejecuta como administrador; `apt` es el gestor de paquetes de Ubuntu (como Homebrew).
-Si al final pide reiniciar, ejecuta `sudo reboot`, espera un minuto y vuelve a conectarte con el
-mismo `ssh`.
+Si al final pide reiniciar, ejecuta `sudo reboot`, espera un minuto y vuelve a conectarte como en
+la parte 4.
 
 **5.2 Añadir memoria de intercambio (swap) de 2 GB.** Es espacio en disco que el sistema usa como
 RAM de emergencia. Evita que `next build` se quede sin memoria y muera.
@@ -552,6 +570,7 @@ Y repite la verificación de la parte 14.
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
 | `ssh` se queda colgado o da *timeout* | Tu IP cambió y la regla SSH solo permite la antigua | Security group → editar la regla SSH → **My IP** |
+| EC2 Instance Connect: *Failed to connect to your instance* | Falta la regla SSH con la lista `ec2-instance-connect`, o la instancia aún arranca | Revisa el security group (parte 1, paso 7) y espera a **2/2 checks passed** |
 | `next build` termina con `Killed` | Sin memoria | Comprueba el swap (parte 5.2) con `free -h` |
 | **502 Bad Gateway** en el navegador | La web o la API no están corriendo | `systemctl status timesheet-api timesheet-web` y `journalctl -u timesheet-api -n 50` |
 | La API no arranca: `Invalid environment variables` | Falta o está mal una variable en `apps/api/.env` | El log dice cuál; revisa la parte 9.2 |
