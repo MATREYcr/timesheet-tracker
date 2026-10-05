@@ -47,6 +47,11 @@ generic error that does not reveal whether the email exists.
 - **THEN** the same localized "invalid email or password" error is shown and no session is
   started
 
+#### Scenario: Too many attempts
+
+- **WHEN** the auth endpoints answer 429 because of repeated attempts
+- **THEN** a localized "too many attempts, try again in a moment" error is shown
+
 ### Requirement: Sign out
 
 A signed-in user SHALL be able to sign out from the app shell. Signing out MUST invalidate the
@@ -96,6 +101,7 @@ endpoints stay public.
 - **WHEN** a business endpoint is called with a cookie for a session that was signed out or has
   expired
 - **THEN** the response is 401 `UNAUTHORIZED`
+- **AND** the response expires the stale session cookie, so the browser no longer presents it
 
 #### Scenario: Public endpoints
 

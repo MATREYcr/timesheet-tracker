@@ -89,9 +89,12 @@ describe('authentication (integration)', () => {
 
     const ok = await signIn(email, password);
     expect(ok.status).toBe(200);
-    expect(ok.headers.get('set-cookie')).toMatch(
-      /session_token=.*HttpOnly.*SameSite=Lax/i,
-    );
+    const cookie = ok.headers.get('set-cookie') ?? '';
+    expect(cookie).toMatch(/session_token=/);
+    expect(cookie).toMatch(/Max-Age=604800/); // 7 days
+    expect(cookie).toMatch(/HttpOnly/i);
+    expect(cookie).toMatch(/SameSite=Lax/i);
+    expect(cookie).not.toMatch(/Secure/i); // only in production
 
     const wrongPassword = await body<{ code: string }>(
       await signIn(email, 'wrong-pass'),

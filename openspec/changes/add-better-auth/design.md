@@ -42,6 +42,11 @@ c => auth.handler(c.req.raw))`.
   doesn't own); a hosted IdP like Cognito (would hide the auth flow the practice is about — can
   be added later as a social/OIDC provider).
 
+Session lifetime (`session.expiresIn` 7 days, `updateAge` 1 day) and `useSecureCookies` (on in
+production) are set explicitly rather than inherited, since the spec promises them. Rate
+limiting keeps the library default (on in production, off in development); the web only maps
+a 429 to a localized message — tuning it stays out of scope.
+
 ### 2. Auth tables are ours: `users`, `sessions`, `accounts`, `verifications`
 
 Defined by hand in `db/schema/auth.ts` from the Better Auth CLI output (`npx
@@ -62,6 +67,9 @@ missing. It is applied to `apiRoutes` only, so `/health`, `/openapi`, `/docs` an
 - *Why:* one place enforces auth; existing routes don't change; the error goes through the
   existing `onError` → localized envelope path.
 - *Rejected:* per-route checks (easy to forget on a new route).
+- On a 401 the guard forwards Better Auth's cookie-expiry `set-cookie` headers. Without this a
+  revoked cookie survives, the web proxy keeps treating the visitor as signed in, and the user
+  bounces between `/login` and the app.
 
 ### 4. Cookies + credentialed CORS between `:3000` and `:3333`
 
