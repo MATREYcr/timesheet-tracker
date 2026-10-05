@@ -18,12 +18,12 @@
 
 ## 3. Web — auth client, protection and screens
 
-- [ ] 3.1 Add `better-auth` to `apps/web`, create `lib/auth-client.ts` (`createAuthClient` with `NEXT_PUBLIC_API_URL`), set `withCredentials: true` in `lib/http.ts` and redirect to the locale's login on a 401 `UNAUTHORIZED`; verify `pnpm nx run web:typecheck`
-- [ ] 3.2 Split `app/[locale]` into `(app)` (sidebar + topbar layout, existing pages moved, URLs unchanged) and `(auth)` (centered layout with locale + theme toggles); slim `providers.tsx`; verify every existing page still renders at the same URL
-- [ ] 3.3 Compose `proxy.ts`: session-cookie check (protected → `/{locale}/login?next=`, login/register while signed in → `/{locale}`) before next-intl; safe `next` handling; verify in the browser that `/es/weekly-summary` signed-out redirects to `/es/login?next=%2Fweekly-summary`
-- [ ] 3.4 Build Login and Register screens with shadcn + `react-hook-form` + shared schemas, progress state, links between them, Better Auth error codes mapped to en/es messages; add all strings to `en.json`/`es.json`; verify wrong password shows the generic localized error and registration lands on the dashboard
-- [ ] 3.5 Replace the sidebar "Admin" placeholder with the session user's name/email and a Sign out action (revoke, `queryClient.clear()`, go to login); verify the user is shown and sign out returns to login
-- [ ] 3.6 Add a component test for the login form (shared-schema validation message, submit calls `signIn.email`) and verify `pnpm nx run web:test` passes; run `pnpm lint` for web
+- [x] 3.1 Add `better-auth` to `apps/web`, create `lib/auth-client.ts` (`createAuthClient` with `NEXT_PUBLIC_API_URL`), set `withCredentials: true` in `lib/http.ts` and redirect to the locale's login on a 401 `UNAUTHORIZED`; verify `pnpm nx run web:typecheck`
+- [x] 3.2 Split `app/[locale]` into `(app)` (sidebar + topbar layout, existing pages moved, URLs unchanged) and `(auth)` (centered layout with locale + theme toggles); slim `providers.tsx`; verify every existing page still renders at the same URL
+- [x] 3.3 Compose `proxy.ts`: session-cookie check (protected → `/{locale}/login?next=`, login/register while signed in → `/{locale}`) before next-intl; safe `next` handling; verify in the browser that `/es/weekly-summary` signed-out redirects to `/es/login?next=%2Fweekly-summary`
+- [x] 3.4 Build Login and Register screens with shadcn + `react-hook-form` + shared schemas, progress state, links between them, Better Auth error codes mapped to en/es messages; add all strings to `en.json`/`es.json`; verify wrong password shows the generic localized error and registration lands on the dashboard
+- [x] 3.5 Replace the sidebar "Admin" placeholder with the session user's name/email and a Sign out action (revoke, `queryClient.clear()`, go to login); verify the user is shown and sign out returns to login
+- [x] 3.6 Add a component test for the login form (shared-schema validation message, submit calls `signIn.email`) and verify `pnpm nx run web:test` passes; run `pnpm lint` for web
 
 ## 4. E2E (Playwright)
 

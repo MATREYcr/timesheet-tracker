@@ -4,9 +4,6 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { ThemeProvider } from 'next-themes';
 import { useState, type ReactNode } from 'react';
-import { AppSidebar } from '@/components/layout/app-sidebar';
-import { Topbar } from '@/components/layout/topbar';
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/sonner';
 import { TooltipProvider } from '@/components/ui/tooltip';
 import { makeQueryClient } from '@/lib/query';
@@ -28,15 +25,7 @@ export function Providers({ children }: { children: ReactNode }) {
       disableTransitionOnChange
     >
       <QueryProvider>
-        <TooltipProvider delayDuration={0}>
-          <SidebarProvider>
-            <AppSidebar />
-            <SidebarInset className="min-w-0">
-              <Topbar />
-              <div className="px-4 py-6 sm:px-6 sm:py-8">{children}</div>
-            </SidebarInset>
-          </SidebarProvider>
-        </TooltipProvider>
+        <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
         <Toaster richColors />
       </QueryProvider>
     </ThemeProvider>

@@ -10,6 +10,13 @@ export const AUTH_VALIDATION = {
   passwordTooLong: 'passwordTooLong',
 } as const;
 
+export type AuthValidationKey =
+  (typeof AUTH_VALIDATION)[keyof typeof AUTH_VALIDATION];
+
+export function isAuthValidationKey(value: string): value is AuthValidationKey {
+  return Object.values<string>(AUTH_VALIDATION).includes(value);
+}
+
 export const PASSWORD_MIN_LENGTH = 8;
 export const PASSWORD_MAX_LENGTH = 128;
 

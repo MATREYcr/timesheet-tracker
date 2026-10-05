@@ -31,8 +31,8 @@
     "toggle": "Toggle theme"
   },
   "account": {
-    "name": "Admin",
-    "role": "Administrator"
+    "signOut": "Sign out",
+    "signingOut": "Signing out…"
   },
   "pagination": {
     "previous": "Previous",
@@ -202,6 +202,42 @@
     "toast": {
       "approved": "Week approved.",
       "rejected": "Week rejected."
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Sign in",
+      "description": "Welcome back. Enter your email and password.",
+      "submit": "Sign in",
+      "noAccount": "Don't have an account?",
+      "toRegister": "Create an account"
+    },
+    "register": {
+      "title": "Create an account",
+      "description": "Start tracking hours and approving weeks.",
+      "submit": "Create account",
+      "hasAccount": "Already have an account?",
+      "toLogin": "Sign in"
+    },
+    "fields": {
+      "name": "Full name",
+      "email": "Email",
+      "password": "Password",
+      "passwordHint": "At least 8 characters."
+    },
+    "validation": {
+      "nameRequired": "Enter your name.",
+      "nameTooLong": "Name must be 100 characters or fewer.",
+      "emailInvalid": "Enter a valid email address.",
+      "passwordRequired": "Enter your password.",
+      "passwordTooShort": "Password must be at least 8 characters.",
+      "passwordTooLong": "Password must be 128 characters or fewer."
+    },
+    "errors": {
+      "invalidCredentials": "Invalid email or password.",
+      "emailTaken": "An account with this email already exists.",
+      "tooManyRequests": "Too many attempts. Try again in a moment.",
+      "generic": "Something went wrong. Please try again."
     }
   }
 }

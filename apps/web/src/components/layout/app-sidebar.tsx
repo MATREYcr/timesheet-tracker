@@ -9,7 +9,6 @@ import {
 } from 'lucide-react';
 import { useEffect } from 'react';
 import { useTranslations } from 'next-intl';
-import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import {
   Sidebar,
   SidebarContent,
@@ -23,6 +22,7 @@ import {
   SidebarRail,
   useSidebar,
 } from '@/components/ui/sidebar';
+import { UserMenu } from '@/features/auth/components/user-menu';
 import { Link, usePathname } from '@/i18n/navigation';
 
 const NAV = [
@@ -35,7 +35,6 @@ const NAV = [
 export function AppSidebar() {
   const tNav = useTranslations('nav');
   const tApp = useTranslations('app');
-  const tAccount = useTranslations('account');
   const pathname = usePathname();
   const { isMobile, setOpenMobile } = useSidebar();
 
@@ -86,29 +85,7 @@ export function AppSidebar() {
       </SidebarContent>
 
       <SidebarFooter className="border-t p-4">
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <SidebarMenuButton
-              size="lg"
-              tooltip={tAccount('name')}
-              className="h-14 cursor-default gap-3 rounded-lg px-3 hover:bg-transparent active:bg-transparent"
-            >
-              <Avatar className="size-10 group-data-[collapsible=icon]:size-8">
-                <AvatarFallback className="bg-primary-soft text-primary text-base font-semibold">
-                  A
-                </AvatarFallback>
-              </Avatar>
-              <div className="grid flex-1 gap-0.5 text-left leading-tight">
-                <span className="truncate text-[15px] font-semibold">
-                  {tAccount('name')}
-                </span>
-                <span className="text-muted-foreground truncate text-[13px]">
-                  {tAccount('role')}
-                </span>
-              </div>
-            </SidebarMenuButton>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <UserMenu />
       </SidebarFooter>
 
       <SidebarRail />

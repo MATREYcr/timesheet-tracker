@@ -31,8 +31,8 @@
     "toggle": "Cambiar tema"
   },
   "account": {
-    "name": "Admin",
-    "role": "Administrador"
+    "signOut": "Cerrar sesión",
+    "signingOut": "Cerrando sesión…"
   },
   "pagination": {
     "previous": "Anterior",
@@ -202,6 +202,42 @@
     "toast": {
       "approved": "Semana aprobada.",
       "rejected": "Semana rechazada."
+    }
+  },
+  "auth": {
+    "login": {
+      "title": "Iniciar sesión",
+      "description": "Bienvenido de nuevo. Introduce tu correo y contraseña.",
+      "submit": "Iniciar sesión",
+      "noAccount": "¿No tienes cuenta?",
+      "toRegister": "Crear una cuenta"
+    },
+    "register": {
+      "title": "Crear una cuenta",
+      "description": "Empieza a registrar horas y aprobar semanas.",
+      "submit": "Crear cuenta",
+      "hasAccount": "¿Ya tienes cuenta?",
+      "toLogin": "Iniciar sesión"
+    },
+    "fields": {
+      "name": "Nombre completo",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "passwordHint": "Mínimo 8 caracteres."
+    },
+    "validation": {
+      "nameRequired": "Introduce tu nombre.",
+      "nameTooLong": "El nombre debe tener 100 caracteres o menos.",
+      "emailInvalid": "Introduce un correo electrónico válido.",
+      "passwordRequired": "Introduce tu contraseña.",
+      "passwordTooShort": "La contraseña debe tener al menos 8 caracteres.",
+      "passwordTooLong": "La contraseña debe tener 128 caracteres o menos."
+    },
+    "errors": {
+      "invalidCredentials": "Correo o contraseña incorrectos.",
+      "emailTaken": "Ya existe una cuenta con este correo.",
+      "tooManyRequests": "Demasiados intentos. Inténtalo de nuevo en un momento.",
+      "generic": "Algo salió mal. Inténtalo de nuevo."
     }
   }
 }

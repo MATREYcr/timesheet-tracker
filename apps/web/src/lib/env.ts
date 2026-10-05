@@ -13,7 +13,9 @@ if (!parsed.success) {
     'Invalid environment variables:',
     z.flattenError(parsed.error).fieldErrors,
   );
-  throw new Error('Invalid environment configuration. Copy apps/web/.env.example to apps/web/.env.local.');
+  throw new Error(
+    'Invalid environment configuration. Copy apps/web/.env.example to apps/web/.env.local.',
+  );
 }
 
 export const env = parsed.data;
