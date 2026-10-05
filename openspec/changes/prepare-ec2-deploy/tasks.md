@@ -10,8 +10,8 @@
 
 ## 3. Server configuration
 
-- [ ] 3.1 Add `deploy/ec2/nginx.conf` (web at `/`, API at `/backend/` with the prefix stripped, `X-Forwarded-For`/`-Proto`/`Host`); verify `nginx -t` accepts it
-- [ ] 3.2 Add `deploy/ec2/timesheet-api.service` and `deploy/ec2/timesheet-web.service` (unprivileged user, working directories, `Restart=on-failure`, `NODE_ENV=production`); verify with `systemd-analyze verify` if available or by review against the guide
+- [x] 3.1 Add `deploy/ec2/nginx.conf` (web at `/`, API at `/backend/` with the prefix stripped, `X-Forwarded-For`/`-Proto`/`Host`); verify `nginx -t` accepts it
+- [x] 3.2 Add `deploy/ec2/timesheet-api.service` and `deploy/ec2/timesheet-web.service` (unprivileged user, working directories, `Restart=on-failure`, `NODE_ENV=production`); verify with `systemd-analyze verify` if available or by review against the guide
 
 ## 4. Local rehearsal without Docker
 
