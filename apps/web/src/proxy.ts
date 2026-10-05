@@ -15,8 +15,7 @@ function splitLocale(pathname: string): { locale: string; path: string } {
   return { locale: DEFAULT_LOCALE, path: pathname };
 }
 
-// Optimistic gate: only checks that a session cookie exists (no DB/API call). The API is the
-// authority — a stale cookie gets a 401 there and the client sends the user to login.
+// Presence check only; the API is the authority and answers 401 for invalid sessions.
 export default function proxy(request: NextRequest) {
   const { pathname, search } = request.nextUrl;
   const { locale, path } = splitLocale(pathname);

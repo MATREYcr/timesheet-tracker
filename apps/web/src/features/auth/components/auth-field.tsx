@@ -19,7 +19,6 @@ type AuthFieldProps = ComponentProps<typeof Input> & {
   error?: FormFieldError;
 };
 
-// Shared schema messages are keys (see AUTH_VALIDATION); translate them here.
 export function AuthField({
   id,
   label,

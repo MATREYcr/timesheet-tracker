@@ -16,13 +16,11 @@ function withSession(init: RequestInit = {}): RequestInit {
   return { ...init, headers };
 }
 
-/** The app as an authenticated client: every request carries the test user's session. */
 export const app = {
   request: (path: string, init?: RequestInit) =>
     rawApp.request(path, withSession(init)),
 };
 
-/** The app with no session, for exercising auth itself. */
 export const anonymousApp = rawApp;
 
 export const WEB_ORIGIN = process.env.CORS_ORIGIN ?? 'http://localhost:3000';
@@ -71,7 +69,6 @@ export const patchJson = (path: string, payload: unknown) =>
   send('PATCH', path, payload);
 export const del = (path: string) => send('DELETE', path);
 
-/** Clean slate (business + auth tables), then sign in a fresh test user for `app`. */
 export async function truncate() {
   await db.execute(
     sql`TRUNCATE TABLE weekly_approvals, time_entries, employees, sessions, accounts, verifications, users RESTART IDENTITY CASCADE`,

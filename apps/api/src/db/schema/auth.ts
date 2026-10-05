@@ -7,9 +7,6 @@ import {
   uuid,
 } from 'drizzle-orm/pg-core';
 
-// Shape required by Better Auth (checked against the Better Auth CLI output), adapted to project
-// conventions: plural tables, uuid ids, snake_case columns, timestamptz.
-
 const timestamps = {
   createdAt: timestamp('created_at', { withTimezone: true })
     .notNull()

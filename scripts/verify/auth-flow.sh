@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
-# Real-flow smoke check of authentication, driven by agent-browser against a running stack.
-#
-#   pnpm verify:auth                                   # local (http://localhost:3000)
-#   BASE_URL=https://app.example.com \
-#   API_URL=https://api.example.com pnpm verify:auth   # a deployed environment
-#
-# Registers a fresh user each run (unique email), so it is safe to repeat. Exits non-zero on the
-# first failed step and always closes its isolated browser session.
-# Requires the agent-browser CLI: npm i -g agent-browser && agent-browser install
+# Auth real-flow check with agent-browser. Requires: npm i -g agent-browser && agent-browser install
+# Usage: [BASE_URL=... API_URL=...] pnpm verify:auth
 set -euo pipefail
 
 BASE_URL="${BASE_URL:-http://localhost:3000}"
@@ -45,8 +38,7 @@ step() {
   fi
 }
 
-# Client-side navigations don't fire load events, so assert on location instead of waiting
-# for network idle (which never settles against a dev server with HMR).
+# networkidle never settles against next dev (HMR), so assert on location and text instead.
 expect_path() { ab wait --fn "location.pathname === '$1'"; }
 expect_text() { ab wait --text "$1"; }
 expect_eval() { [ "$(ab eval "$1")" = "$2" ]; }

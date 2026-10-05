@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-// Messages are stable keys, not copy: the web resolves them against its en/es catalogs.
+// Messages are i18n keys resolved by the web (auth.validation.*), not user-facing copy.
 export const AUTH_VALIDATION = {
   nameRequired: 'nameRequired',
   nameTooLong: 'nameTooLong',

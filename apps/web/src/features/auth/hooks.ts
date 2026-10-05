@@ -7,7 +7,6 @@ import { useRouter } from '@/i18n/navigation';
 import { authClient } from '@/lib/auth-client';
 import { NEXT_PARAM, safeNextPath } from '@/lib/auth-routes';
 
-/** Where to land after signing in: the remembered `?next=` path, if it is same-site. */
 export function useAfterAuthPath(): string {
   const searchParams = useSearchParams();
   return safeNextPath(searchParams.get(NEXT_PARAM));

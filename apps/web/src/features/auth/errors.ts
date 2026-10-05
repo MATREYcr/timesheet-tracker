@@ -6,7 +6,6 @@ export type AuthErrorKey =
   | 'tooManyRequests'
   | 'generic';
 
-/** Better Auth error codes → keys under `auth.errors` in the message catalogs. */
 export function authErrorKey(error: AuthError): AuthErrorKey {
   if (error?.status === 429) return 'tooManyRequests';
   switch (error?.code) {

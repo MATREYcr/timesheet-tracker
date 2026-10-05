@@ -9,7 +9,7 @@ export default async function LoginPage({
 }) {
   const { locale } = await params;
   setRequestLocale(locale);
-  // The form reads ?next= via useSearchParams, which needs a Suspense boundary.
+  // useSearchParams (for ?next=) needs a Suspense boundary.
   return (
     <Suspense>
       <LoginForm />

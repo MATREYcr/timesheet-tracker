@@ -6,7 +6,7 @@ import { employeesRoutes } from '@/modules/employees/employees.routes';
 import { timeEntriesRoutes } from '@/modules/time-entries/time-entries.routes';
 import { weeklySummaryRoutes } from '@/modules/weekly-summary/weekly-summary.routes';
 
-// Scoped per module prefix (not '*') so /health, /openapi, /docs and /api/auth stay public.
+// Per prefix, not '*', so /health, /openapi, /docs and /api/auth stay public.
 const PROTECTED_PREFIXES = [
   '/dashboard',
   '/employees',

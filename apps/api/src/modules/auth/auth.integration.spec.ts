@@ -78,7 +78,6 @@ describe('authentication (integration)', () => {
 
     const stale = await anonymousApp.request('/employees', authed);
     expect(stale.status).toBe(401);
-    // The stale cookie is expired in the 401 so the web proxy stops treating it as a session.
     expect(stale.headers.get('set-cookie')).toMatch(
       /session_token=;.*Max-Age=0/i,
     );

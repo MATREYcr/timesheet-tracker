@@ -7,13 +7,13 @@ const envSchema = z.object({
   TEST_DATABASE_URL: z.string().min(1).optional(),
   PORT: z.coerce.number().int().positive(),
   CORS_ORIGIN: z.string().min(1),
-  // Signs session cookies; generate with `openssl rand -base64 32`.
   BETTER_AUTH_SECRET: z
     .string()
     .min(32, 'BETTER_AUTH_SECRET must be at least 32 characters'),
-  // Public URL of this API (where /api/auth/* is served).
   BETTER_AUTH_URL: z.url(),
-  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  NODE_ENV: z
+    .enum(['development', 'test', 'production'])
+    .default('development'),
 });
 
 const parsed = envSchema.safeParse(process.env);

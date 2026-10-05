@@ -39,8 +39,7 @@ http.interceptors.response.use(
   },
 );
 
-// The session expired or was revoked while the app was open: hard-navigate so the proxy and
-// the login screen start from a clean state, remembering where the user was.
+// Full navigation so the proxy re-evaluates the (now expired) session cookie.
 function redirectToLogin() {
   const locale = document.documentElement.lang || 'en';
   const prefix = `/${locale}`;

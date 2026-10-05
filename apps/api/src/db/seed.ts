@@ -1,5 +1,9 @@
 import 'dotenv/config';
-import { addDays, APPROVAL_STATUS, type ApprovalStatus } from '@timesheet/shared';
+import {
+  addDays,
+  APPROVAL_STATUS,
+  type ApprovalStatus,
+} from '@timesheet/shared';
 import { eq } from 'drizzle-orm';
 import { auth } from '@/auth';
 import { db } from './client';
@@ -11,8 +15,7 @@ const DEMO_USER = {
   password: 'Demo1234!',
 };
 
-// Through the auth API (not a raw insert) so the password is hashed exactly as on sign-up.
-// Auth tables are never cleared: users who registered keep their accounts across re-seeds.
+// Via the auth API so the password is hashed as on sign-up. Auth tables are never cleared.
 async function ensureDemoUser(): Promise<boolean> {
   const existing = await db.query.users.findFirst({
     where: eq(users.email, DEMO_USER.email),

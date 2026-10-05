@@ -25,7 +25,6 @@ export default async function AuthLayout({
   return (
     <div className="grid min-h-svh lg:grid-cols-2">
       <aside className="bg-primary text-primary-foreground relative hidden overflow-hidden lg:flex lg:flex-col lg:justify-between lg:p-12">
-        {/* Decorative glow only; colors come from the primary token. */}
         <div className="bg-primary-foreground/10 pointer-events-none absolute -top-32 -right-32 size-96 rounded-full blur-3xl" />
         <div className="bg-primary-foreground/10 pointer-events-none absolute -bottom-40 -left-24 size-96 rounded-full blur-3xl" />
         <div className="relative flex items-center gap-2.5 text-lg font-bold tracking-tight">

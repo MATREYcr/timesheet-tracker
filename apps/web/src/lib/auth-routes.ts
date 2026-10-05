@@ -7,13 +7,12 @@ export function isAuthPath(path: string): boolean {
   return (AUTH_PATHS as readonly string[]).includes(path);
 }
 
-/** Mirrors next-intl's `localePrefix: 'as-needed'`: the default locale has no prefix. */
 export function localizedPath(locale: string, path: string): string {
   if (locale === DEFAULT_LOCALE) return path;
   return path === '/' ? `/${locale}` : `/${locale}${path}`;
 }
 
-/** Only same-site relative paths ("/x"), never "//host" or "/\host", to block open redirects. */
+// Rejects "//host" and "/\host" to prevent open redirects.
 export function safeNextPath(next: string | null | undefined): string {
   if (
     !next ||

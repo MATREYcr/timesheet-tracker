@@ -185,9 +185,10 @@ timesheet-tracker/
   `Table`, `Select`, `Badge`, `Skeleton`, `Alert`, `Empty`, `Spinner`). Use built-in
   variants and semantic tokens (`bg-primary`, `text-muted-foreground`), not raw
   colors. Follow the `shadcn` skill. Only hand-roll markup when nothing fits.
-- **Comments:** only when they add value — explain the **why** (non-obvious
-  decisions, trade-offs, gotchas), never restate the **what** the code already says.
-  No redundant file-header summaries; prefer self-documenting code and names.
+- **Comments:** only the strictly necessary ones, always in **English**, ideally one
+  line. Keep a comment only for a non-obvious **why** (library gotchas, security,
+  framework requirements); never restate the **what**, no file-header summaries, no
+  JSDoc that repeats the function name, no comments in tests or JSX describing markup.
 - **Commits:** small, conventional (`feat:`, `fix:`, `chore:`, `test:`, `docs:`).
 - **OpenSpec artifacts:** written in English; scenarios use exactly `####` headings and
   `- **WHEN**` / `- **THEN**` bullets (anything else fails validation silently).
