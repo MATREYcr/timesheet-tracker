@@ -3,6 +3,7 @@ import { OpenAPIHono } from '@hono/zod-openapi';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
 import { buildOpenApiDocument } from '@/common/openapi';
+import { auth } from '@/auth';
 import { onError } from '@/common/errors';
 import type { AppEnv } from '@/common/types';
 import { env } from '@/config/env';
@@ -13,10 +14,12 @@ export function createApp() {
   const app = new OpenAPIHono<AppEnv>();
 
   app.use('*', logger());
-  app.use('*', cors({ origin: env.CORS_ORIGIN }));
+  app.use('*', cors({ origin: env.CORS_ORIGIN, credentials: true }));
   app.use('*', localeMiddleware);
 
   app.get('/health', (c) => c.json({ status: 'ok' }));
+
+  app.on(['GET', 'POST'], '/api/auth/*', (c) => auth.handler(c.req.raw));
 
   app.route('/', apiRoutes);
 
@@ -26,7 +29,6 @@ export function createApp() {
 
   app.onError(onError);
 
-  
   return app;
 }
 

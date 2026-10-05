@@ -2,19 +2,19 @@
 
 ## 1. Shared contracts
 
-- [ ] 1.1 Add `UNAUTHORIZED` to `ERROR_CODES` in `packages/shared/src/utils/errors.ts` and verify `pnpm nx run shared:typecheck` reports the missing `UNAUTHORIZED` entries in the API status/message maps (fixed in 2.x)
-- [ ] 1.2 Add `packages/shared/src/auth/auth.ts` with `signInSchema` / `signUpSchema` + derived types, export them from `index.ts`, and verify new unit tests in `auth/auth.spec.ts` (short password, email trim + lowercase, name 1–100) pass with `pnpm nx run shared:test`
+- [x] 1.1 Add `UNAUTHORIZED` to `ERROR_CODES` in `packages/shared/src/utils/errors.ts` and verify `pnpm nx run shared:typecheck` reports the missing `UNAUTHORIZED` entries in the API status/message maps (fixed in 2.x)
+- [x] 1.2 Add `packages/shared/src/auth/auth.ts` with `signInSchema` / `signUpSchema` + derived types, export them from `index.ts`, and verify new unit tests in `auth/auth.spec.ts` (short password, email trim + lowercase, name 1–100) pass with `pnpm nx run shared:test`
 
 ## 2. API — auth server and session guard
 
 - [ ] 2.1 Add `better-auth` to `apps/api`, extend `config/env.ts` with `BETTER_AUTH_SECRET` (min 32) and `BETTER_AUTH_URL` (url), update `apps/api/.env.example`, and verify the API refuses to start with a short secret
-- [ ] 2.2 Add `db/schema/auth.ts` (`users`, `sessions`, `accounts`, `verifications`; uuid ids, snake_case, timestamptz) following the db-change skill, generate the migration with `pnpm --filter @timesheet/api db:generate`, review the SQL, and verify `pnpm db:migrate` creates the four tables
-- [ ] 2.3 Create `src/auth.ts` (Drizzle adapter, email/password 8–128, uuid ids, trustedOrigins = `CORS_ORIGIN`) and mount `/api/auth/*` in `app.ts`; switch CORS to `credentials: true`; verify with curl that sign-up/sign-in set an HttpOnly `SameSite=Lax` cookie and `get-session` returns the user without password fields
-- [ ] 2.4 Add `UNAUTHORIZED` → 401 to `ERROR_STATUS` and en/es messages to `common/errors/messages.ts`; verify `pnpm nx run api:typecheck` passes
-- [ ] 2.5 Add `middleware/auth.ts` (session on context, `AppError('UNAUTHORIZED')` when absent), extend `AppEnv`, apply it to `apiRoutes` only; verify with curl that `/employees` returns 401 envelope without cookie (en and es) and 200 with it, and `/health` stays 200
-- [ ] 2.6 Update `test/helpers.ts` (sign up once per file, attach cookie to every helper request, truncate auth tables) and verify the existing integration suites pass again with `pnpm nx run api:test`
-- [ ] 2.7 Add `src/modules/auth/auth.integration.spec.ts` covering 401 without session (en/es), sign-up → access, sign-out → 401 with the old cookie, public `/health`, foreign Origin sign-in rejected, and verify it passes
-- [ ] 2.8 Seed the demo user (`demo@timesheet.dev` / `Demo1234!`) via `auth.api.signUpEmail` only if missing, without truncating auth tables; verify running `pnpm db:seed` twice leaves one demo user who can sign in
+- [x] 2.2 Add `db/schema/auth.ts` (`users`, `sessions`, `accounts`, `verifications`; uuid ids, snake_case, timestamptz) following the db-change skill, generate the migration with `pnpm --filter @timesheet/api db:generate`, review the SQL, and verify `pnpm db:migrate` creates the four tables
+- [x] 2.3 Create `src/auth.ts` (Drizzle adapter, email/password 8–128, uuid ids, trustedOrigins = `CORS_ORIGIN`) and mount `/api/auth/*` in `app.ts`; switch CORS to `credentials: true`; verify with curl that sign-up/sign-in set an HttpOnly `SameSite=Lax` cookie and `get-session` returns the user without password fields
+- [x] 2.4 Add `UNAUTHORIZED` → 401 to `ERROR_STATUS` and en/es messages to `common/errors/messages.ts`; verify `pnpm nx run api:typecheck` passes
+- [x] 2.5 Add `middleware/auth.ts` (session on context, `AppError('UNAUTHORIZED')` when absent), extend `AppEnv`, apply it to `apiRoutes` only; verify with curl that `/employees` returns 401 envelope without cookie (en and es) and 200 with it, and `/health` stays 200
+- [x] 2.6 Update `test/helpers.ts` (sign up once per file, attach cookie to every helper request, truncate auth tables) and verify the existing integration suites pass again with `pnpm nx run api:test`
+- [x] 2.7 Add `src/modules/auth/auth.integration.spec.ts` covering 401 without session (en/es), sign-up → access, sign-out → 401 with the old cookie, public `/health`, foreign Origin sign-in rejected, and verify it passes
+- [x] 2.8 Seed the demo user (`demo@timesheet.dev` / `Demo1234!`) via `auth.api.signUpEmail` only if missing, without truncating auth tables; verify running `pnpm db:seed` twice leaves one demo user who can sign in
 
 ## 3. Web — auth client, protection and screens
 

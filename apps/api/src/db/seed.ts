@@ -1,7 +1,26 @@
 import 'dotenv/config';
 import { addDays, APPROVAL_STATUS, type ApprovalStatus } from '@timesheet/shared';
+import { eq } from 'drizzle-orm';
+import { auth } from '@/auth';
 import { db } from './client';
-import { employees, timeEntries, weeklyApprovals } from '@/db/schema';
+import { employees, timeEntries, users, weeklyApprovals } from '@/db/schema';
+
+const DEMO_USER = {
+  name: 'Demo User',
+  email: 'demo@timesheet.dev',
+  password: 'Demo1234!',
+};
+
+// Through the auth API (not a raw insert) so the password is hashed exactly as on sign-up.
+// Auth tables are never cleared: users who registered keep their accounts across re-seeds.
+async function ensureDemoUser(): Promise<boolean> {
+  const existing = await db.query.users.findFirst({
+    where: eq(users.email, DEMO_USER.email),
+  });
+  if (existing) return false;
+  await auth.api.signUpEmail({ body: DEMO_USER });
+  return true;
+}
 
 const WEEK1 = '2026-06-08';
 const FILL_WEEKS = ['2026-06-15', '2026-06-22', '2026-06-29'];
@@ -139,8 +158,13 @@ async function seed() {
 
   await db.insert(weeklyApprovals).values(approvals);
 
+  const demoCreated = await ensureDemoUser();
+
   console.log(
     `Seeded ${active.length + 1} employees, ${entries.length} time entries, ${approvals.length} approvals.`,
+  );
+  console.log(
+    `Demo login: ${DEMO_USER.email} / ${DEMO_USER.password}${demoCreated ? '' : ' (already existed)'}`,
   );
   process.exit(0);
 }
