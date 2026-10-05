@@ -1,32 +1,51 @@
 schema: spec-driven
 
-# Project context (optional)
-# Add only constraints that should guide OpenSpec artifacts and workflows.
-# Include constraints an agent cannot infer by reading the code.
-# Keep general project documentation and discoverable codebase facts out.
-# Example:
-#   context: |
-#     Designs and tasks must cover Windows, macOS, and Linux
-#     Write all artifacts in Spanish
+# Injected into every artifact. Keep to constraints an agent can't infer from the code;
+# CLAUDE.md is the full constitution.
+context: |
+  Mini Timesheets — take-home assessment: a simplified slice of US payroll for hourly employees
+  (roster, time entries, weekly summary with overtime, approve/reject per employee-week).
+  No AI features in the product. Out of scope: auth, multi-tenancy, taxes, payments.
 
-# Per-artifact rules (optional)
-# Add custom rules for specific artifacts.
-# Example:
-#   rules:
-#     proposal:
-#       - Keep proposals under 500 words
-#       - Always state what is out of scope
-#     tasks:
-#       - Break tasks into chunks of max 2 hours
+  Stack is locked (ask before substituting): Nx + pnpm monorepo; apps/api = Hono + Drizzle +
+  Zod on PostgreSQL (docker-compose); apps/web = Next.js 16 App Router + TanStack Query +
+  Tailwind + shadcn/ui + next-intl; packages/shared = headless TypeScript; Vitest + Playwright.
 
-# Per-operation guidance (optional)
-# Add advisory guidance for how apply and archive work should be conducted.
-# This is separate from artifact rules above.
-# Example:
-#   operations:
-#     apply:
-#       guidance:
-#         - Keep test summaries concise
-#     archive:
-#       guidance:
-#         - Summarize the archive outcome before finishing
+  Graded architecture rules:
+  - The overtime/pay calculation (calculateWeeklyPay) lives ONLY in packages/shared, unit-tested.
+  - The web client consumes shared types, Zod schemas and calculateWeeklyPay; the weekly
+    summary API returns raw totals and the client derives pay.
+  - packages/shared has no framework/platform imports (no React, window, process, Hono...).
+  - Every API error is { error: { code, message } } with en/es messages via Accept-Language.
+
+  Domain invariants: soft delete only (deactivatedAt); hours 0.25–24 in 0.25 steps; no future
+  dates; no entries for inactive employees; weeks run Monday→Sunday keyed by weekStart; only
+  `approved` locks a week; money is numeric in the DB and rounded half-up to 2 decimals at the
+  boundary; date-only values are YYYY-MM-DD strings, never parsed with new Date(str).
+
+  Artifacts are written in English. WRITEUP.md is human-only — never touch it.
+
+rules:
+  proposal:
+    - State which capabilities in openspec/specs/ are affected and which graded rules apply
+    - List what is explicitly out of scope
+  specs:
+    - Every requirement uses SHALL/MUST and has at least one WHEN/THEN scenario
+    - Cover the edge cases (boundaries, inactive employees, approved weeks, en/es) as scenarios
+    - New API error codes must name the code, HTTP status and en/es message
+  design:
+    - Record each decision with the alternative rejected and why
+    - Note any Drizzle migration and whether the seed changes
+  tasks:
+    - Order tasks shared → api → web, matching the create-module skill
+    - Each task group ends with a verifiable check (test, typecheck, or a visible UI behavior)
+    - Include tests for every new rule; pay logic changes need shared unit tests
+
+operations:
+  apply:
+    guidance:
+      - Follow the create-module skill for new vertical slices and db-change for schema changes
+      - Run pnpm typecheck, pnpm lint and the affected tests before marking a task group done
+  archive:
+    guidance:
+      - Run openspec validate --all --strict after syncing specs
