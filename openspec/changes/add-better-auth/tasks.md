@@ -7,7 +7,7 @@
 
 ## 2. API — auth server and session guard
 
-- [ ] 2.1 Add `better-auth` to `apps/api`, extend `config/env.ts` with `BETTER_AUTH_SECRET` (min 32) and `BETTER_AUTH_URL` (url), update `apps/api/.env.example`, and verify the API refuses to start with a short secret
+- [x] 2.1 Add `better-auth` to `apps/api`, extend `config/env.ts` with `BETTER_AUTH_SECRET` (min 32) and `BETTER_AUTH_URL` (url), update `apps/api/.env.example`, and verify the API refuses to start with a short secret
 - [x] 2.2 Add `db/schema/auth.ts` (`users`, `sessions`, `accounts`, `verifications`; uuid ids, snake_case, timestamptz) following the db-change skill, generate the migration with `pnpm --filter @timesheet/api db:generate`, review the SQL, and verify `pnpm db:migrate` creates the four tables
 - [x] 2.3 Create `src/auth.ts` (Drizzle adapter, email/password 8–128, uuid ids, trustedOrigins = `CORS_ORIGIN`) and mount `/api/auth/*` in `app.ts`; switch CORS to `credentials: true`; verify with curl that sign-up/sign-in set an HttpOnly `SameSite=Lax` cookie and `get-session` returns the user without password fields
 - [x] 2.4 Add `UNAUTHORIZED` → 401 to `ERROR_STATUS` and en/es messages to `common/errors/messages.ts`; verify `pnpm nx run api:typecheck` passes
@@ -38,5 +38,5 @@
 
 ## 6. Docs and close-out
 
-- [ ] 6.1 Update README (env vars, migrate/seed, demo credentials, auth section, `pnpm verify:auth`, AWS cookie note), CLAUDE.md (product now has auth; stack adds Better Auth; §10 commands) and `openspec/config.yaml` context (auth no longer out of scope); verify the README setup works from the `.env.example` files
+- [x] 6.1 Update README (env vars, migrate/seed, demo credentials, auth section, `pnpm verify:auth`, AWS cookie note), CLAUDE.md (product now has auth; stack adds Better Auth; §10 commands) and `openspec/config.yaml` context (auth no longer out of scope); verify the README setup works from the `.env.example` files
 - [x] 6.2 Run `pnpm typecheck`, `pnpm lint`, `pnpm test` and `openspec validate --all --strict`; verify all pass
