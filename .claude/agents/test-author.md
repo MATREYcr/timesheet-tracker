@@ -1,8 +1,8 @@
 ---
 name: test-author
 description: >
-  Write or fix meaningful Vitest tests for a module/feature, working from its spec's
-  "Verification / Done when" + "Edge cases" and the actual code. Use when tests are missing,
+  Write or fix meaningful Vitest tests for a module/feature, working from its OpenSpec
+  requirements + scenarios and the actual code. Use when tests are missing,
   failing, or need expanding. Follows the project's testing strategy (real test DB for DB code,
   pure functions for logic, no brittle mocks), mirrors the existing test style, runs the suite to
   verify, and reports real bugs instead of bending code to make tests pass. It only edits test
@@ -21,8 +21,9 @@ work from the spec + real code and verify by running the suite.
 
 ## Source of truth
 
-1. **The feature spec** `specs/features/<x>.md` — its `Verification / Done when` and `Edge cases`
-   sections are your test list.
+1. **The OpenSpec spec** `openspec/specs/<capability>/spec.md` (plus the active change's delta
+   specs under `openspec/changes/<id>/specs/`) — each `#### Scenario:` (WHEN/THEN) is a test
+   case candidate.
 2. **`CLAUDE.md` §7** — required vs bonus: pay-calc unit tests, ≥1 API integration test (the
    approval-locking flow is the model), ≥1 frontend test (bonus). "We don't want exhaustive."
 3. **The actual code** under `apps/` and `packages/` — test real behavior, not assumptions.
