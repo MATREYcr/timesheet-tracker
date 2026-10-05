@@ -6,7 +6,7 @@
 
 ## 2. Swagger under a path prefix
 
-- [ ] 2.1 Serve Swagger UI with a relative document URL (`./openapi`) in `apps/api/src/app.ts`; verify `/docs` still lists the endpoints locally
+- [x] 2.1 Serve Swagger UI with a relative document URL (`./openapi`) in `apps/api/src/app.ts`; verify `/docs` still lists the endpoints locally
 
 ## 3. Server configuration
 

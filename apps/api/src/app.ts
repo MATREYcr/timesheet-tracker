@@ -25,7 +25,8 @@ export function createApp() {
 
   const openApiDocument = buildOpenApiDocument(app);
   app.get('/openapi', (c) => c.json(openApiDocument));
-  app.get('/docs', swaggerUI({ url: '/openapi' }));
+  // Relative so it resolves to /backend/openapi when served under a path prefix.
+  app.get('/docs', swaggerUI({ url: './openapi' }));
 
   app.onError(onError);
 
