@@ -299,21 +299,31 @@ Email/password authentication with [Better Auth](https://www.better-auth.com), r
 
 ### Deploying (e.g. AWS)
 
-Configure by environment only:
+Serve the web and the API from **one domain**, with the API under a path prefix behind a reverse proxy:
+
+```
+https://example.com/           → web (next start, :3000)
+https://example.com/backend/   → API (node dist/main.js, :3333)
+```
+
+The session cookie is then first-party to the web's domain, so the web's route protection sees it and no cross-site cookie setup is needed. Configure by environment only:
 
 | App | Variable | Example |
 |---|---|---|
-| API | `BETTER_AUTH_URL` | `https://api.example.com` |
+| API | `BETTER_AUTH_URL` | `https://example.com/backend` — the API mounts its routes under this path |
+| API | `CORS_ORIGIN` | `https://example.com` (also the only trusted origin for auth) |
 | API | `BETTER_AUTH_SECRET` | output of `openssl rand -base64 32` |
-| API | `CORS_ORIGIN` | `https://app.example.com` (also the only trusted origin for auth) |
-| Web | `NEXT_PUBLIC_API_URL` | `https://api.example.com` |
+| API | `HOST` | `127.0.0.1` so only the proxy can reach the API |
+| Web | `NEXT_PUBLIC_API_URL` | `https://example.com/backend` (inlined at build time — rebuild after changing it) |
 
-Serve web and API from **sub-domains of one parent domain** (`app.example.com` + `api.example.com`) so the session cookie stays first-party. Unrelated domains would make it a third-party cookie that browsers block.
+HTTPS is required in production: session cookies are `Secure`.
+
+**Step-by-step manual guide for a single EC2 instance (no Docker):** [`deploy/ec2/README.md`](deploy/ec2/README.md), with the reference `nginx.conf` and systemd units next to it.
 
 Then run the real-flow check against the deployment:
 
 ```bash
-BASE_URL=https://app.example.com API_URL=https://api.example.com pnpm verify:auth
+BASE_URL=https://example.com API_URL=https://example.com/backend pnpm verify:auth
 ```
 
 ---

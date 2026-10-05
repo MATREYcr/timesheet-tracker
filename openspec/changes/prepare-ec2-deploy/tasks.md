@@ -22,8 +22,8 @@
 
 ## 5. Guide
 
-- [ ] 5.1 Write `deploy/ec2/README.md` (instance, security group, Elastic IP, DNS, apt packages, PostgreSQL user/db, env files, build, migrations, seed, systemd, nginx, certbot, `pnpm verify:auth`, update procedure, troubleshooting) from what the rehearsal proved; link it from README and fix the earlier sub-domain advice
+- [x] 5.1 Write `deploy/ec2/README.md` (instance, security group, Elastic IP, DNS, apt packages, PostgreSQL user/db, env files, build, migrations, seed, systemd, nginx, certbot, `pnpm verify:auth`, update procedure, troubleshooting) from what the rehearsal proved; link it from README and fix the earlier sub-domain advice
 
 ## 6. Close-out
 
-- [ ] 6.1 Run `pnpm typecheck`, `pnpm lint`, `pnpm test` and `openspec validate --all --strict`; verify all pass
+- [x] 6.1 Run `pnpm typecheck`, `pnpm lint`, `pnpm test` and `openspec validate --all --strict`; verify all pass
