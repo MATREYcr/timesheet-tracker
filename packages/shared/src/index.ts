@@ -7,3 +7,4 @@ export * from './week/summary.js';
 export * from './employee/employee.js';
 export * from './time-entry/time-entry.js';
 export * from './approval/approval.js';
+export * from './auth/auth.js';

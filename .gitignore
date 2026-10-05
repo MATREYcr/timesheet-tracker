@@ -65,3 +65,6 @@ vitest.config.*.timestamp*
 # Playwright
 playwright-report
 test-results
+
+# Playwright auth state (per-run E2E session)
+apps/e2e/.auth

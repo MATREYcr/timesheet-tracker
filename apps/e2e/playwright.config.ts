@@ -1,10 +1,11 @@
-import { defineConfig } from '@playwright/test'
-import * as dotenv from 'dotenv'
-import * as path from 'path'
+import { defineConfig } from '@playwright/test';
+import * as dotenv from 'dotenv';
+import * as path from 'path';
 
-dotenv.config({ path: path.join(__dirname, '.env.test') })
+dotenv.config({ path: path.join(__dirname, '.env.test') });
 
 export default defineConfig({
+  globalSetup: require.resolve('./src/global-setup'),
   testDir: './src',
   testMatch: '**/*.spec.ts',
   fullyParallel: false,
@@ -16,5 +17,6 @@ export default defineConfig({
     trace: 'on-first-retry',
     screenshot: 'only-on-failure',
     locale: 'en-US',
+    storageState: '.auth/user.json',
   },
-})
+});

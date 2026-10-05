@@ -48,7 +48,9 @@ A production-grade timesheet tracker for hourly employees: roster management, ti
 | Database seed | ✅ | 14 employees + 4 weeks of varied hour data |
 | Mermaid architecture diagrams | ✅ | `docs/diagrams/` — architecture, ER, state machine |
 | Spec-driven development artifacts | ✅ | `openspec/` (OpenSpec, source of truth) + original `specs/` record |
-| Frontend component test | ✅ | `weekly-summary-table.spec.tsx` |
+| Frontend component test | ✅ | `weekly-summary-table.spec.tsx`, `login-form.spec.tsx` |
+| Authentication (Better Auth) | ✅ | Email/password register + login, protected API and screens — see [Authentication](#authentication) |
+| Real-flow browser check | ✅ | `pnpm verify:auth` — agent-browser drives register → sign out → sign in |
 
 ---
 
@@ -96,6 +98,7 @@ Full diagrams (Mermaid): [`docs/diagrams/`](docs/diagrams/)
 | Database | **PostgreSQL 16** via docker-compose |
 | Web client | **Next.js 16** (App Router) + **TanStack Query 5** |
 | Styling / UI | **Tailwind CSS 4** + **shadcn/ui** |
+| Auth | **Better Auth** (email/password, cookie sessions, Drizzle adapter) |
 | Shared logic | **Plain TypeScript** — headless, platform-agnostic |
 | Testing | **Vitest 4** (unit + integration) + **Playwright** (E2E) |
 | Language | TypeScript 5.9, `strict` mode throughout |
@@ -127,6 +130,9 @@ pnpm install
 ```bash
 cp apps/api/.env.example apps/api/.env
 ```
+
+It includes a **dev-only** `BETTER_AUTH_SECRET` and `BETTER_AUTH_URL=http://localhost:3333`. For any
+deployed environment generate a real secret with `openssl rand -base64 32`.
 
 **Web client** — copy the example:
 
@@ -160,6 +166,12 @@ pnpm db:seed
 
 Inserts **14 employees** and **4 weeks** of time entries with varied hours — some with overtime, some approved, some pending — so every screen has realistic data immediately.
 
+It also creates a **demo account** (only if it doesn't exist yet — registered users are never wiped):
+
+| Email | Password |
+|---|---|
+| `demo@timesheet.dev` | `Demo1234!` |
+
 ### 6 — Start the development servers
 
 ```bash
@@ -175,7 +187,7 @@ Starts the Hono API and the Next.js client concurrently via Nx. (`pnpm db:up` ru
 | Swagger UI | http://localhost:3333/docs |
 | Health check | http://localhost:3333/health |
 
-The web app opens in English by default. Use the language toggle in the top-right corner to switch to Spanish (`/es`).
+The web app opens on the **login screen**: sign in with the demo account or create your own from **Create an account**. It is in English by default; use the language toggle in the top-right corner to switch to Spanish (`/es`).
 
 ### Troubleshooting
 
@@ -186,6 +198,14 @@ In `apps/api/.env`, uncomment and set `DB_HOST_PORT=5434`, then update the port 
 **`DATABASE_URL is required` on API start**
 
 `apps/api/.env` is missing. Run `cp apps/api/.env.example apps/api/.env`.
+
+**`BETTER_AUTH_SECRET must be at least 32 characters` / `BETTER_AUTH_URL` invalid on API start**
+
+Your `apps/api/.env` predates authentication. Copy the two `BETTER_AUTH_*` lines from `apps/api/.env.example`.
+
+**Signed in but every screen bounces back to login**
+
+The API rejects the session cookie. Check that `CORS_ORIGIN` (API) matches the web origin exactly and that `NEXT_PUBLIC_API_URL` (web) points at the same API as `BETTER_AUTH_URL`.
 
 **`Cannot connect to database` on first migrate**
 
@@ -238,11 +258,24 @@ pnpm nx run e2e:e2e            # headless (default)
 pnpm nx run e2e:e2e-headed     # headed — opens a browser window so you can watch the tests run
 ```
 
-Playwright covers all three core screens:
+A global setup registers a fresh user per run through the auth API, so every spec starts signed in (and the API fixtures use the same session). Playwright covers auth and all three core screens:
 
+- `auth.spec.ts` — signed-out redirect, register, wrong password, sign out, sign in (starts signed out)
 - `employees.spec.ts` — create, edit, deactivate, reactivate
 - `time-entries.spec.ts` — log hours, edit, delete, locking
 - `weekly-summary.spec.ts` — approve → entries locked → reject → entries unlocked
+
+### Real-flow check (agent-browser)
+
+A shell script drives a real browser through the whole auth flow — signed-out redirect → register → dashboard and data screens → sign out → blocked → sign in — asserting each step and exiting non-zero on the first failure. It registers a unique user per run, so it is safe to repeat, and works against any environment:
+
+```bash
+npm i -g agent-browser && agent-browser install   # first time only
+pnpm verify:auth                                  # local stack (pnpm dev running)
+BASE_URL=https://app.example.com API_URL=https://api.example.com pnpm verify:auth
+```
+
+The last run and an exploratory en/es pass are recorded in `openspec/changes/archive/*-add-better-auth/verification.md`.
 
 ### Type check
 
@@ -251,6 +284,37 @@ pnpm typecheck
 ```
 
 Runs `tsc --noEmit` across all packages in strict mode.
+
+---
+
+## Authentication
+
+Email/password authentication with [Better Auth](https://www.better-auth.com), running **inside the Hono API**:
+
+- **Endpoints** — Better Auth serves `/api/auth/*` (`sign-up/email`, `sign-in/email`, `sign-out`, `get-session`). Users, sessions, accounts and verifications live in Postgres (`users`, `sessions`, `accounts`, `verifications`), created by a Drizzle migration.
+- **Sessions** — an `HttpOnly`, `SameSite=Lax` cookie (`Secure` over HTTPS), valid 7 days and extended while in use. Passwords are stored hashed and never returned.
+- **API protection** — every business route (`/employees`, `/time-entries`, `/weekly-summary`, `/dashboard`) requires a session and otherwise answers **401** `{ "error": { "code": "UNAUTHORIZED", … } }` (en/es). `/health`, `/openapi`, `/docs` and `/api/auth/*` are public.
+- **Web protection** — `apps/web/src/proxy.ts` sends signed-out visitors to `/login?next=<page>` and signed-in users away from `/login`/`/register`. It only checks that the cookie exists; the API is the authority, and a 401 sends the user back to login.
+- **No roles** — every signed-in user can use the whole app. Email verification, password reset and OAuth are out of scope.
+
+### Deploying (e.g. AWS)
+
+Configure by environment only:
+
+| App | Variable | Example |
+|---|---|---|
+| API | `BETTER_AUTH_URL` | `https://api.example.com` |
+| API | `BETTER_AUTH_SECRET` | output of `openssl rand -base64 32` |
+| API | `CORS_ORIGIN` | `https://app.example.com` (also the only trusted origin for auth) |
+| Web | `NEXT_PUBLIC_API_URL` | `https://api.example.com` |
+
+Serve web and API from **sub-domains of one parent domain** (`app.example.com` + `api.example.com`) so the session cookie stays first-party. Unrelated domains would make it a third-party cookie that browsers block.
+
+Then run the real-flow check against the deployment:
+
+```bash
+BASE_URL=https://app.example.com API_URL=https://api.example.com pnpm verify:auth
+```
 
 ---
 
@@ -397,6 +461,7 @@ Monetary values are rounded **half-up to 2 decimals** at the final boundary. The
 ## API Reference
 
 All errors use the envelope: `{ "error": { "code": "STABLE_CODE", "message": "…" } }`.
+Every endpoint below requires a session cookie (see [Authentication](#authentication)); without one it returns **401 `UNAUTHORIZED`**.
 Interactive docs: **http://localhost:3333/docs/ui**
 
 ### Employees
@@ -466,7 +531,7 @@ pnpm db:up
 
 # Database
 pnpm db:migrate          # Apply Drizzle migrations
-pnpm db:seed             # Seed 14 employees + 4 weeks of data
+pnpm db:seed             # Seed 14 employees + 4 weeks of data + demo account
 pnpm nx run api:db:studio  # Open Drizzle Studio (visual DB browser)
 
 # Development
@@ -479,6 +544,7 @@ pnpm nx run e2e:e2e          # E2E headless (app must be running)
 pnpm nx run e2e:e2e-headed   # E2E with browser window visible
 pnpm nx run e2e:e2e-report   # Open last HTML test report
 pnpm typecheck               # Full TypeScript strict check
+pnpm verify:auth             # agent-browser real-flow auth check (app must be running)
 
 # Quality
 pnpm lint                # ESLint across all packages
