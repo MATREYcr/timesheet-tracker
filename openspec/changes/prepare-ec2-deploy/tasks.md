@@ -2,7 +2,7 @@
 
 ## 1. Auth URL under a path prefix
 
-- [ ] 1.1 Build the auth endpoint as `<NEXT_PUBLIC_API_URL>/api/auth` in `apps/web/src/lib/auth-client.ts` and as `<BETTER_AUTH_URL>/api/auth` in `apps/api/src/auth.ts`; verify `pnpm test`, `pnpm lint` and `pnpm verify:auth` (local, no prefix) still pass
+- [x] 1.1 Build the auth endpoint as `<NEXT_PUBLIC_API_URL>/api/auth` in `apps/web/src/lib/auth-client.ts` and as `<BETTER_AUTH_URL>/api/auth` in `apps/api/src/auth.ts`; verify `pnpm test`, `pnpm lint` and `pnpm verify:auth` (local, no prefix) still pass
 
 ## 2. Swagger under a path prefix
 
