@@ -46,13 +46,15 @@ export function RegisterForm() {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-xl">{t('register.title')}</CardTitle>
+    <Card className="border-0 bg-transparent shadow-none sm:border sm:bg-card sm:shadow-xl sm:shadow-primary/5">
+      <CardHeader className="gap-2 sm:px-8 sm:pt-8">
+        <CardTitle className="text-2xl font-bold tracking-tight">
+          {t('register.title')}
+        </CardTitle>
         <CardDescription>{t('register.description')}</CardDescription>
       </CardHeader>
       <form onSubmit={handleSubmit(onSubmit)} noValidate>
-        <CardContent>
+        <CardContent className="sm:px-8">
           <FieldGroup>
             {errorKey && (
               <Alert variant="destructive">
@@ -86,8 +88,13 @@ export function RegisterForm() {
             />
           </FieldGroup>
         </CardContent>
-        <CardFooter className="mt-6 flex-col gap-4">
-          <Button type="submit" className="w-full" disabled={isSubmitting}>
+        <CardFooter className="mt-6 flex-col gap-4 sm:px-8 sm:pb-8">
+          <Button
+            type="submit"
+            size="lg"
+            className="h-11 w-full text-base"
+            disabled={isSubmitting}
+          >
             {isSubmitting && <Spinner />}
             {t('register.submit')}
           </Button>

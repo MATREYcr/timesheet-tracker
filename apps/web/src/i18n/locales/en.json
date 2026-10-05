@@ -238,6 +238,15 @@
       "emailTaken": "An account with this email already exists.",
       "tooManyRequests": "Too many attempts. Try again in a moment.",
       "generic": "Something went wrong. Please try again."
+    },
+    "brand": {
+      "tagline": "Payroll-ready timesheets for hourly teams.",
+      "subtitle": "Log hours, catch overtime automatically and approve each week with confidence.",
+      "features": {
+        "overtime": "Overtime calculated at 1.5× beyond 40 hours",
+        "approvals": "Approved weeks lock so paid hours never change",
+        "bilingual": "Works in English and Spanish"
+      }
     }
   }
 }

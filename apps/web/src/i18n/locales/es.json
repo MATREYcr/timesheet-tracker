@@ -238,6 +238,15 @@
       "emailTaken": "Ya existe una cuenta con este correo.",
       "tooManyRequests": "Demasiados intentos. Inténtalo de nuevo en un momento.",
       "generic": "Algo salió mal. Inténtalo de nuevo."
+    },
+    "brand": {
+      "tagline": "Hojas de horas listas para nómina.",
+      "subtitle": "Registra horas, detecta horas extra automáticamente y aprueba cada semana con confianza.",
+      "features": {
+        "overtime": "Horas extra a 1,5× por encima de 40 horas",
+        "approvals": "Las semanas aprobadas se bloquean para que las horas pagadas no cambien",
+        "bilingual": "Disponible en inglés y español"
+      }
     }
   }
 }

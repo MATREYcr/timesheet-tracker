@@ -33,7 +33,7 @@ export function AuthField({
   return (
     <Field data-invalid={!!error}>
       <FieldLabel htmlFor={id}>{label}</FieldLabel>
-      <Input id={id} aria-invalid={!!error} {...inputProps} />
+      <Input id={id} aria-invalid={!!error} className="h-11" {...inputProps} />
       {hint && !error && <FieldDescription>{hint}</FieldDescription>}
       <FieldError errors={[message ? { message } : undefined]} />
     </Field>
