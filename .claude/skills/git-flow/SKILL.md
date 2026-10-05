@@ -2,10 +2,10 @@
 name: git-flow
 description: >
   Git workflow conventions for the Mini Timesheets assessment (solo, GitHub, no Jira/Vercel).
-  Use ALWAYS when the user mentions: starting a phase, creating a branch, committing,
-  pushing, opening a PR, or any git operation. This skill defines a phase-based flow:
-  one branch per phase, one commit per subphase, push, then a PR back to develop with the
-  link returned to the user. Mandatory before any git operation touching main or develop.
+  Use ALWAYS when the user mentions: starting a change, creating a branch, committing,
+  pushing, opening a PR, or any git operation. This skill defines a change-based flow:
+  one branch per OpenSpec change, one commit per task group, push, then a PR back to develop
+  with the link returned to the user. Mandatory before any git operation touching main or develop.
 ---
 
 # Git Flow — Mini Timesheets (project workflow)
@@ -18,83 +18,85 @@ Vercel, no release/hotfix branches, no team-review checklists.** Solo developer,
 1. **Claude never merges to `main` and never approves PRs.** It can open PRs, push
    branches, and report status — but merging/approval is the human's call. No
    `gh pr merge` to main and no `gh pr review --approve` without an explicit human ok.
-2. **Never commit directly on `develop` or `main`.** All work happens on a phase branch.
+2. **Never commit directly on `develop` or `main`.** All work happens on a change (or chore/fix) branch.
 3. Before any push/PR to `develop` or `main`, state what you're about to do and proceed
-   only with the work for the current phase.
+   only with the work for the current change.
 
 ---
 
 ## Branch model
 
 ```
-main          ← final deliverable. Receives ONE release PR from develop at the very end.
-develop       ← integration. Phase PRs merge here.
-<type>/phase-N-<slug>   ← one branch PER PHASE, cut from develop, PR'd back to develop.
+main          ← deliverable. Receives release PRs from develop.
+develop       ← integration. Change PRs merge here.
+<type>/<change-id>   ← one branch PER OpenSpec change, cut from develop, PR'd back to develop.
 ```
 
-Phase branches (per `specs/PLAN.md`):
-
-| Phase | Branch                        |
-| ----- | ----------------------------- |
-| 0     | `chore/phase-0-scaffold`      |
-| 1     | `feat/phase-1-shared-package` |
-| 2     | `feat/phase-2-api`            |
-| 3     | `feat/phase-3-web`            |
-| 4     | `docs/phase-4-delivery`       |
+`<change-id>` is the folder name under `openspec/changes/` (kebab-case, e.g.
+`feat/add-rate-snapshot`). The original assessment was built in phases
+(`chore/phase-0-scaffold` … `docs/phase-4-delivery`, logged in `specs/PLAN.md`); that log is
+historical — new work follows the change flow below.
 
 ---
 
-## The phase workflow (follow this exactly)
+## The change workflow (follow this exactly)
 
-### ▶ When a PHASE starts — create the branch
+### ▶ When a CHANGE starts — create the branch
 
 ```bash
 git checkout develop
 git pull origin develop
-git checkout -b <type>/phase-N-<slug>
+git checkout -b <type>/<change-id>
 ```
 
-### ● For EACH subphase — commit on that branch
+Commit the proposal artifacts (`/opsx:propose` output) first:
+`docs(openspec): propose <change-id>`.
 
-One conventional commit per completed subphase (the `[ ]` items in `PLAN.md`):
+### ● For EACH task group — commit on that branch
+
+One conventional commit per completed task group (the `## N.` sections in the change's
+`tasks.md`), ticking its `[ ]` items in the same commit:
 
 ```bash
 git add <files>
-git commit -m "feat(scope): describe the subphase in imperative"
+git commit -m "feat(scope): describe the task group in imperative"
 ```
-
-Tick the matching checkbox in `specs/PLAN.md` in the same commit when it makes sense.
 
 ### ⬆ Push
 
-Push the branch (after each subphase, or at minimum before opening the PR):
+Push the branch (after each task group, or at minimum before opening the PR):
 
 ```bash
-git push -u origin <type>/phase-N-<slug>
+git push -u origin <type>/<change-id>
 ```
 
-### ✔ When the PHASE finishes — open the PR and return the link
+### ✔ When the CHANGE is implemented — archive, open the PR and return the link
+
+Run `/opsx:archive` (merges delta specs into `openspec/specs/`) and commit it as
+`docs(openspec): archive <change-id>`, then:
 
 ```bash
-gh pr create --base develop --head <type>/phase-N-<slug> \
-  --title "<type>(phase-N): <phase summary>" \
+gh pr create --base develop --head <type>/<change-id> \
+  --title "<type>(<scope>): <change summary>" \
   --body-file <(...)   # use the template in references/pr-template.md
 ```
 
 Then **report the PR URL back to the user** (the `gh pr create` output). Do not merge it
 — that's the user's decision.
 
-### 🏁 At the very end (Phase 4 done)
+### 🏁 Releases
 
-Open the final release PR `develop → main` and return the link. Do not merge to `main`.
+When the user asks for a release, open the PR `develop → main` and return the link. Do not
+merge to `main`.
 
 ---
 
 ## Branch naming
 
-`<type>/phase-N-<short-slug>` — lowercase, words separated by `-`, no spaces/underscores/camelCase.
+`<type>/<change-id>` — lowercase, words separated by `-`, no spaces/underscores/camelCase.
 
-For non-phase work (a quick fix mid-phase), use `fix/<slug>` or `chore/<slug>`.
+For work that doesn't warrant an OpenSpec change (tooling, a trivial fix), use `fix/<slug>`
+or `chore/<slug>`.
 
 | type       | when                         |
 | ---------- | ---------------------------- |
@@ -127,18 +129,19 @@ docs(repo): write fresh-clone setup in README
 Sign-off footer for AI-authored commits:
 
 ```
-Co-Authored-By: Claude Opus 4.8 <noreply@anthropic.com>
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
 ```
 
 ---
 
 ## Pre-PR quick checklist (solo version)
 
-Before opening a phase PR to `develop`:
+Before opening a change PR to `develop`:
 
-- [ ] Branch is `<type>/phase-N-<slug>`, cut from `develop`.
-- [ ] Commits are conventional and scoped to this phase.
-- [ ] Phase subphases ticked in `specs/PLAN.md`.
+- [ ] Branch is `<type>/<change-id>`, cut from `develop`.
+- [ ] Commits are conventional and scoped to this change.
+- [ ] All tasks ticked in the change's `tasks.md`; change archived (`/opsx:archive`).
+- [ ] `openspec validate --all --strict` passes.
 - [ ] `pnpm test` and `pnpm lint` pass (once tooling exists).
 - [ ] No debug leftovers, no committed secrets / `.env`.
 - [ ] `pnpm-lock.yaml` committed whenever a dependency changed (CI installs with
