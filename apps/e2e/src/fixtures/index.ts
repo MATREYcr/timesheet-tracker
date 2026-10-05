@@ -1,8 +1,6 @@
 import { test as base, expect } from '@playwright/test'
-import axios from 'axios'
+import { api } from '../helpers/api'
 import { addDays, lastWeekStart } from '../helpers/dates'
-
-const API = process.env.API_URL ?? 'http://localhost:3333'
 
 export interface EmployeeData {
   id: string
@@ -31,7 +29,7 @@ export const test = base.extend<Fixtures>({
     const factory = async (
       overrides: { firstName?: string; lastName?: string; hourlyRate?: number } = {},
     ): Promise<EmployeeData> => {
-      const res = await axios.post(`${API}/employees`, {
+      const res = await api.post(`/employees`, {
         firstName: 'E2E',
         lastName: `Test${Date.now()}`,
         hourlyRate: 20,
@@ -45,7 +43,7 @@ export const test = base.extend<Fixtures>({
     await use(factory)
 
     for (const id of createdIds) {
-      await axios.post(`${API}/employees/${id}/deactivate`).catch(() => {})
+      await api.post(`/employees/${id}/deactivate`).catch(() => {})
     }
   },
 
@@ -53,7 +51,7 @@ export const test = base.extend<Fixtures>({
     const created: Array<{ empId: string; entryIds: string[]; weekStart: string }> = []
 
     const seed = async (hoursPerDay: number[] = [9, 9, 9, 9, 9]): Promise<SeededEmployee> => {
-      const res = await axios.post(`${API}/employees`, {
+      const res = await api.post(`/employees`, {
         firstName: 'E2E',
         lastName: `Seed${Date.now()}`,
         hourlyRate: 20,
@@ -63,7 +61,7 @@ export const test = base.extend<Fixtures>({
       const entryIds: string[] = []
 
       for (let i = 0; i < hoursPerDay.length; i++) {
-        const entryRes = await axios.post(`${API}/time-entries`, {
+        const entryRes = await api.post(`/time-entries`, {
           employeeId: emp.id,
           date: addDays(week, i),
           hours: hoursPerDay[i],
@@ -86,11 +84,11 @@ export const test = base.extend<Fixtures>({
 
     for (const { empId, entryIds, weekStart } of created) {
       // Unlock in case the week was approved during the test, so entries can be deleted
-      await axios.post(`${API}/weekly-summary/reject`, { employeeId: empId, weekStart }).catch(() => {})
+      await api.post(`/weekly-summary/reject`, { employeeId: empId, weekStart }).catch(() => {})
       for (const id of entryIds) {
-        await axios.delete(`${API}/time-entries/${id}`).catch(() => {})
+        await api.delete(`/time-entries/${id}`).catch(() => {})
       }
-      await axios.post(`${API}/employees/${empId}/deactivate`).catch(() => {})
+      await api.post(`/employees/${empId}/deactivate`).catch(() => {})
     }
   },
 })

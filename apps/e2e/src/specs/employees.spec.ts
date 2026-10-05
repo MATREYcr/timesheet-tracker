@@ -1,8 +1,6 @@
-import axios from 'axios'
+import { api } from '../helpers/api'
 import { expect, test } from '../fixtures'
 import { EmployeesPage } from '../pages/employees.page'
-
-const API = process.env.API_URL ?? 'http://localhost:3333'
 
 test('create employee via UI appears in the table', async ({ page }) => {
   const lastName = `Crea${Date.now()}`
@@ -20,9 +18,9 @@ test('create employee via UI appears in the table', async ({ page }) => {
   await expect(row).toBeVisible()
 
   // cleanup: find the created employee via API and deactivate
-  const { data } = await axios.get(`${API}/employees?search=${lastName}&includeInactive=false`)
+  const { data } = await api.get(`/employees?search=${lastName}&includeInactive=false`)
   const emp = data.data?.[0]
-  if (emp) await axios.post(`${API}/employees/${emp.id}/deactivate`).catch(() => {})
+  if (emp) await api.post(`/employees/${emp.id}/deactivate`).catch(() => {})
 })
 
 test('edit employee updates data in the table', async ({ page, createEmployee }) => {

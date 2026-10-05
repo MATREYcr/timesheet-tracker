@@ -27,8 +27,8 @@
 
 ## 4. E2E (Playwright)
 
-- [ ] 4.1 Add a Playwright `globalSetup` that registers a run-unique user through the API and saves `storageState`; make fixtures send the session cookie on their axios calls; verify the existing employees/time-entries/weekly-summary specs pass with `pnpm exec nx e2e e2e`
-- [ ] 4.2 Add `auth.spec.ts` (fresh context: signed-out redirect, register → dashboard, sign out → blocked, sign in → dashboard) with a page object, and verify it passes
+- [x] 4.1 Add a Playwright `globalSetup` that registers a run-unique user through the API and saves `storageState`; make fixtures send the session cookie on their axios calls; verify the existing employees/time-entries/weekly-summary specs pass with `pnpm exec nx e2e e2e`
+- [x] 4.2 Add `auth.spec.ts` (fresh context: signed-out redirect, register → dashboard, sign out → blocked, sign in → dashboard) with a page object, and verify it passes
 
 ## 5. Real-flow verification with agent-browser
 
