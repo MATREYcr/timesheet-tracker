@@ -9,7 +9,8 @@ User=timesheet
 Group=timesheet
 WorkingDirectory=/opt/timesheet-tracker/apps/web
 Environment=NODE_ENV=production
-ExecStart=/opt/timesheet-tracker/apps/web/node_modules/.bin/next start --hostname 127.0.0.1 --port 3000
+# No --hostname: binding 127.0.0.1 makes next-intl's locale rewrite external and loops /login.
+ExecStart=/opt/timesheet-tracker/apps/web/node_modules/.bin/next start --port 3000
 Restart=on-failure
 RestartSec=5
 

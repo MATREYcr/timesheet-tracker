@@ -10,15 +10,15 @@
 
 ## 3. Server configuration
 
-- [x] 3.1 Add `deploy/ec2/nginx.conf` (web at `/`, API at `/backend/` with the prefix stripped, `X-Forwarded-For`/`-Proto`/`Host`); verify `nginx -t` accepts it
+- [x] 3.1 Add `deploy/ec2/nginx.conf` (web at `/`, API at `/backend/` passed through unchanged with the API mounted under its base path, `X-Forwarded-For` overwritten with the peer address); verify `nginx -t` accepts it
 - [x] 3.2 Add `deploy/ec2/timesheet-api.service` and `deploy/ec2/timesheet-web.service` (unprivileged user, working directories, `Restart=on-failure`, `NODE_ENV=production`); verify with `systemd-analyze verify` if available or by review against the guide
 
-- [ ] 3.3 Add an optional `HOST` env var so the API can listen on `127.0.0.1` only (unset keeps today's behavior) and set it in `timesheet-api.service`; verify local `pnpm dev` is unchanged and a production run with `HOST=127.0.0.1` refuses connections on other interfaces
+- [x] 3.3 Add an optional `HOST` env var so the API can listen on `127.0.0.1` only (unset keeps today's behavior) and set it in `timesheet-api.service`; verify local `pnpm dev` is unchanged and a production run with `HOST=127.0.0.1` refuses connections on other interfaces
 
 ## 4. Local rehearsal without Docker
 
-- [ ] 4.1 Run the production builds with the systemd commands behind Homebrew nginx on `:8080` (env pointing to `http://localhost:8080/backend`); verify `BASE_URL=http://localhost:8080 API_URL=http://localhost:8080/backend pnpm verify:auth` passes all steps and `/backend/docs` lists the endpoints
-- [ ] 4.2 Verify the API records the forwarded client IP on the session (not only `127.0.0.1` from nginx)
+- [x] 4.1 Run the production builds with the systemd commands behind Homebrew nginx on `:8080` (env pointing to `http://localhost:8080/backend`); verify `BASE_URL=http://localhost:8080 API_URL=http://localhost:8080/backend pnpm verify:auth` passes all steps and `/backend/docs` lists the endpoints
+- [x] 4.2 Verify the API records the forwarded client IP on the session (not only `127.0.0.1` from nginx)
 
 ## 5. Guide
 

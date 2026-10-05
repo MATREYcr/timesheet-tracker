@@ -31,3 +31,10 @@ if (!parsed.success) {
 }
 
 export const env = parsed.data;
+
+// Behind a proxy the public URL has a path (e.g. /backend); routes mount under it so Better Auth's
+// router, which matches on its URL's path, sees the same path as the request.
+export const basePath = new URL(env.BETTER_AUTH_URL).pathname.replace(
+  /\/+$/,
+  '',
+);

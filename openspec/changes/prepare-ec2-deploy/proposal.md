@@ -14,8 +14,10 @@ the API has no path prefix.
 - Auth endpoint URL (web client and API) is always built as `<API URL>/api/auth`, so login works
   whether the API is at `http://localhost:3333` or `https://example.com/backend`.
 - Swagger UI loads the OpenAPI document by a relative URL so `/docs` works under a prefix.
-- Reference server config in `deploy/ec2/`: `nginx.conf` (web at `/`, API at `/backend/` with the
-  prefix stripped, `X-Forwarded-*` headers) and systemd units for the API and the web.
+- The API mounts its routes under the path of its public URL (`/backend` in production, root
+  locally), so its own URLs match the public ones (Better Auth's router depends on it).
+- Reference server config in `deploy/ec2/`: `nginx.conf` (web at `/`, API at `/backend/` passed
+  through unchanged, `X-Forwarded-*` set by nginx) and systemd units for the API and the web.
 - A local rehearsal without Docker for the app layer: production builds run with `node` /
   `next start` behind a native (Homebrew) nginx using the same config, verified with
   `pnpm verify:auth`. The rehearsal uses the existing development database.
@@ -40,7 +42,8 @@ Out of scope: Docker images, ECS, Terraform/CDK, CI/CD, RDS, multiple instances.
 
 ## Impact
 
-- **Code**: `apps/web/src/lib/auth-client.ts`, `apps/api/src/auth.ts`, `apps/api/src/app.ts`.
+- **Code**: `apps/web/src/lib/auth-client.ts`, `apps/api/src/auth.ts`, `apps/api/src/app.ts`,
+  `apps/api/src/config/env.ts`, `apps/api/src/main.ts`.
 - **New files**: `deploy/ec2/nginx.conf`, `deploy/ec2/timesheet-api.service`,
   `deploy/ec2/timesheet-web.service`, `deploy/ec2/README.md`.
 - **Docs**: README (pointer to the EC2 guide; correct the earlier sub-domain advice), CLAUDE.md

@@ -11,13 +11,19 @@ and verifiable.
 ### Requirement: Single origin behind a reverse proxy
 
 In production the web SHALL be served at the root of one domain and the API under the `/backend`
-path prefix of the same domain, with the reverse proxy removing the prefix before the request
-reaches the API. The API's own routes do not change.
+path prefix of the same domain. The proxy passes the path unchanged and the API mounts all its
+routes under the path of its public URL (`BETTER_AUTH_URL`); with no path (local development)
+routes stay at the root.
 
 #### Scenario: Business route through the proxy
 
 - **WHEN** a signed-in browser calls `https://example.com/backend/employees`
-- **THEN** the API handles it as `/employees` and responds 200
+- **THEN** the API handles it on its `/backend/employees` route and responds 200
+
+#### Scenario: Root mount locally
+
+- **WHEN** `BETTER_AUTH_URL` is `http://localhost:3333`
+- **THEN** the API serves `/employees`, `/health` and `/api/auth/*` at the root as before
 
 #### Scenario: Health check through the proxy
 
@@ -43,14 +49,20 @@ the web sees it.
 
 ### Requirement: Client IP forwarded to the API
 
-The reverse proxy SHALL forward the client IP and protocol (`X-Forwarded-For`,
-`X-Forwarded-Proto`, `Host`) so per-client protections such as auth rate limiting see each
-visitor's real address, not the proxy's.
+The reverse proxy SHALL set the client IP and protocol (`X-Forwarded-For`, `X-Forwarded-Proto`,
+`Host`), overwriting any client-supplied `X-Forwarded-For`, so per-client protections such as
+auth rate limiting see each visitor's real address. The API MUST only be reachable through the
+proxy.
 
 #### Scenario: Distinct clients
 
 - **WHEN** two visitors from different IPs sign in through the proxy
 - **THEN** the API records each visitor's own IP on their session
+
+#### Scenario: Spoofed header
+
+- **WHEN** a client sends its own `X-Forwarded-For: 9.9.9.9` through the proxy
+- **THEN** the session records the client's real address, not `9.9.9.9`
 
 ### Requirement: Managed processes
 

@@ -6,12 +6,12 @@ import { buildOpenApiDocument } from '@/common/openapi';
 import { auth } from '@/auth';
 import { onError } from '@/common/errors';
 import type { AppEnv } from '@/common/types';
-import { env } from '@/config/env';
+import { basePath, env } from '@/config/env';
 import { localeMiddleware } from '@/middleware/locale';
 import { apiRoutes } from '@/routes';
 
 export function createApp() {
-  const app = new OpenAPIHono<AppEnv>();
+  const app = new OpenAPIHono<AppEnv>().basePath(basePath);
 
   app.use('*', logger());
   app.use('*', cors({ origin: env.CORS_ORIGIN, credentials: true }));
@@ -25,7 +25,7 @@ export function createApp() {
 
   const openApiDocument = buildOpenApiDocument(app);
   app.get('/openapi', (c) => c.json(openApiDocument));
-  // Relative so it resolves to /backend/openapi when served under a path prefix.
+  // Relative so it resolves under the base path (e.g. /backend/openapi).
   app.get('/docs', swaggerUI({ url: './openapi' }));
 
   app.onError(onError);

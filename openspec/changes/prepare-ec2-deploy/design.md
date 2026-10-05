@@ -18,14 +18,21 @@ proxy layout is rehearsed on the developer's machine before touching AWS.
 
 ## Decisions
 
-### 1. One origin, API under `/backend` with the prefix stripped
+### 1. One origin, API mounted under `/backend`
 
-nginx: `location /backend/ { proxy_pass http://127.0.0.1:3333/; }` (trailing slash strips the
-prefix) and `location / { proxy_pass http://127.0.0.1:3000; }`.
+nginx: `location /backend/ { proxy_pass http://127.0.0.1:3333; }` (no trailing slash: the path
+is passed unchanged) and `location / { proxy_pass http://127.0.0.1:3000; }`. The API mounts its
+routes with Hono `basePath()` under the path of `BETTER_AUTH_URL`.
+
+Changed during the rehearsal: the first version stripped the prefix in nginx. Sign-up then
+returned 404 because Better Auth's router matches on the path of its `baseURL`
+(`/backend/api/auth`) while the API received `/api/auth/...`. An app that doesn't know its
+public path breaks every component that compares the two (auth URL, Swagger, auth router), so
+the API now knows where it lives instead of patching each one.
 
 - *Why:* the session cookie is first-party to the web's domain, so `proxy.ts` sees it; no CORS
   in the browser; no API route changes.
-- *Rejected:* `api.` sub-domain (the cookie would be host-only for the API and invisible to the
+- *Rejected:* stripping the prefix in nginx (see above); `api.` sub-domain (the cookie would be host-only for the API and invisible to the
   web unless `crossSubDomainCookies` is configured); API routes under `/api` in code (collides
   with Better Auth's `/api/auth` and changes every route).
 
@@ -69,6 +76,15 @@ inject a fake IP nor blank it out to dodge the per-IP rate limit. With a load ba
 `serve({ hostname: env.HOST })`; unset keeps listening on all interfaces (local dev), the
 systemd unit sets `127.0.0.1` so only nginx can reach the API — defense in depth on top of the
 security group.
+
+### 8. The web is not bound to 127.0.0.1
+
+Found in the rehearsal: `next start --hostname 127.0.0.1` makes Next build next-intl's
+default-locale rewrite (`/login` → `/en/login`) as an absolute `http://localhost:3000/...` URL;
+the host mismatch turns it into an external rewrite and `/login` redirects to itself forever.
+`--hostname localhost` binds IPv6-only on some systems, which nginx's `127.0.0.1` upstream can't
+reach. So the web listens on all interfaces and port 3000 is closed by the security group (plus
+`ufw` on the host). The API keeps `HOST=127.0.0.1`.
 
 ## Risks / Trade-offs
 
