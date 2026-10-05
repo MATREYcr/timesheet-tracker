@@ -1,4 +1,4 @@
-import { api } from '../helpers/api'
+import { api, ignoreCleanupError } from '../helpers/api'
 import { expect, test } from '../fixtures'
 import { EmployeesPage } from '../pages/employees.page'
 
@@ -20,7 +20,7 @@ test('create employee via UI appears in the table', async ({ page }) => {
   // cleanup: find the created employee via API and deactivate
   const { data } = await api.get(`/employees?search=${lastName}&includeInactive=false`)
   const emp = data.data?.[0]
-  if (emp) await api.post(`/employees/${emp.id}/deactivate`).catch(() => {})
+  if (emp) await api.post(`/employees/${emp.id}/deactivate`).catch(ignoreCleanupError)
 })
 
 test('edit employee updates data in the table', async ({ page, createEmployee }) => {

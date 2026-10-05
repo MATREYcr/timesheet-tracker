@@ -1,5 +1,5 @@
 import { test as base, expect } from '@playwright/test'
-import { api } from '../helpers/api'
+import { api, ignoreCleanupError } from '../helpers/api'
 import { addDays, lastWeekStart } from '../helpers/dates'
 
 export interface EmployeeData {
@@ -23,6 +23,7 @@ type Fixtures = {
 }
 
 export const test = base.extend<Fixtures>({
+  // eslint-disable-next-line no-empty-pattern -- Playwright requires destructuring the fixtures arg
   createEmployee: async ({}, use) => {
     const createdIds: string[] = []
 
@@ -43,10 +44,11 @@ export const test = base.extend<Fixtures>({
     await use(factory)
 
     for (const id of createdIds) {
-      await api.post(`/employees/${id}/deactivate`).catch(() => {})
+      await api.post(`/employees/${id}/deactivate`).catch(ignoreCleanupError)
     }
   },
 
+  // eslint-disable-next-line no-empty-pattern -- Playwright requires destructuring the fixtures arg
   seedEmployeeWithHours: async ({}, use) => {
     const created: Array<{ empId: string; entryIds: string[]; weekStart: string }> = []
 
@@ -84,11 +86,11 @@ export const test = base.extend<Fixtures>({
 
     for (const { empId, entryIds, weekStart } of created) {
       // Unlock in case the week was approved during the test, so entries can be deleted
-      await api.post(`/weekly-summary/reject`, { employeeId: empId, weekStart }).catch(() => {})
+      await api.post(`/weekly-summary/reject`, { employeeId: empId, weekStart }).catch(ignoreCleanupError)
       for (const id of entryIds) {
-        await api.delete(`/time-entries/${id}`).catch(() => {})
+        await api.delete(`/time-entries/${id}`).catch(ignoreCleanupError)
       }
-      await api.post(`/employees/${empId}/deactivate`).catch(() => {})
+      await api.post(`/employees/${empId}/deactivate`).catch(ignoreCleanupError)
     }
   },
 })
