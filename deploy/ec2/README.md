@@ -28,19 +28,18 @@ a internet.
 ## Antes de empezar: lo que necesitas
 
 1. **Una cuenta de AWS** con un método de pago.
-2. **Un dominio** (por ejemplo `mi-timesheets.com`). Puedes comprarlo en Route 53 (dentro de AWS)
-   o en cualquier registrador (Namecheap, GoDaddy, Cloudflare…). **Es obligatorio**: sin dominio
-   no hay certificado HTTPS, y sin HTTPS el login no funciona, porque las cookies de sesión de
-   producción solo se guardan por HTTPS.
+2. **El dominio `mateocabrera.space`**, gestionado en **Cloudflare**. La app vivirá en el
+   subdominio **`timesheet.mateocabrera.space`**, así el dominio raíz queda libre para otras cosas.
+   **El dominio es obligatorio**: sin él no hay certificado HTTPS, y sin HTTPS el login no
+   funciona, porque las cookies de sesión de producción solo se guardan por HTTPS.
 3. **En tu Mac**: el repo clonado, `pnpm install` hecho y
    [agent-browser](https://github.com/vercel-labs/agent-browser) instalado
    (`npm i -g agent-browser && agent-browser install`) para la verificación final.
 
-En toda la guía sustituye:
+En la guía, sustituye estos textos por tus valores:
 
 | Texto en la guía | Por |
 |---|---|
-| `TU_DOMINIO` | tu dominio, por ejemplo `mi-timesheets.com` (sin `https://` ni `/` al final) |
 | `TU_IP_ELASTICA` | la IP elástica que crearás en la parte 2 |
 | `CONTRASEÑA_BD` | una contraseña larga que inventes para la base de datos (solo letras y números para evitar problemas en la URL) |
 | `~/Downloads/timesheet-key.pem` | la ruta donde se descargó tu clave en la parte 1 |
@@ -132,31 +131,44 @@ elástica. Apúntala: es tu `TU_IP_ELASTICA`.
 
 ---
 
-## Parte 3 — Apuntar tu dominio al servidor (DNS)
+## Parte 3 — Apuntar tu dominio al servidor (DNS en Cloudflare)
 
-**Por qué:** el DNS traduce `TU_DOMINIO` a `TU_IP_ELASTICA`. Sin esto, nadie llega a tu servidor
-por el nombre y no podrás pedir el certificado.
+**Por qué:** el DNS traduce `timesheet.mateocabrera.space` a `TU_IP_ELASTICA`. Sin esto, nadie
+llega a tu servidor por el nombre y no podrás pedir el certificado.
 
-**Si el dominio está en Route 53:**
-1. Busca **Route 53** → **Hosted zones** → haz click en tu dominio.
-2. **Create record**:
-   - Record name: vacío (es el dominio raíz).
-   - Record type: **A**.
-   - Value: `TU_IP_ELASTICA`.
-   - TTL: `300`.
-   - **Create records**.
+1. Entra en [dash.cloudflare.com](https://dash.cloudflare.com) y haz click en
+   **mateocabrera.space**.
+2. Menú izquierdo → **DNS** → **Records** → botón **Add record**.
+3. Rellena:
 
-**Si está en otro registrador:** en su panel, sección **DNS**, crea un registro **A** con
-**Host/Name** `@` y **Value/Points to** `TU_IP_ELASTICA`.
+   | Campo | Valor |
+   |---|---|
+   | **Type** | `A` |
+   | **Name** | `timesheet` (Cloudflare completa el resto: `timesheet.mateocabrera.space`) |
+   | **IPv4 address** | `TU_IP_ELASTICA` |
+   | **Proxy status** | **DNS only** — la nube debe quedar **gris**, no naranja |
+   | **TTL** | `Auto` |
 
-**Comprueba** desde la terminal de tu Mac (puede tardar de unos minutos a una hora):
+4. **Save**.
+
+**Por qué la nube gris (DNS only):** con la nube naranja (*Proxied*), las visitas pasarían
+primero por los servidores de Cloudflare y luego llegarían a tu EC2. Eso cambiaría tres cosas que
+esta guía da por hechas: certbot no podría validar el dominio como se explica en la parte 13,
+nginx vería la IP de Cloudflare en vez de la del visitante (y la API también), y el HTTPS lo
+gestionaría Cloudflare con sus propios ajustes. Con la nube gris, Cloudflare solo responde "este
+nombre es esta IP" y el navegador habla directamente con tu servidor. El proxy de Cloudflare es
+un buen tema para una práctica posterior.
+
+**Comprueba** desde la terminal de tu Mac (con Cloudflare suele tardar menos de un minuto):
 
 ```bash
-dig +short TU_DOMINIO
+dig +short timesheet.mateocabrera.space @1.1.1.1
 ```
 
-Debe imprimir `TU_IP_ELASTICA`. Mientras no lo haga, sigue con las partes 4 a 11, que no
-dependen del dominio.
+Debe imprimir `TU_IP_ELASTICA`. Si imprime otras IPs (las de Cloudflare, que suelen empezar por
+`104.` o `172.`), la nube está en naranja: edita el registro y ponla en gris. `@1.1.1.1` pregunta
+directamente al DNS de Cloudflare, sin la caché de tu proveedor de internet. Mientras no
+responda bien, sigue con las partes 4 a 11, que no dependen del dominio.
 
 ---
 
@@ -345,9 +357,9 @@ Pega esto, sustituyendo los valores:
 ```dotenv
 DATABASE_URL=postgres://timesheet:CONTRASEÑA_BD@localhost:5432/timesheet
 PORT=3333
-CORS_ORIGIN=https://TU_DOMINIO
+CORS_ORIGIN=https://timesheet.mateocabrera.space
 BETTER_AUTH_SECRET=EL_SECRETO_DEL_PASO_9.1
-BETTER_AUTH_URL=https://TU_DOMINIO/backend
+BETTER_AUTH_URL=https://timesheet.mateocabrera.space/backend
 ```
 
 Guarda con `Ctrl + O` y `Enter`, y sal con `Ctrl + X`.
@@ -364,7 +376,7 @@ sudo -u timesheet nano /opt/timesheet-tracker/apps/web/.env.local
 ```
 
 ```dotenv
-NEXT_PUBLIC_API_URL=https://TU_DOMINIO/backend
+NEXT_PUBLIC_API_URL=https://timesheet.mateocabrera.space/backend
 ```
 
 > **Esta URL se copia dentro del código al compilar** (parte 10). Si algún día la cambias, tienes
@@ -470,7 +482,7 @@ journalctl -u timesheet-web -f
 ```bash
 sudo apt install -y nginx
 sudo cp /opt/timesheet-tracker/deploy/ec2/nginx.conf /etc/nginx/sites-available/timesheet
-sudo sed -i 's/example.com/TU_DOMINIO/' /etc/nginx/sites-available/timesheet
+sudo sed -i 's/example.com/timesheet.mateocabrera.space/' /etc/nginx/sites-available/timesheet
 sudo ln -s /etc/nginx/sites-available/timesheet /etc/nginx/sites-enabled/timesheet
 sudo rm /etc/nginx/sites-enabled/default
 ```
@@ -488,7 +500,7 @@ sudo systemctl reload nginx
 `nginx -t` revisa la configuración **antes** de aplicarla. Si falla, te dice el archivo y la línea,
 y el nginx en marcha sigue con la configuración anterior. Ejecútalo siempre antes de `reload`.
 
-**Comprueba** desde el navegador de tu Mac: `http://TU_DOMINIO` muestra la pantalla de login.
+**Comprueba** desde el navegador de tu Mac: `http://timesheet.mateocabrera.space` muestra la pantalla de login.
 
 > Todavía **no inicies sesión**: sin HTTPS el navegador no guarda la cookie de sesión y el login
 > parece no hacer nada. Es lo esperado hasta la parte 13.
@@ -497,14 +509,15 @@ y el nginx en marcha sigue con la configuración anterior. Ejecútalo siempre an
 
 ## Parte 13 — HTTPS con Let's Encrypt (certbot)
 
-**Qué es:** un certificado demuestra que tu servidor es de verdad `TU_DOMINIO` y permite cifrar
+**Qué es:** un certificado demuestra que tu servidor es de verdad `timesheet.mateocabrera.space` y permite cifrar
 la conexión. Let's Encrypt los da gratis, y **certbot** los pide y los configura en nginx.
 
-Requisitos: `dig +short TU_DOMINIO` ya devuelve tu IP (parte 3) y el puerto 80 está abierto.
+Requisitos: `dig +short timesheet.mateocabrera.space @1.1.1.1` ya devuelve tu IP (parte 3), con la
+nube **gris** en Cloudflare, y el puerto 80 está abierto.
 
 ```bash
 sudo apt install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d TU_DOMINIO --redirect
+sudo certbot --nginx -d timesheet.mateocabrera.space --redirect
 ```
 
 - Te pide un correo (para avisos de caducidad) y que aceptes los términos.
@@ -512,7 +525,7 @@ sudo certbot --nginx -d TU_DOMINIO --redirect
 - `--redirect` hace que `http://` redirija a `https://`.
 
 **Comprueba:**
-- `https://TU_DOMINIO` muestra el candado en el navegador.
+- `https://timesheet.mateocabrera.space` muestra el candado en el navegador.
 - La renovación automática está programada (los certificados duran 90 días):
 
   ```bash
@@ -524,14 +537,14 @@ sudo certbot --nginx -d TU_DOMINIO --redirect
 
 ## Parte 14 — Verificar que todo funciona
 
-**14.1 En el navegador:** entra en `https://TU_DOMINIO`, inicia sesión con la cuenta demo (si
+**14.1 En el navegador:** entra en `https://timesheet.mateocabrera.space`, inicia sesión con la cuenta demo (si
 ejecutaste el seed) o crea una cuenta, y recorre Empleados, Horas y Resumen semanal.
 
 **14.2 Prueba automática del flujo completo**, desde la terminal **de tu Mac** (no del servidor),
 en la carpeta del repo:
 
 ```bash
-BASE_URL=https://TU_DOMINIO API_URL=https://TU_DOMINIO/backend pnpm verify:auth
+BASE_URL=https://timesheet.mateocabrera.space API_URL=https://timesheet.mateocabrera.space/backend pnpm verify:auth
 ```
 
 Debe terminar con `All 31 steps passed.`
@@ -539,12 +552,12 @@ Debe terminar con `All 31 steps passed.`
 **14.3 Comprobaciones rápidas:**
 
 ```bash
-curl -s https://TU_DOMINIO/backend/health              # {"status":"ok"}
-curl -s https://TU_DOMINIO/backend/employees           # 401 UNAUTHORIZED sin sesión: correcto
+curl -s https://timesheet.mateocabrera.space/backend/health              # {"status":"ok"}
+curl -s https://timesheet.mateocabrera.space/backend/employees           # 401 UNAUTHORIZED sin sesión: correcto
 curl -s -m 5 http://TU_IP_ELASTICA:3333/backend/health  # no debe responder: la API no es pública
 ```
 
-Y la documentación de la API en `https://TU_DOMINIO/backend/docs`.
+Y la documentación de la API en `https://timesheet.mateocabrera.space/backend/docs`.
 
 ---
 
@@ -577,7 +590,7 @@ Y repite la verificación de la parte 14.
 | Inicias sesión y vuelves al login | Estás en `http://`, o `CORS_ORIGIN` / `BETTER_AUTH_URL` no coinciden con tu dominio | Usa `https://`; revisa la parte 9.2 |
 | El registro o login da **404** | `BETTER_AUTH_URL` sin `/backend`, o la web compilada con otra `NEXT_PUBLIC_API_URL` | Corrige los `.env`, recompila (`pnpm build`) y reinicia los servicios |
 | `/login` entra en un bucle de redirecciones | Alguien añadió `--hostname` al `.service` de la web | Quítalo (ver el comentario del archivo), `daemon-reload` y `restart` |
-| certbot falla en la validación | El DNS aún no apunta a tu IP, o el puerto 80 está cerrado | `dig +short TU_DOMINIO`; revisa el security group y `sudo ufw status` |
+| certbot falla en la validación | El DNS no apunta a tu IP, la nube de Cloudflare está en naranja, o el puerto 80 está cerrado | `dig +short timesheet.mateocabrera.space @1.1.1.1`; pon la nube en gris; revisa el security group y `sudo ufw status` |
 | La consola de AWS "no muestra" tu servidor | Estás en otra región | Cambia la región arriba a la derecha |
 
 ---
@@ -591,7 +604,7 @@ Cuando termines la práctica, en la consola de EC2:
    pero sigue cobrando el disco y la IP.)
 2. **Elastic IPs** → selecciona tu IP → **Actions → Release Elastic IP addresses**.
 3. **Security Groups** → borra `timesheet-sg` (cuando la instancia ya esté terminada).
-4. Si creaste el registro DNS en Route 53, bórralo. La *hosted zone* también tiene un pequeño
-   coste mensual si ya no la vas a usar.
+4. En Cloudflare → **mateocabrera.space** → **DNS → Records**, borra el registro `timesheet`
+   (apuntaría a una IP que ya no es tuya y que AWS puede dar a otra persona).
 
 Revisa **Billing and Cost Management** unos días después para confirmar que el gasto se detuvo.
