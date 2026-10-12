@@ -8,7 +8,8 @@ import * as schema from '@/db/schema';
 const DAY_SECONDS = 60 * 60 * 24;
 
 export const auth = betterAuth({
-  baseURL: env.BETTER_AUTH_URL,
+  // Full endpoint URL: Better Auth only appends /api/auth when the URL has no path (e.g. /backend).
+  baseURL: `${env.BETTER_AUTH_URL.replace(/\/$/, '')}/api/auth`,
   secret: env.BETTER_AUTH_SECRET,
   trustedOrigins: [env.CORS_ORIGIN],
   database: drizzleAdapter(db, { provider: 'pg', schema, usePlural: true }),
