@@ -42,4 +42,4 @@ sequenceDiagram
     end
 ```
 
-See [`specs/features/approval-flow.md`](../../specs/features/approval-flow.md).
+See [`openspec/specs/approval-flow/spec.md`](../../openspec/specs/approval-flow/spec.md).

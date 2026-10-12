@@ -2,7 +2,7 @@
 name: create-module
 description: >
   Implement a feature as a full vertical slice across the stack, in the exact order and file
-  layout this project uses. Use AFTER a feature spec exists (write one with `spec-author` first),
+  layout this project uses. Use AFTER an OpenSpec change exists (create one with `/opsx:propose` first),
   when you're ready to BUILD: a new API module, a new shared domain, a new web screen, or all
   three. Triggers on: "implement <feature>", "add a module", "create the endpoint/route", "build
   the screen", "scaffold <feature>", "add a domain to shared". Follow it step by step — do not
@@ -13,8 +13,9 @@ description: >
 
 ## When to use
 
-After the feature's spec exists (`specs/features/<slug>.md`). If it doesn't, stop and run
-`spec-author` first — never build without a spec. This skill turns that spec into code following
+After an OpenSpec change exists (`openspec/changes/<id>/` with delta specs + `tasks.md`). If it
+doesn't, stop and run `/opsx:propose` first — never build without a spec. Typically invoked while
+running `/opsx:apply`. This skill turns that change into code following
 the project's exact module shape, in the right order, without re-deriving the structure each time.
 
 ## The one rule that makes this deterministic
@@ -27,7 +28,7 @@ existing module and copy its structure, naming, and wiring:
 - Web → mirror `apps/web/src/features/employees/` (`api.ts`, `hooks.ts`, `components/`).
 - Shared → mirror `packages/shared/src/employee/employee.ts`.
 
-The live code is the template. The **why** behind each layer lives in `specs/foundations/`
+The live code is the template. The **why** behind each layer lives in `openspec/specs/`
 (`shared-package`, `api-platform`, `web-platform`) and `CLAUDE.md` — read them once if unsure;
 this skill is the **procedure**, those are the **rationale**. Do not duplicate their content here.
 
@@ -88,9 +89,9 @@ tweak = phase C only). Within a phase, do the steps in order — later steps dep
 - API: `pnpm nx typecheck api` + the integration test green; hit the route once (curl/Swagger).
 - Web: `pnpm nx typecheck web` + lint; the screen renders with all three states.
 
-Run the `/subphase` gate (typecheck + lint + test) and tick the matching `specs/PLAN.md`
-"Done when" as each step passes. If a decision changed while building, update the feature spec
-**first** (record it under `## Notes / deviations`), then the code.
+Run the gate (typecheck + lint + test) and tick the matching task in the change's `tasks.md` as
+each step passes. If a decision changed while building, update the change's artifacts **first**
+(`/opsx:update`), then the code.
 
 ## Final wiring checklist (the easy-to-forget bits)
 

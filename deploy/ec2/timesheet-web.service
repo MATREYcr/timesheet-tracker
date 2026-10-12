@@ -1,0 +1,18 @@
+# Install as /etc/systemd/system/timesheet-web.service (see deploy/ec2/README.md).
+[Unit]
+Description=Mini Timesheets web (Next.js)
+After=network.target timesheet-api.service
+
+[Service]
+Type=simple
+User=timesheet
+Group=timesheet
+WorkingDirectory=/opt/timesheet-tracker/apps/web
+Environment=NODE_ENV=production
+# No --hostname: binding 127.0.0.1 makes next-intl's locale rewrite external and loops /login.
+ExecStart=/opt/timesheet-tracker/apps/web/node_modules/.bin/next start --port 3000
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

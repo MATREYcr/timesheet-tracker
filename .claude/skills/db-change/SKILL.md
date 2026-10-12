@@ -14,7 +14,7 @@ description: >
 
 Any time the schema (`apps/api/src/db/schema/`) changes, or you need to generate/apply a migration,
 seed, or reset the DB. The **rationale** for the data model lives in
-`specs/foundations/api-platform.md` and the feature specs; this skill is the **procedure**.
+`openspec/specs/api-platform/spec.md` and the capability specs; this skill is the **procedure**.
 
 ## Setup facts (know these before running anything)
 

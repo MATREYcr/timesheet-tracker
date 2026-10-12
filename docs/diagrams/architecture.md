@@ -7,9 +7,12 @@ shared `calculateWeeklyPay`; the API never computes pay for the weekly summary.
 ```mermaid
 flowchart TD
     subgraph web["apps/web — Next.js 16 (App Router)"]
+        P["proxy.ts — session-cookie gate + next-intl"]
         W["Screens · TanStack Query · react-hook-form"]
     end
     subgraph api["apps/api — Hono"]
+        AU["Better Auth · /api/auth/*"]
+        G["Session guard (401 UNAUTHORIZED)"]
         A["Routes → Services (Drizzle + domain rules)"]
     end
     subgraph shared["packages/shared — headless TS"]
@@ -17,7 +20,11 @@ flowchart TD
     end
     DB[("PostgreSQL")]
 
-    W -->|"HTTP + Accept-Language"| A
+    P --> W
+    W -->|"sign-up / sign-in / sign-out"| AU
+    W -->|"HTTP + session cookie + Accept-Language"| G
+    G --> A
+    AU -->|"Drizzle adapter"| DB
     A -->|"Drizzle ORM"| DB
     W -.->|"consumes (types · Zod · pay calc)"| S
     A -.->|"consumes (types · Zod · error codes)"| S
@@ -32,5 +39,5 @@ flowchart TD
 - Validation uses the **same** shared Zod schemas on both sides; errors flow back as the envelope
   `{ error: { code, message } }`, localized en/es by `Accept-Language`.
 
-See [`specs/overview.md`](../../specs/overview.md) and
-[`specs/foundations/`](../../specs/foundations/) for the rationale.
+See [`openspec/specs/`](../../openspec/specs/) for the current requirements, and
+[`specs/overview.md`](../../specs/overview.md) for the original rationale.

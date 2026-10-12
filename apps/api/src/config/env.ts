@@ -6,8 +6,16 @@ const envSchema = z.object({
   // (the same Postgres, database name swapped to `timesheet_test`).
   TEST_DATABASE_URL: z.string().min(1).optional(),
   PORT: z.coerce.number().int().positive(),
+  // Unset listens on all interfaces; 127.0.0.1 behind a reverse proxy.
+  HOST: z.string().min(1).optional(),
   CORS_ORIGIN: z.string().min(1),
-  NODE_ENV: z.enum(['development', 'test', 'production']).default('development'),
+  BETTER_AUTH_SECRET: z
+    .string()
+    .min(32, 'BETTER_AUTH_SECRET must be at least 32 characters'),
+  BETTER_AUTH_URL: z.url(),
+  NODE_ENV: z
+    .enum(['development', 'test', 'production'])
+    .default('development'),
 });
 
 const parsed = envSchema.safeParse(process.env);
@@ -23,3 +31,10 @@ if (!parsed.success) {
 }
 
 export const env = parsed.data;
+
+// Behind a proxy the public URL has a path (e.g. /backend); routes mount under it so Better Auth's
+// router, which matches on its URL's path, sees the same path as the request.
+export const basePath = new URL(env.BETTER_AUTH_URL).pathname.replace(
+  /\/+$/,
+  '',
+);

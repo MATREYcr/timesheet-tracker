@@ -3,6 +3,7 @@ import { HttpStatus } from '@/common/http-status';
 
 export const ERROR_STATUS: Record<ErrorCode, number> = {
   VALIDATION_ERROR: HttpStatus.BAD_REQUEST,
+  UNAUTHORIZED: HttpStatus.UNAUTHORIZED,
   NOT_FOUND: HttpStatus.NOT_FOUND,
   EMPLOYEE_INACTIVE: HttpStatus.CONFLICT,
   WEEK_LOCKED: HttpStatus.CONFLICT,

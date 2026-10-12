@@ -7,6 +7,10 @@ const MESSAGES: Record<ErrorCode, Record<Locale, string>> = {
     en: 'Invalid request data.',
     es: 'Datos de solicitud inválidos.',
   },
+  UNAUTHORIZED: {
+    en: 'You need to sign in to continue.',
+    es: 'Debes iniciar sesión para continuar.',
+  },
   NOT_FOUND: {
     en: 'Resource not found.',
     es: 'Recurso no encontrado.',

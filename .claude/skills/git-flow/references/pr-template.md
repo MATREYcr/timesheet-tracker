@@ -2,22 +2,22 @@
 
 ## Title
 
-`<type>(phase-N): short imperative summary`
+`<type>(<scope>): short imperative summary`
 
-Example: `feat(phase-1): shared package — types, schemas, pay calculation`
+Example: `feat(weekly-summary): snapshot hourly rate on approval`
 
 ---
 
 ## What this PR does
 
-<!-- 2-4 sentences describing the phase's changes. -->
+<!-- 2-4 sentences describing the change. -->
 
-## Phase
+## OpenSpec change
 
-<!-- Which phase from specs/PLAN.md, and which subphases are completed. -->
+<!-- The change id and the capabilities whose specs it modifies. -->
 
-- Phase: N — <name>
-- Subphases done: <e.g. 1.1–1.6>
+- Change: `openspec/changes/archive/<date>-<change-id>/`
+- Capabilities touched: <e.g. weekly-summary, approval-flow>
 
 ## How it was verified
 
@@ -31,11 +31,12 @@ Example: `feat(phase-1): shared package — types, schemas, pay calculation`
 
 ## Checklist
 
-- [ ] Branch cut from `develop`, named `<type>/phase-N-<slug>`
+- [ ] Branch cut from `develop`, named `<type>/<change-id>`
 - [ ] Conventional, scoped commits
-- [ ] `specs/PLAN.md` checkboxes updated
+- [ ] `tasks.md` fully ticked and change archived
+- [ ] `openspec validate --all --strict` passes
 - [ ] No debug code, no committed secrets / `.env`
-- [ ] Relevant specs updated if requirements changed
+- [ ] Delta specs updated if requirements changed during implementation
 
 ## Notes for reviewer
 

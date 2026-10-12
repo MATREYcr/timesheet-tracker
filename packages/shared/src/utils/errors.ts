@@ -1,6 +1,7 @@
 // en/es messages live in the API; here only the machine-readable codes.
 export const ERROR_CODES = [
   'VALIDATION_ERROR',
+  'UNAUTHORIZED',
   'NOT_FOUND',
   'EMPLOYEE_INACTIVE',
   'WEEK_LOCKED',

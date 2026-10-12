@@ -16,6 +16,9 @@ The app does three things:
 2. Let someone log time entries for them (date + hours worked).
 3. Show a weekly summary per employee (regular vs overtime hours, total pay) and
    let a reviewer approve or reject each employee's week. Approved weeks are locked.
+4. Require an account: users register and sign in (email + password) before using
+   any of the above. Added after the assessment so the app can serve as a complete
+   application for AWS deployment practice.
 
 This is a normal CRUD application. **It contains no AI features.** AI (Claude Code)
 is the tool used to _build_ it, not part of the product.
@@ -30,6 +33,7 @@ is the tool used to _build_ it, not part of the product.
 | API          | **Hono** + **Drizzle ORM** + **Zod**, **PostgreSQL**              |
 | Database     | PostgreSQL via **docker-compose**                                 |
 | Web client   | **Next.js 16** (App Router) + **TanStack Query**                  |
+| Auth         | **Better Auth** (email/password, cookie sessions) inside the API  |
 | Styling / UI | **Tailwind CSS** + **shadcn/ui**                                  |
 | Shared logic | Plain TypeScript (headless) — types, Zod schemas, pay calculation |
 | Tests        | **Vitest**                                                        |
@@ -50,7 +54,8 @@ timesheet-tracker/
 │   └── e2e/                Playwright end-to-end tests
 ├── packages/
 │   └── shared/             Headless TS: types, Zod schemas, pay calculation
-├── specs/                  Spec-driven plans (source of truth before coding)
+├── openspec/               OpenSpec: specs/ (source of truth) + changes/ (proposals)
+├── specs/                  Original spec-first plans — historical record, read-only
 ├── docs/                   Mermaid diagrams (docs/diagrams) + design handoff (docs/design)
 ├── docker-compose.yml      PostgreSQL
 ├── CLAUDE.md               This file
@@ -116,6 +121,21 @@ timesheet-tracker/
 - The decision is flipped with the **opposite action** (approve ⇄ reject) — there is
   no separate "reopen". To unlock an approved week, reject it.
 
+### Authentication
+
+- Better Auth runs **inside the API** at `/api/auth/*` with the Drizzle adapter; auth
+  tables (`users`, `sessions`, `accounts`, `verifications`) follow the same conventions
+  (plural, uuid, snake_case) and are migrated with Drizzle Kit.
+- Every business route requires a session → otherwise **401 `UNAUTHORIZED`** in the
+  error envelope. New business modules must be added to `PROTECTED_PREFIXES` in
+  `apps/api/src/routes/index.ts`. `/health`, `/openapi`, `/docs`, `/api/auth/*` are public.
+- The **API is the authority** on sessions. The web `proxy.ts` only checks that the
+  cookie exists (optimistic redirects); never rely on it for security.
+- No roles: every signed-in user can do everything. The seed ensures a demo account
+  (`demo@timesheet.dev` / `Demo1234!`) and never wipes registered users.
+- Auth form schemas live in `shared`; their messages are **keys** resolved by the web
+  i18n catalogs (`auth.validation.*`), not English copy.
+
 ---
 
 ## 5. Architecture rules (graded heavily — do not violate)
@@ -165,10 +185,13 @@ timesheet-tracker/
   `Table`, `Select`, `Badge`, `Skeleton`, `Alert`, `Empty`, `Spinner`). Use built-in
   variants and semantic tokens (`bg-primary`, `text-muted-foreground`), not raw
   colors. Follow the `shadcn` skill. Only hand-roll markup when nothing fits.
-- **Comments:** only when they add value — explain the **why** (non-obvious
-  decisions, trade-offs, gotchas), never restate the **what** the code already says.
-  No redundant file-header summaries; prefer self-documenting code and names.
+- **Comments:** only the strictly necessary ones, always in **English**, ideally one
+  line. Keep a comment only for a non-obvious **why** (library gotchas, security,
+  framework requirements); never restate the **what**, no file-header summaries, no
+  JSDoc that repeats the function name, no comments in tests or JSX describing markup.
 - **Commits:** small, conventional (`feat:`, `fix:`, `chore:`, `test:`, `docs:`).
+- **OpenSpec artifacts:** written in English; scenarios use exactly `####` headings and
+  `- **WHEN**` / `- **THEN**` bullets (anything else fails validation silently).
 - **Diagrams:** Mermaid only, in `docs/diagrams/` (diagrams-as-code — they render natively on
   GitHub and stay diffable). No exported PNG/SVG images. Keep them in sync with the code.
 - **Visual / UI verification:** use the `agent-browser` skill to drive the running app — verify
@@ -191,18 +214,30 @@ timesheet-tracker/
 
 ---
 
-## 8. Workflow (spec-driven)
+## 8. Workflow (spec-driven, OpenSpec)
 
-This project is built spec-first. The flow for any non-trivial piece of work:
+This project is built spec-first with **OpenSpec**. `openspec/specs/<capability>/spec.md`
+describes how the system behaves today (requirements + WHEN/THEN scenarios);
+`openspec/changes/<change-id>/` holds proposed work. `openspec/config.yaml` injects the
+project context and per-artifact rules. The flow for any non-trivial piece of work:
 
-1. Read / write the relevant spec in `specs/` — define _what_ and the edge cases
-   before writing code.
-2. Implement against the spec.
-3. Verify with tests.
-4. If requirements change, update the spec, then the code.
+1. **Propose** — `/opsx:propose "<idea>"` (or `/opsx:explore` first if it's fuzzy) creates
+   `proposal.md`, `design.md`, `tasks.md` and delta specs (`ADDED/MODIFIED/REMOVED
+   Requirements`) defining the _what_ and the edge cases before any code.
+2. **Apply** — `/opsx:apply` implements the tasks against the delta specs (use the
+   `create-module` / `db-change` skills for the code), ticking `tasks.md` as it goes.
+3. **Verify** — tests + `openspec validate --all --strict`; run the `spec-guardian` agent
+   before opening the PR.
+4. **Archive** — `/opsx:archive` merges the delta specs into `openspec/specs/` and moves the
+   change to `openspec/changes/archive/`.
 
-`specs/` files are committed as-is and are deliverable artifacts. Do not delete or
-polish them away.
+If requirements change mid-way, update the change's artifacts (`/opsx:update`) first, then
+the code. Validate specs with `openspec validate --all --strict`.
+
+`specs/` is the original spec-first record of the assessment (overview, decision tables
+with rejected alternatives, `PLAN.md` build log). It is a committed deliverable: **do not
+delete, edit or polish it** (the only addition is the pointer note at the top of
+`specs/README.md`) — new work goes through OpenSpec only.
 
 ### Capturing preferences & corrections
 
@@ -223,10 +258,11 @@ in `CLAUDE.md` or a spec, not a skill.
 
 ## 9. Hard rules — do not break these
 
-- **Always build to the specs.** `CLAUDE.md` + `specs/` are the source of truth;
-  implement against them, never improvise around a documented decision. If a
-  decision changes during the work, **update the relevant spec (and this file)
-  first, then change the code** — code and specs must never drift apart.
+- **Always build to the specs.** `CLAUDE.md` + `openspec/specs/` are the source of
+  truth; implement against them (through an OpenSpec change), never improvise around a
+  documented decision. If a decision changes during the work, **update the change's
+  delta specs (and this file) first, then change the code** — code and specs must never
+  drift apart.
 - **`WRITEUP.md` is written entirely by the human. Never write, edit, or polish it
   with AI.** It is evaluated as the candidate's own voice. Do not touch it.
 - Do not put the pay calculation anywhere except `packages/shared`.
@@ -250,6 +286,7 @@ pnpm dev                # docker up + serve api & web (dev)
 pnpm test               # all Vitest suites (unit + integration)
 pnpm lint               # lint every project
 pnpm exec nx e2e e2e    # Playwright E2E (needs the app stack running)
+pnpm verify:auth        # agent-browser real-flow auth check (needs the app stack running)
 ```
 
 ---
