@@ -322,8 +322,11 @@ ssh -i ~/.ssh/timesheet-key.pem ubuntu@TU_IP_ELASTICA
 
 > Si la opción A falla: revisa que existe la regla SSH con la lista `ec2-instance-connect`
 > (parte 1.5) y que la instancia está en **Running** con **2/2 checks passed**.
-> Si la opción B no conecta: la regla SSH tiene **My IP**; si tu IP de casa cambió (pasa a
-> menudo), edita esa regla y vuelve a elegir **My IP**.
+> Si la opción B se queda colgada (*Operation timed out*): falta la regla SSH con **My IP** o tu
+> IP de casa cambió (pasa a menudo). **EC2 → Instances** → tu instancia → pestaña **Security** →
+> click en el security group → **Edit inbound rules**. Si la regla existe, vuelve a elegir
+> **My IP**; si no (te la saltaste en la parte 1.5), **Add rule** → Type `SSH`, Source **My IP**
+> → **Save rules**. Para ver tu IP pública: `curl https://checkip.amazonaws.com`.
 
 ---
 
@@ -804,7 +807,7 @@ Y repite la verificación de la parte 14.
 
 | Síntoma | Causa probable | Qué hacer |
 |---|---|---|
-| `ssh` se queda colgado o da *timeout* | Tu IP cambió y la regla SSH solo permite la antigua | Security group → editar la regla SSH → **My IP** |
+| `ssh` se queda colgado o da *timeout* | No hay regla SSH con **My IP**, o tu IP cambió y la regla solo permite la antigua | Security group → **Edit inbound rules** → edita la regla SSH (o **Add rule** → `SSH`) → **My IP** |
 | EC2 Instance Connect: *Failed to connect to your instance* | Falta la regla SSH con la lista `ec2-instance-connect`, o la instancia aún arranca | Revisa el security group (parte 1.5) y espera a **2/2 checks passed** |
 | No puedes elegir región: todas con candado y pone **Global** | Estás en un servicio global (Billing, IAM…) | Entra en **EC2** y elige la región allí |
 | `next build` termina con `Killed` | Sin memoria | Comprueba el swap (parte 5.2) con `free -h` |
