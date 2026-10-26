@@ -446,7 +446,7 @@ Debe imprimir una tabla con un `1`.
 > (copias de seguridad, parches y alta disponibilidad automáticos), y es lo que usarías en una
 > empresa. Pero cuesta bastante más que el servidor entero y te ahorra justo lo que aquí quieres
 > aprender: instalar y configurar una base de datos. Pasar a RDS es un buen siguiente paso:
-> solo cambiaría `DATABASE_URL`.
+> solo cambiaría `DATABASE_URL` (guía: [RDS.md](RDS.md)).
 
 > **¿Por qué un usuario `timesheet` y no usar `postgres` directamente?** `postgres` es el
 > superusuario: puede hacer cualquier cosa en cualquier base de datos. La app solo necesita su
@@ -613,9 +613,35 @@ que no lo ejecutes cuando ya tengas datos reales. Las cuentas de usuario no las 
 
 ## Parte 11 — Arrancar la API y la web como servicios (systemd)
 
-**Qué es systemd:** el "encargado" de Ubuntu que arranca los programas al encender la máquina y
-los reinicia si se caen. Le describes cada programa con un archivo `.service`; los nuestros están
-en `deploy/ec2/` (ábrelos: son cortos y se leen casi como una lista de instrucciones).
+**El problema:** en tu Mac arrancas la app con `pnpm dev` en una terminal. En un servidor eso no
+vale: si se corta tu `ssh` la app muere, si el servidor se reinicia no arranca sola y si falla se
+queda caída hasta que entres a levantarla. Un servidor tiene que funcionar 24/7 sin ti conectado.
+
+**Qué es systemd:** el "encargado" de Ubuntu. Es lo primero que arranca al encender la máquina, y
+arranca y vigila todo lo demás (ya cuida de PostgreSQL y SSH). Le das una **ficha** por programa
+(un archivo `.service`) y él se asegura de que esté siempre en marcha. Las nuestras están en
+`deploy/ec2/`. Así se lee la de la API:
+
+```ini
+[Unit]
+After=network.target postgresql.service   # arráncala DESPUÉS de la red y de PostgreSQL
+Wants=postgresql.service                  # y asegúrate de que PostgreSQL también arranca
+
+[Service]
+User=timesheet                            # ejecútala como "timesheet", no como administrador
+WorkingDirectory=/opt/timesheet-tracker/apps/api   # entra en esta carpeta (ahí está su .env)
+Environment=NODE_ENV=production
+Environment=HOST=127.0.0.1                # escucha solo dentro de la máquina
+ExecStart=/usr/bin/node dist/main.js      # EL COMANDO para arrancarla
+Restart=on-failure                        # si se cae por un error, levántala de nuevo
+RestartSec=5                              # esperando 5 segundos
+
+[Install]
+WantedBy=multi-user.target                # arráncala en cada encendido normal
+```
+
+Es lo mismo que harías a mano (`cd apps/api && node dist/main.js`), pero lo hace systemd por ti,
+siempre. La de la web es igual, con `next start --port 3000`.
 
 ```bash
 sudo cp /opt/timesheet-tracker/deploy/ec2/timesheet-api.service /etc/systemd/system/
@@ -630,8 +656,11 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now timesheet-api timesheet-web
 ```
 
+- `cp ... /etc/systemd/system/`: dejas las fichas donde systemd las busca.
 - `daemon-reload`: systemd vuelve a leer sus archivos y descubre los nuevos.
-- `enable --now`: los arranca ahora **y** en cada encendido.
+- `enable --now`: **este es el "start"**. `enable` los apunta para arrancar en cada encendido y
+  `--now` además los arranca ya (equivale a `enable` + `start`). Solo `start` correría ahora pero
+  no tras un reinicio; solo `enable`, al revés.
 
 **Comprueba:**
 
@@ -644,13 +673,34 @@ curl -s -o /dev/null -w '%{http_code}\n' http://127.0.0.1:3000/login
 - Los dos servicios muestran `Active: active (running)`.
 - La API responde `{"status":"ok"}` en `/backend/health`: ya monta sus rutas bajo `/backend`.
 - La web responde `200`.
+- Las dos últimas salen pegadas (`{"status":"ok"}200`) porque la primera no termina en salto de
+  línea; es normal.
 
-**Ver los logs** (lo primero que mirar si algo falla; `Ctrl + C` para salir):
+Cómo leer el `status`: `enabled` = arrancará en cada encendido; `active (running) since …` = lleva
+ese tiempo en marcha sin caerse; `Main PID` = el número del proceso (cambia si se reinicia);
+debajo, las últimas líneas de su log.
 
-```bash
-journalctl -u timesheet-api -f
-journalctl -u timesheet-web -f
-```
+**Desde ahora no "corres" la app: ya está corriendo.** Solo la gestionas:
+
+| Para… | Comando | En tu Mac era… |
+|---|---|---|
+| Ver cómo están | `systemctl status timesheet-api timesheet-web --no-pager` | mirar la terminal |
+| Logs en vivo (`Ctrl + C` para salir) | `journalctl -u timesheet-api -f` (o `timesheet-web`) | la salida de `pnpm dev` |
+| Reiniciar (tras cambiar un `.env` o el código) | `sudo systemctl restart timesheet-api timesheet-web` | parar y volver a lanzar |
+| Parar / arrancar | `sudo systemctl stop …` / `sudo systemctl start …` | `Ctrl + C` / `pnpm dev` |
+
+`journalctl` es el libro de registro del encargado: guarda todo lo que la app escribe aunque no
+estuvieras conectado. Es lo primero que mirar si algo falla. Para desplegar código nuevo, mira
+[Actualizar la app](#actualizar-la-app-cuando-cambies-el-código).
+
+> **Pruébalo:** `sudo reboot`, espera un minuto, reconéctate y repite el `status`. Las dos apps
+> estarán en marcha sin que hayas hecho nada: eso es systemd trabajando.
+
+> **¿Se usa systemd en empresas?** Sí: es el estándar en casi todo Linux de servidor (Ubuntu,
+> Debian, Red Hat, Amazon Linux) y gestiona PostgreSQL, nginx o Docker. Con contenedores (ECS,
+> Kubernetes) tu app la vigila otra herramienta, pero las ideas son las mismas
+> (`Restart=on-failure` ≈ `restartPolicy` en Kubernetes), y `systemctl` / `journalctl` es lo
+> primero que se mira cuando un servidor da problemas.
 
 > **¿Por qué systemd y no PM2?** PM2 es un gestor de procesos para Node muy popular, pero es otra
 > herramienta que instalar y mantener. systemd ya viene en Ubuntu, es el que arranca todo el
@@ -779,6 +829,8 @@ curl -s -m 5 http://TU_IP_ELASTICA:3333/backend/health         # no debe respond
 
 Y la documentación de la API en `https://timesheet.mateocabrera.space/backend/docs`.
 
+**Siguiente paso:** mover la base de datos a Amazon RDS con [RDS.md](RDS.md).
+
 ---
 
 ## Actualizar la app cuando cambies el código
@@ -836,6 +888,11 @@ Al volver, **Start**. La IP elástica se mantiene, así que el DNS sigue funcion
 2. **Elastic IPs** → selecciona tu IP → **Actions → Release Elastic IP addresses**.
 3. **Security Groups** → borra `timesheet-sg` (cuando la instancia ya esté terminada).
 4. En Cloudflare → **mateocabrera.space** → **DNS → Records**, borra el registro `timesheet`.
+
+Si moviste la base de datos a RDS, bórrala antes: [RDS.md, parte 6](RDS.md#parte-6--coste-y-cómo-apagar).
+El **key pair** puedes conservarlo (es gratis) junto con tu `.pem` para reutilizarlo en la próxima
+instancia; si lo haces, `ssh` avisará de que la huella del servidor cambió:
+`ssh-keygen -R LA_IP` la olvida.
 
 > **¿Por qué borrar también el registro DNS?** Al liberar la IP, AWS puede dársela a otra persona.
 > Si tu registro siguiera apuntando a ella, `timesheet.mateocabrera.space` mostraría el servidor de
